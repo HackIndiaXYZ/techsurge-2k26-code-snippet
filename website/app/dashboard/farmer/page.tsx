@@ -8,7 +8,6 @@ import {
   CheckCircle,
   Cloud,
   Wheat,
-  AlertTriangle,
   Clock,
   ChevronDown,
   Sparkles,
@@ -16,10 +15,10 @@ import {
   Copy,
   Download,
   Check,
-  ShieldAlert,
   FileText,
   Loader2,
   HelpCircle,
+  ShieldCheck,
 } from "lucide-react";
 
 type PathwayKey = "new" | "enrolled" | null;
@@ -35,7 +34,6 @@ export default function FarmerJourneyPage() {
 
   const toggle = (key: PathwayKey) => setOpen((prev) => (prev === key ? null : key));
 
-  // Open Modal & trigger Step 1 -> Step 2 transition after 2 seconds
   const handleOpenDiagnosticModal = () => {
     setIsModalOpen(true);
     setModalStep("loading");
@@ -50,7 +48,6 @@ export default function FarmerJourneyPage() {
     }
   }, [isModalOpen, modalStep]);
 
-  // Trigger Step 2 -> Step 3 transition
   const handleGenerateRTI = () => {
     setModalStep("drafting");
     setTimeout(() => {
@@ -58,7 +55,6 @@ export default function FarmerJourneyPage() {
     }, 1200);
   };
 
-  // Mock RTI Draft Content
   const rtiText = `To the Public Information Officer,
 State Agriculture Department & PMFBY Nodal Agency,
 
@@ -233,15 +229,15 @@ Medak District, Telangana`;
                     className="overflow-hidden"
                   >
                     <div className="px-5 sm:px-6 pb-6 pt-1">
-                      {/* UPDATED WARN BOX: REDUCED CLAIM SCENARIO */}
-                      <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 sm:p-5 shadow-sm">
+                      {/* PURE GREEN & WHITE THEMED STATUS BOX */}
+                      <div className="rounded-xl border-2 border-emerald-300 bg-emerald-50 p-4 sm:p-5 shadow-sm">
                         <div className="flex items-start gap-3">
-                          <AlertTriangle className="w-6 h-6 text-amber-600 shrink-0 mt-0.5" />
+                          <ShieldCheck className="w-6 h-6 text-emerald-700 shrink-0 mt-0.5" />
                           <div>
-                            <p className="font-bold text-amber-900 text-base sm:text-lg">
+                            <p className="font-bold text-emerald-950 text-base sm:text-lg">
                               Claim Partially Settled
                             </p>
-                            <p className="text-sm text-amber-800 font-semibold mt-0.5">
+                            <p className="text-sm text-emerald-800 font-semibold mt-0.5">
                               Expected: ₹50,000 | Received: ₹12,500
                             </p>
                           </div>
@@ -265,7 +261,6 @@ Medak District, Telangana`;
 
                       {/* TWO SIDE-BY-SIDE BUTTONS */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-5">
-                        {/* Primary Button 1: AI Diagnostic & RTI */}
                         <button
                           type="button"
                           onClick={handleOpenDiagnosticModal}
@@ -275,7 +270,6 @@ Medak District, Telangana`;
                           <span>Analyze Discrepancy &amp; Draft RTI</span>
                         </button>
 
-                        {/* Secondary Button 2: Outline View Timeline */}
                         <button
                           type="button"
                           className="w-full py-3.5 px-4 rounded-xl border-2 border-emerald-600 text-emerald-800 hover:bg-emerald-50 font-bold text-sm transition-colors cursor-pointer flex items-center justify-center gap-2"
@@ -339,7 +333,7 @@ Medak District, Telangana`;
 
                 {/* Modal Content Workflow States */}
                 <div className="p-6 sm:p-8">
-                  {/* STATE 1: LOADING STATE (SIMULATING RULE-MATCHING) */}
+                  {/* STATE 1: LOADING STATE */}
                   {modalStep === "loading" && (
                     <div className="py-12 flex flex-col items-center justify-center text-center space-y-4">
                       <Loader2 className="w-12 h-12 text-emerald-600 animate-spin" />
@@ -354,10 +348,10 @@ Medak District, Telangana`;
                     </div>
                   )}
 
-                  {/* STATE 2: PLAIN-LANGUAGE EXPLANATION (THE AI OUTPUT) */}
+                  {/* STATE 2: PLAIN-LANGUAGE EXPLANATION */}
                   {modalStep === "explanation" && (
                     <div className="space-y-5">
-                      {/* Success & Rule Matched Badge */}
+                      {/* Success & Rule Matched Badge in PURE GREEN */}
                       <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-slate-100">
                         <div className="flex items-center gap-2">
                           <CheckCircle className="w-6 h-6 text-emerald-600" />
@@ -365,14 +359,14 @@ Medak District, Telangana`;
                             Analysis Complete
                           </span>
                         </div>
-                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300">
+                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-900 border border-emerald-300">
                           Rule Matched: Section 25: Area Correction Factor (ACF)
                         </span>
                       </div>
 
                       {/* Plain Language Explanation Card */}
-                      <div className="p-5 rounded-2xl bg-emerald-50/60 border border-emerald-200 space-y-3">
-                        <div className="flex items-center gap-2 text-emerald-900 font-bold text-sm">
+                      <div className="p-5 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-3">
+                        <div className="flex items-center gap-2 text-emerald-950 font-bold text-sm">
                           <HelpCircle className="w-4 h-4 text-emerald-700" />
                           <span>Why was your claim reduced?</span>
                         </div>
@@ -415,7 +409,7 @@ Medak District, Telangana`;
                     </div>
                   )}
 
-                  {/* STATE 3: THE RTI DRAFT (ACTIONABLE OUTPUT) */}
+                  {/* STATE 3: THE RTI DRAFT */}
                   {modalStep === "rti_draft" && (
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
@@ -428,15 +422,13 @@ Medak District, Telangana`;
                         </span>
                       </div>
 
-                      {/* Styled Textarea */}
                       <textarea
                         readOnly
                         rows={9}
                         value={rtiText}
-                        className="w-full p-4 rounded-2xl bg-slate-900 text-slate-100 border border-slate-800 text-xs sm:text-sm font-mono leading-relaxed focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-none shadow-inner"
+                        className="w-full p-4 rounded-2xl bg-white text-slate-900 border-2 border-emerald-200 text-xs sm:text-sm font-mono leading-relaxed focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-none shadow-sm"
                       />
 
-                      {/* Action Buttons: Copy & Download */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                         <button
                           type="button"
@@ -468,7 +460,7 @@ Medak District, Telangana`;
                     </div>
                   )}
 
-                  {/* MANDATORY DISCLAIMER TEXT AT BOTTOM OF MODAL */}
+                  {/* DISCLAIMER TEXT */}
                   <div className="mt-6 pt-4 border-t border-slate-100">
                     <p className="text-[11px] text-slate-500 leading-normal font-medium italic">
                       <strong>Note:</strong> This tool explains PMFBY guidelines and drafts requests for data. It does not determine if your claim is right or wrong, and cannot guarantee a change in claim outcome.

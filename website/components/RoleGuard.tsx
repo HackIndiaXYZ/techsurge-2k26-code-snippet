@@ -25,7 +25,6 @@ export default function RoleGuard({ children }: RoleGuardProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Instant zero-delay profile resolution for demo mode
   const activeProfile =
     currentProfile ||
     (typeof window !== 'undefined'
@@ -153,7 +152,7 @@ export default function RoleGuard({ children }: RoleGuardProps) {
                         setIsDropdownOpen(false);
                         logout();
                       }}
-                      className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 transition-all flex items-center justify-between cursor-pointer"
+                      className="w-full text-left px-3 py-2 rounded-xl text-xs font-bold text-emerald-700 hover:bg-emerald-50 transition-all flex items-center justify-between cursor-pointer"
                     >
                       <span>Sign Out</span>
                       <LogOut className="w-3.5 h-3.5" />
@@ -167,7 +166,7 @@ export default function RoleGuard({ children }: RoleGuardProps) {
             <button
               onClick={logout}
               title="Logout"
-              className="p-2 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 transition-all cursor-pointer"
+              className="p-2 rounded-xl text-slate-500 hover:text-emerald-700 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-200 transition-all cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
             </button>

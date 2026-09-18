@@ -169,7 +169,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       profile = DEMO_PERSONAS[0];
     }
 
-    // Synchronous 0ms immediate execution
     setCurrentProfile(profile);
     setAuthCookies(profile);
     setIsLoading(false);

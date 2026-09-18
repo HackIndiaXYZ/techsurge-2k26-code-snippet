@@ -38,26 +38,26 @@ export default function AdminDashboardPage() {
         return {
           title: 'District Agriculture Officer (DAO) Dashboard',
           jurisdiction: activeProfile.jurisdiction || 'District Agriculture Office (Rangareddy)',
-          icon: <Building2 className="w-6 h-6 text-blue-400 stroke-[2.5]" />,
-          badgeColor: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+          icon: <Building2 className="w-6 h-6 text-emerald-400 stroke-[2.5]" />,
+          badgeColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
           stats: [
             { label: 'Applications Received', value: '14,280', color: 'text-slate-100' },
-            { label: 'Pending Verification', value: '342', color: 'text-amber-400' },
+            { label: 'Pending Verification', value: '342', color: 'text-emerald-400' },
             { label: 'CCE Loss Reports', value: '89', color: 'text-emerald-400' },
-            { label: 'Sanctioned Amount', value: '₹ 4.8 Cr', color: 'text-blue-400' },
+            { label: 'Sanctioned Amount', value: '₹ 4.8 Cr', color: 'text-emerald-400' },
           ],
         };
       case 'csc_operator':
         return {
           title: 'CSC VLE Operator Portal',
           jurisdiction: activeProfile.jurisdiction || 'Common Service Centre #402',
-          icon: <Store className="w-6 h-6 text-amber-400 stroke-[2.5]" />,
-          badgeColor: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+          icon: <Store className="w-6 h-6 text-emerald-400 stroke-[2.5]" />,
+          badgeColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
           stats: [
             { label: 'Farmers Enrolled Today', value: '28', color: 'text-emerald-400' },
             { label: 'Total Policy Uploads', value: '1,450', color: 'text-slate-100' },
-            { label: 'Premiums Collected', value: '₹ 89,200', color: 'text-amber-400' },
-            { label: 'Loss Intimations Filed', value: '14', color: 'text-blue-400' },
+            { label: 'Premiums Collected', value: '₹ 89,200', color: 'text-emerald-400' },
+            { label: 'Loss Intimations Filed', value: '14', color: 'text-emerald-400' },
           ],
         };
       case 'state_officer':
@@ -79,12 +79,12 @@ export default function AdminDashboardPage() {
         return {
           title: 'Ministry of Agriculture & Farmers Welfare (National)',
           jurisdiction: activeProfile.jurisdiction || 'Ministry of Agriculture & Farmers Welfare',
-          icon: <ShieldCheck className="w-6 h-6 text-rose-400 stroke-[2.5]" />,
-          badgeColor: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+          icon: <ShieldCheck className="w-6 h-6 text-emerald-400 stroke-[2.5]" />,
+          badgeColor: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
           stats: [
             { label: 'National Coverage', value: '5.4 Crore Farmers', color: 'text-slate-100' },
-            { label: 'Central Subsidy Share', value: '₹ 8,450 Cr', color: 'text-rose-400' },
-            { label: 'Insurance Companies Onboarded', value: '18 Empanelled', color: 'text-amber-400' },
+            { label: 'Central Subsidy Share', value: '₹ 8,450 Cr', color: 'text-emerald-400' },
+            { label: 'Insurance Companies Onboarded', value: '18 Empanelled', color: 'text-emerald-400' },
             { label: 'National Claim Ratio', value: '88.6%', color: 'text-emerald-400' },
           ],
         };
@@ -140,7 +140,7 @@ export default function AdminDashboardPage() {
 
             <button
               onClick={logout}
-              className="p-2 sm:px-3 sm:py-2 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-all flex items-center gap-1.5 cursor-pointer"
+              className="p-2 sm:px-3 sm:py-2 rounded-xl text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
               <span className="hidden sm:inline">Logout</span>
@@ -216,9 +216,9 @@ export default function AdminDashboardPage() {
 
             <button
               onClick={() => loginAs('csc_operator')}
-              className="p-3 rounded-xl glass-card text-left text-xs hover:border-amber-500/50 cursor-pointer"
+              className="p-3 rounded-xl glass-card text-left text-xs hover:border-emerald-500/50 cursor-pointer"
             >
-              <p className="font-bold text-amber-400 flex items-center gap-1">
+              <p className="font-bold text-emerald-400 flex items-center gap-1">
                 <Store className="w-3.5 h-3.5" /> CSC VLE
               </p>
               <p className="text-[10px] text-slate-400 truncate">Pooja Verma</p>
@@ -226,9 +226,9 @@ export default function AdminDashboardPage() {
 
             <button
               onClick={() => loginAs('state_officer')}
-              className="p-3 rounded-xl glass-card text-left text-xs hover:border-purple-500/50 cursor-pointer"
+              className="p-3 rounded-xl glass-card text-left text-xs hover:border-emerald-500/50 cursor-pointer"
             >
-              <p className="font-bold text-purple-400 flex items-center gap-1">
+              <p className="font-bold text-emerald-400 flex items-center gap-1">
                 <Landmark className="w-3.5 h-3.5" /> State Dept
               </p>
               <p className="text-[10px] text-slate-400 truncate">Rajesh Patil</p>
@@ -236,9 +236,9 @@ export default function AdminDashboardPage() {
 
             <button
               onClick={() => loginAs('ministry_officer')}
-              className="p-3 rounded-xl glass-card text-left text-xs hover:border-rose-500/50 cursor-pointer"
+              className="p-3 rounded-xl glass-card text-left text-xs hover:border-emerald-500/50 cursor-pointer"
             >
-              <p className="font-bold text-rose-400 flex items-center gap-1">
+              <p className="font-bold text-emerald-400 flex items-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5" /> Ministry
               </p>
               <p className="text-[10px] text-slate-400 truncate">Dr. Meena Swaminathan</p>
