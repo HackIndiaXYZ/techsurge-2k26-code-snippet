@@ -67,8 +67,8 @@ export default function MinistryDashboardPage() {
             <button
               onClick={() => setActiveTab('krishi')}
               className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'krishi'
-                  ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
+                ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
                 }`}
             >
               <PhoneCall className="w-4 h-4 text-[#A94A4A]" />
@@ -77,8 +77,8 @@ export default function MinistryDashboardPage() {
             <button
               onClick={() => setActiveTab('bottleneck')}
               className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'bottleneck'
-                  ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
+                ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
                 }`}
             >
               <BarChart className="w-4 h-4 text-[#A94A4A]" />
@@ -87,8 +87,8 @@ export default function MinistryDashboardPage() {
             <button
               onClick={() => setActiveTab('safety')}
               className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'safety'
-                  ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
+                ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
                 }`}
             >
               <Lock className="w-4 h-4 text-[#A94A4A]" />

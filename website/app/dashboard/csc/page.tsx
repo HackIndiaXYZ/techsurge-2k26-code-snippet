@@ -76,8 +76,8 @@ export default function CSCDashboardPage() {
             <button
               onClick={() => setActiveTab('intake')}
               className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'intake'
-                  ? 'border-[#a94a4a] text-[#8c3a3a] bg-[#fdf5f5] rounded-t-xl'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
+                ? 'border-[#a94a4a] text-[#8c3a3a] bg-[#fdf5f5] rounded-t-xl'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
                 }`}
             >
               <Clock className="w-4 h-4 text-[#a94a4a]" />
@@ -86,8 +86,8 @@ export default function CSCDashboardPage() {
             <button
               onClick={() => setActiveTab('checklist')}
               className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'checklist'
-                  ? 'border-[#a94a4a] text-[#8c3a3a] bg-[#fdf5f5] rounded-t-xl'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
+                ? 'border-[#a94a4a] text-[#8c3a3a] bg-[#fdf5f5] rounded-t-xl'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
                 }`}
             >
               <FileCheck className="w-4 h-4 text-emerald-600" />
@@ -96,8 +96,8 @@ export default function CSCDashboardPage() {
             <button
               onClick={() => setActiveTab('package')}
               className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'package'
-                  ? 'border-emerald-600 text-emerald-800 bg-emerald-50/50 rounded-t-xl'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
+                ? 'border-emerald-600 text-emerald-800 bg-emerald-50/50 rounded-t-xl'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
                 }`}
             >
               <Printer className="w-4 h-4 text-emerald-600" />

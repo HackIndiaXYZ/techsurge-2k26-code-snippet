@@ -99,8 +99,8 @@ export default function StateDashboardPage() {
             <button
               onClick={() => setActiveTab('heatmap')}
               className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'heatmap'
-                  ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
+                ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
                 }`}
             >
               <MapPin className="w-4 h-4 text-[#A94A4A]" />
@@ -109,8 +109,8 @@ export default function StateDashboardPage() {
             <button
               onClick={() => setActiveTab('slgrc')}
               className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'slgrc'
-                  ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
+                ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
                 }`}
             >
               <Scale className="w-4 h-4 text-[#A94A4A]" />
@@ -119,8 +119,8 @@ export default function StateDashboardPage() {
             <button
               onClick={() => setActiveTab('audit')}
               className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'audit'
-                  ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
+                ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
                 }`}
             >
               <BarChart3 className="w-4 h-4 text-[#A94A4A]" />
