@@ -4,19 +4,19 @@ import React, { useState } from 'react';
 import RoleGuard from '@/components/RoleGuard';
 import { useAuth } from '@/context/AuthContext';
 import { 
-  Landmark, 
-  MapPin, 
-  AlertTriangle, 
-  Scale, 
-  FileText, 
-  Printer, 
-  Download, 
-  Building2, 
-  CheckCircle2, 
-  TrendingUp, 
-  BarChart3,
-  Layers
-} from 'lucide-react';
+  LuLandmark as Landmark, 
+  LuMapPin as MapPin, 
+  LuTriangleAlert as AlertTriangle, 
+  LuScale as Scale, 
+  LuFileText as FileText, 
+  LuPrinter as Printer, 
+  LuDownload as Download, 
+  LuBuilding2 as Building2, 
+  LuCircleCheck as CheckCircle2, 
+  LuTrendingUp as TrendingUp, 
+  LuChartBar as BarChart3,
+  LuLayers as Layers
+} from 'react-icons/lu';
 
 interface DisputeCluster {
   district: string;

@@ -3,7 +3,14 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { Tractor, Building2, ShieldCheck, ArrowRight, Sparkles, UserCheck } from 'lucide-react';
+import { 
+  LuTractor as Tractor, 
+  LuBuilding2 as Building2, 
+  LuShieldCheck as ShieldCheck, 
+  LuArrowRight as ArrowRight, 
+  LuSparkles as Sparkles, 
+  LuUserCheck as UserCheck 
+} from 'react-icons/lu';
 
 export default function LoginPage() {
   const router = useRouter();

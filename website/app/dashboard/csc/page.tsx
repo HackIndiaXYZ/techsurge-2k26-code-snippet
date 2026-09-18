@@ -4,20 +4,20 @@ import React, { useState } from 'react';
 import RoleGuard from '@/components/RoleGuard';
 import { useAuth } from '@/context/AuthContext';
 import { 
-  Store, 
-  Clock, 
-  FileCheck, 
-  Printer, 
-  CheckCircle2, 
-  AlertCircle, 
-  Download, 
-  UserCheck, 
-  FileText, 
-  Search, 
-  Sparkles,
-  ShieldAlert,
-  ArrowRight
-} from 'lucide-react';
+  LuStore as Store, 
+  LuClock as Clock, 
+  LuFileCheck as FileCheck, 
+  LuPrinter as Printer, 
+  LuCircleCheck as CheckCircle2, 
+  LuCircleAlert as AlertCircle, 
+  LuDownload as Download, 
+  LuUserCheck as UserCheck, 
+  LuFileText as FileText, 
+  LuSearch as Search, 
+  LuSparkles as Sparkles,
+  LuShieldAlert as ShieldAlert,
+  LuArrowRight as ArrowRight
+} from 'react-icons/lu';
 
 export default function CSCDashboardPage() {
   const { currentProfile } = useAuth();

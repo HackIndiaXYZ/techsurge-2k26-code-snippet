@@ -4,19 +4,19 @@ import React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { 
-  Building2, 
-  Store, 
-  Landmark, 
-  ShieldCheck, 
-  LogOut, 
-  Users, 
-  FileCheck, 
-  AlertTriangle, 
-  CheckCircle2, 
-  MapPin, 
-  RefreshCw,
-  Tractor
-} from 'lucide-react';
+  LuBuilding2 as Building2, 
+  LuStore as Store, 
+  LuLandmark as Landmark, 
+  LuShieldCheck as ShieldCheck, 
+  LuLogOut as LogOut, 
+  LuUsers as Users, 
+  LuFileCheck as FileCheck, 
+  LuTriangleAlert as AlertTriangle, 
+  LuCircleCheck as CheckCircle2, 
+  LuMapPin as MapPin, 
+  LuRefreshCw as RefreshCw,
+  LuTractor as Tractor
+} from 'react-icons/lu';
 
 export default function AdminDashboardPage() {
   const params = useParams();

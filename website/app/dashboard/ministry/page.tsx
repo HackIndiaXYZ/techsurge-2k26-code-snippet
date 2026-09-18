@@ -4,19 +4,19 @@ import React, { useState } from 'react';
 import RoleGuard from '@/components/RoleGuard';
 import { useAuth } from '@/context/AuthContext';
 import { 
-  ShieldCheck, 
-  Globe, 
-  PhoneCall, 
-  CheckCircle2, 
-  FileCode, 
-  Lock, 
-  AlertCircle, 
-  Download, 
-  Printer, 
-  Share2, 
-  BarChart, 
-  Sparkles 
-} from 'lucide-react';
+  LuShieldCheck as ShieldCheck, 
+  LuGlobe as Globe, 
+  LuPhoneCall as PhoneCall, 
+  LuCircleCheck as CheckCircle2, 
+  LuFileCode as FileCode, 
+  LuLock as Lock, 
+  LuCircleAlert as AlertCircle, 
+  LuDownload as Download, 
+  LuPrinter as Printer, 
+  LuShare2 as Share2, 
+  LuChartBar as BarChart, 
+  LuSparkles as Sparkles 
+} from 'react-icons/lu';
 
 export default function MinistryDashboardPage() {
   const { currentProfile } = useAuth();
