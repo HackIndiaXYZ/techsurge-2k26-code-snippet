@@ -20,7 +20,7 @@ interface RoleGuardProps {
 }
 
 export default function RoleGuard({ children }: RoleGuardProps) {
-  const { currentProfile, loginAs, logout } = useAuth();
+  const { currentProfile, isLoading, loginAs, logout } = useAuth();
   const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -49,7 +49,6 @@ export default function RoleGuard({ children }: RoleGuardProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-<<<<<<< HEAD
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-slate-900">
@@ -62,9 +61,6 @@ export default function RoleGuard({ children }: RoleGuardProps) {
   if (!currentProfile) {
     return null;
   }
-
-=======
->>>>>>> 30c7a308f814d9df961021c94e3113530f54ae65
   const getPersonaIcon = (role: string) => {
     switch (role.toLowerCase()) {
       case 'farmer':
