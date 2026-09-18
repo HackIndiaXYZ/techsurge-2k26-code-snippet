@@ -7,10 +7,13 @@ requires-python = ">=3.10,<3.13"
 dependencies = [
     "deepgram-sdk>=7.9.0",
     "elevenlabs>=2.68.0",
+    "fastapi>=0.141.0",
     "google-genai>=2.24.0",
     "openai>=3.16.0",
     "pipecat-ai>=1.11.0",
     "pyaudio>=0.2.14",
     "python-dotenv>=1.2.3",
+    "sarvamai>=0.1.28",
+    "uvicorn>=0.53.0",
     "websockets>=17.1",
 ]

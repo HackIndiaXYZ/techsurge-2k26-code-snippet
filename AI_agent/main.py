@@ -17,7 +17,8 @@ from pipecat.processors.aggregators.llm_response_universal import (
 )
 from pipecat.serializers.twilio import TwilioFrameSerializer
 from pipecat.services.deepgram.stt import DeepgramSTTService
-from pipecat.services.elevenlabs.tts import ElevenLabsTTSService
+from pipecat.services.sarvam.stt import SarvamSTTService, SarvamSTTSettings
+from pipecat.services.sarvam.tts import SarvamTTSService, SarvamTTSSettings
 from pipecat.services.google.llm import GoogleLLMService
 from pipecat.transports.websocket.fastapi import (
     FastAPIWebsocketParams,
@@ -74,12 +75,12 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
 
     deepgram_key = os.getenv("DEEPGRAM_API_KEY", "")
     gemini_key = os.getenv("GEMINI_API_KEY", "")
-    elevenlabs_key = os.getenv("ELEVENLABS_API_KEY", "")
+    sarvam_key = os.getenv("SARVAM_API_KEY", "")
 
     if not gemini_key:
         print("⚠️ Warning: GEMINI_API_KEY is not set in AI_agent/.env")
-    if not elevenlabs_key:
-        print("⚠️ Warning: ELEVENLABS_API_KEY is not set in AI_agent/.env")
+    if not sarvam_key:
+        print("⚠️ Warning: SARVAM_API_KEY is not set in AI_agent/.env")
 
     # Read initial Twilio setup packet to extract streamSid
     stream_sid = "stream_default"
@@ -107,19 +108,16 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
         )
     )
 
-    # 1. Deepgram STT for Telugu ("te")
-    stt = DeepgramSTTService(
-        api_key=deepgram_key,
-        settings=DeepgramSTTService.Settings(
-            model="nova-2",
-            language="te",
-            smart_format=True,
-            interim_results=True,
-            keywords=["Namaskaram:2", "Danyavadalu:2"],
+    # 1. Sarvam AI STT for Telugu ("te-IN")
+    stt = SarvamSTTService(
+        api_key=sarvam_key,
+        settings=SarvamSTTSettings(
+            model="saaras:v3",
+            language="te-IN",
         ),
     )
 
-    # 2. Gemini 2.5 Flash LLM Brain with Telugu Conversational Prompt
+    # 2. Gemini 3.6 Flash LLM Brain with Telugu Conversational Prompt
     llm = GoogleLLMService(
         api_key=gemini_key,
         settings=GoogleLLMService.Settings(
@@ -127,12 +125,13 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
         ),
     )
 
-    # 3. ElevenLabs Multilingual v2 TTS for natural spoken Telugu
-    tts = ElevenLabsTTSService(
-        api_key=elevenlabs_key,
-        settings=ElevenLabsTTSService.Settings(
-            voice="21m00Tcm4TlvDq8ikWAM",
-            model="eleven_multilingual_v2",
+    # 3. Sarvam AI TTS (bulbul:v3) for natural spoken Telugu
+    tts = SarvamTTSService(
+        api_key=sarvam_key,
+        settings=SarvamTTSSettings(
+            model="bulbul:v3",
+            language="te-IN",
+            voice="aditya",
         ),
     )
 
@@ -190,30 +189,31 @@ async def run_local_mic_mode():
         )
     )
 
-    deepgram_key = os.getenv("DEEPGRAM_API_KEY", "")
+    sarvam_key = os.getenv("SARVAM_API_KEY", "")
     gemini_key = os.getenv("GEMINI_API_KEY", "")
-    elevenlabs_key = os.getenv("ELEVENLABS_API_KEY", "")
 
-    stt = DeepgramSTTService(
-        api_key=deepgram_key,
-        settings=DeepgramSTTService.Settings(
-            model="nova-2",
-            language="te",
-            smart_format=True,
-            interim_results=True,
+    # 1. Sarvam AI STT for Telugu ("te-IN")
+    stt = SarvamSTTService(
+        api_key=sarvam_key,
+        settings=SarvamSTTSettings(
+            model="saaras:v3",
+            language="te-IN",
         ),
     )
 
+    # 2. Gemini 3.6 Flash LLM Brain
     llm = GoogleLLMService(
         api_key=gemini_key,
-        settings=GoogleLLMService.Settings(model="gemini-2.5-flash"),
+        settings=GoogleLLMService.Settings(model="gemini-3.6-flash"),
     )
 
-    tts = ElevenLabsTTSService(
-        api_key=elevenlabs_key,
-        settings=ElevenLabsTTSService.Settings(
-            voice="21m00Tcm4TlvDq8ikWAM",
-            model="eleven_multilingual_v2",
+    # 3. Sarvam AI TTS (bulbul:v3) for natural spoken Telugu
+    tts = SarvamTTSService(
+        api_key=sarvam_key,
+        settings=SarvamTTSSettings(
+            model="bulbul:v3",
+            language="te-IN",
+            voice="aditya",
         ),
     )
 
