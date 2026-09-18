@@ -38,7 +38,7 @@ export default function FarmerDashboardPage() {
 
   return (
     <RoleGuard>
-      <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+      <div className="min-h-screen bg-[#FFF6DA] flex flex-col font-sans">
         {/* Main Journey Container */}
         <main className="flex-1 flex flex-col items-center px-4 sm:px-6 py-8 sm:py-12 max-w-4xl mx-auto w-full">
           <div className="w-full max-w-2xl text-center mb-10">
@@ -52,15 +52,15 @@ export default function FarmerDashboardPage() {
 
           <div className="w-full max-w-2xl space-y-5">
             {/* PATHWAY 1: NOT ENROLLED */}
-            <div className="rounded-2xl border-2 border-emerald-200 bg-emerald-50/40 overflow-hidden transition-all hover:border-emerald-400 shadow-sm">
+            <div className="rounded-2xl border-2 border-[#f7d5d5] bg-white overflow-hidden transition-all hover:border-[#a94a4a] shadow-sm">
               <button
                 type="button"
                 onClick={() => toggle("new")}
                 aria-expanded={open === "new"}
-                className="w-full flex items-center gap-4 p-5 sm:p-6 text-left min-h-[88px] active:bg-emerald-100/50 transition-colors cursor-pointer"
+                className="w-full flex items-center gap-4 p-5 sm:p-6 text-left min-h-[88px] active:bg-[#fdf5f5] transition-colors cursor-pointer"
               >
-                <div className="shrink-0 w-14 h-14 rounded-xl bg-emerald-100 flex items-center justify-center border border-emerald-200">
-                  <FilePlus className="w-7 h-7 text-emerald-700" />
+                <div className="shrink-0 w-14 h-14 rounded-xl bg-[#fdf5f5] flex items-center justify-center border border-[#f7d5d5]">
+                  <FilePlus className="w-7 h-7 text-[#A94A4A]" />
                 </div>
                 <div className="flex-1">
                   <h2 className="text-lg sm:text-xl font-bold text-slate-900">
@@ -71,7 +71,7 @@ export default function FarmerDashboardPage() {
                   </p>
                 </div>
                 <ChevronDown
-                  className={`w-6 h-6 text-emerald-700 shrink-0 transition-transform duration-300 ${
+                  className={`w-6 h-6 text-[#A94A4A] shrink-0 transition-transform duration-300 ${
                     open === "new" ? "rotate-180" : ""
                   }`}
                 />

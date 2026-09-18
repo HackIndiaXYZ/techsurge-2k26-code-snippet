@@ -48,13 +48,13 @@ export default function CSCDashboardPage() {
 
   return (
     <RoleGuard>
-      <div className="min-h-screen bg-slate-50 text-slate-900 pb-16 font-sans">
+      <div className="min-h-screen bg-[#FFF6DA] text-slate-900 pb-16 font-sans">
         {/* Header Banner */}
-        <div className="bg-white border-b border-emerald-100 shadow-sm">
+        <div className="bg-white border-b border-[#f7d5d5] shadow-sm">
           <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <div className="flex items-center gap-2 text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1">
-                <Store className="w-4 h-4 text-emerald-600" />
+              <div className="flex items-center gap-2 text-xs font-bold text-[#8c3a3a] uppercase tracking-wider mb-1">
+                <Store className="w-4 h-4 text-[#a94a4a]" />
                 <span>Common Service Centre #402 • Medak Centre</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
@@ -65,8 +65,8 @@ export default function CSCDashboardPage() {
               </p>
             </div>
 
-            <span className="px-3 py-1.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-1.5 self-start md:self-auto">
-              <Sparkles className="w-4 h-4 text-emerald-600" />
+            <span className="px-3 py-1.5 rounded-xl bg-[#F3E8CF] border border-[#E6D0A0] text-[#785114] text-xs font-bold flex items-center gap-1.5 self-start md:self-auto">
+              <Sparkles className="w-4 h-4 text-[#b8860b]" />
               Intake Time Benchmark: &lt; 3 Minutes
             </span>
           </div>
@@ -77,18 +77,18 @@ export default function CSCDashboardPage() {
               onClick={() => setActiveTab('intake')}
               className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
                 activeTab === 'intake'
-                  ? 'border-emerald-600 text-emerald-800 bg-emerald-50/50 rounded-t-xl'
+                  ? 'border-[#a94a4a] text-[#8c3a3a] bg-[#fdf5f5] rounded-t-xl'
                   : 'border-transparent text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Clock className="w-4 h-4 text-emerald-600" />
+              <Clock className="w-4 h-4 text-[#a94a4a]" />
               Quick Intake Form (&lt;3 Mins)
             </button>
             <button
               onClick={() => setActiveTab('checklist')}
               className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
                 activeTab === 'checklist'
-                  ? 'border-emerald-600 text-emerald-800 bg-emerald-50/50 rounded-t-xl'
+                  ? 'border-[#a94a4a] text-[#8c3a3a] bg-[#fdf5f5] rounded-t-xl'
                   : 'border-transparent text-slate-600 hover:text-slate-900'
               }`}
             >

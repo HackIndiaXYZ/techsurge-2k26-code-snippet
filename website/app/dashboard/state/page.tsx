@@ -71,13 +71,13 @@ export default function StateDashboardPage() {
 
   return (
     <RoleGuard>
-      <div className="min-h-screen bg-slate-50 text-slate-900 pb-16 font-sans">
+      <div className="min-h-screen bg-[#FFF6DA] text-slate-900 pb-16 font-sans">
         {/* Header Banner */}
-        <div className="bg-white border-b border-purple-100 shadow-sm">
+        <div className="bg-[#FFF6DA]/90 border-b border-[#E6D0A0] shadow-sm backdrop-blur-sm">
           <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <div className="flex items-center gap-2 text-xs font-bold text-purple-700 uppercase tracking-wider mb-1">
-                <Landmark className="w-4 h-4 text-purple-600" />
+              <div className="flex items-center gap-2 text-xs font-bold text-[#785114] uppercase tracking-wider mb-1">
+                <Landmark className="w-4 h-4 text-[#A94A4A]" />
                 <span>State Agriculture Department • Telangana State HQ</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900">
@@ -88,45 +88,45 @@ export default function StateDashboardPage() {
               </p>
             </div>
 
-            <span className="px-3 py-1.5 rounded-xl bg-purple-50 border border-purple-200 text-purple-800 text-xs font-bold flex items-center gap-1.5 self-start md:self-auto">
-              <CheckCircle2 className="w-4 h-4 text-purple-600" />
+            <span className="px-3 py-1.5 rounded-xl bg-[#F3E8CF] border border-[#E6D0A0] text-[#785114] text-xs font-bold flex items-center gap-1.5 self-start md:self-auto">
+              <CheckCircle2 className="w-4 h-4 text-[#785114]" />
               Monitoring 33 Districts
             </span>
           </div>
 
           {/* Navigation Tabs */}
-          <div className="max-w-7xl mx-auto px-6 flex space-x-2 border-t border-slate-100 pt-2 overflow-x-auto">
+          <div className="max-w-7xl mx-auto px-6 flex space-x-2 border-t border-[#E6D0A0]/60 pt-2 overflow-x-auto">
             <button
               onClick={() => setActiveTab('heatmap')}
               className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
                 activeTab === 'heatmap'
-                  ? 'border-purple-600 text-purple-900 bg-purple-50/50 rounded-t-xl'
+                  ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
                   : 'border-transparent text-slate-600 hover:text-slate-900'
               }`}
             >
-              <MapPin className="w-4 h-4 text-purple-600" />
+              <MapPin className="w-4 h-4 text-[#A94A4A]" />
               District-Wise Dispute Pattern Log
             </button>
             <button
               onClick={() => setActiveTab('slgrc')}
               className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
                 activeTab === 'slgrc'
-                  ? 'border-purple-600 text-purple-900 bg-purple-50/50 rounded-t-xl'
+                  ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
                   : 'border-transparent text-slate-600 hover:text-slate-900'
               }`}
             >
-              <Scale className="w-4 h-4 text-purple-600" />
+              <Scale className="w-4 h-4 text-[#A94A4A]" />
               SLGRC Escalation Brief
             </button>
             <button
               onClick={() => setActiveTab('audit')}
               className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
                 activeTab === 'audit'
-                  ? 'border-purple-600 text-purple-900 bg-purple-50/50 rounded-t-xl'
+                  ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
                   : 'border-transparent text-slate-600 hover:text-slate-900'
               }`}
             >
-              <BarChart3 className="w-4 h-4 text-purple-600" />
+              <BarChart3 className="w-4 h-4 text-[#A94A4A]" />
               Insurer Yield Dispute Audit
             </button>
           </div>
@@ -136,24 +136,24 @@ export default function StateDashboardPage() {
         <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
           {/* Quick Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+            <div className="bg-white/90 rounded-2xl p-5 border border-[#E6D0A0] shadow-sm">
               <p className="text-xs text-slate-500 font-bold mb-1">Statewide Farmers Covered</p>
               <p className="text-2xl font-extrabold text-slate-900">1.2 Million</p>
               <p className="text-[11px] text-slate-500 mt-1 font-medium">Across 33 Districts</p>
             </div>
-            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+            <div className="bg-white/90 rounded-2xl p-5 border border-[#E6D0A0] shadow-sm">
               <p className="text-xs text-slate-500 font-bold mb-1">Dispute Clusters Flagged</p>
               <p className="text-2xl font-extrabold text-amber-600">13 Clusters</p>
               <p className="text-[11px] text-slate-500 mt-1 font-medium">CCE vs Portal payout mismatch</p>
             </div>
-            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+            <div className="bg-white/90 rounded-2xl p-5 border border-[#E6D0A0] shadow-sm">
               <p className="text-xs text-slate-500 font-bold mb-1">State Subsidy Released</p>
-              <p className="text-2xl font-extrabold text-emerald-700">₹ 142 Crore</p>
+              <p className="text-2xl font-extrabold text-[#A94A4A]">₹ 142 Crore</p>
               <p className="text-[11px] text-slate-500 mt-1 font-medium">50% Central Matching Share</p>
             </div>
-            <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
+            <div className="bg-white/90 rounded-2xl p-5 border border-[#E6D0A0] shadow-sm">
               <p className="text-xs text-slate-500 font-bold mb-1">SLGRC Escalations</p>
-              <p className="text-2xl font-extrabold text-purple-700">8 State Briefs</p>
+              <p className="text-2xl font-extrabold text-[#785114]">8 State Briefs</p>
               <p className="text-[11px] text-slate-500 mt-1 font-medium">Prepared for State Committee</p>
             </div>
           </div>
@@ -161,14 +161,14 @@ export default function StateDashboardPage() {
           {/* TAB 1: District-Wise Dispute Pattern Log */}
           {activeTab === 'heatmap' && (
             <div className="space-y-6">
-              <div className="bg-purple-950 text-white rounded-3xl p-6 sm:p-8 shadow-lg border border-purple-900">
-                <span className="px-3 py-1 rounded-full text-xs font-bold bg-purple-900 text-purple-300 border border-purple-700">
+              <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-lg border border-slate-800">
+                <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#F3E8CF] text-[#785114] border border-[#E6D0A0]">
                   Feature 1: District-wise Dispute Pattern Log
                 </span>
                 <h2 className="text-2xl sm:text-3xl font-extrabold mt-3">
                   Identify Payment Delay Clusters & Yield Discrepancies
                 </h2>
-                <p className="text-purple-200 text-sm mt-2 leading-relaxed font-medium max-w-3xl">
+                <p className="text-slate-300 text-sm mt-2 leading-relaxed font-medium max-w-3xl">
                   Flags villages where reported CCE harvest figures do not match portal payouts. Pinpoints systemic subsidy-reconciliation gaps across blocks.
                 </p>
               </div>
@@ -176,13 +176,13 @@ export default function StateDashboardPage() {
               {/* Cluster Cards */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {MOCK_STATE_CLUSTERS.map((cluster, idx) => (
-                  <div key={idx} className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+                  <div key={idx} className="bg-white rounded-2xl p-6 border border-[#E6D0A0] shadow-sm flex flex-col justify-between">
                     <div>
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs font-bold text-purple-700 bg-purple-50 px-2.5 py-1 rounded-full border border-purple-200">
+                        <span className="text-xs font-bold text-[#785114] bg-[#F3E8CF] px-2.5 py-1 rounded-full border border-[#E6D0A0]">
                           {cluster.district}
                         </span>
-                        <span className="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">
+                        <span className="text-xs font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
                           {cluster.blockCount} Blocks Affected
                         </span>
                       </div>
@@ -198,16 +198,16 @@ export default function StateDashboardPage() {
                         </div>
                         <div className="flex justify-between border-t border-slate-200 pt-1.5 font-bold">
                           <span className="text-slate-700">Yield Discrepancy:</span>
-                          <span className="text-rose-600">{cluster.discrepancyPercent}</span>
+                          <span className="text-[#A94A4A]">{cluster.discrepancyPercent}</span>
                         </div>
                       </div>
                     </div>
 
                     <button
                       onClick={() => openSLGRCModal(cluster)}
-                      className="w-full py-3 rounded-xl bg-purple-700 text-white font-bold text-xs hover:bg-purple-800 transition-colors flex items-center justify-center gap-2"
+                      className="w-full py-3 rounded-xl bg-[#A94A4A] text-white font-bold text-xs hover:bg-[#8F3E3E] transition-colors flex items-center justify-center gap-2 shadow-sm"
                     >
-                      <Scale className="w-4 h-4 text-purple-300" />
+                      <Scale className="w-4 h-4 text-white" />
                       Prepare SLGRC Escalation Brief
                     </button>
                   </div>
@@ -220,7 +220,7 @@ export default function StateDashboardPage() {
           {activeTab === 'slgrc' && (
             <div className="space-y-6">
               <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-lg">
-                <span className="px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-purple-400 border border-slate-700">
+                <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#F3E8CF] text-[#785114] border border-[#E6D0A0]">
                   Feature 2: SLGRC Escalation Brief Generator
                 </span>
                 <h2 className="text-2xl sm:text-3xl font-extrabold mt-3">
@@ -233,12 +233,12 @@ export default function StateDashboardPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {MOCK_STATE_CLUSTERS.map((cluster, idx) => (
-                  <div key={idx} className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+                  <div key={idx} className="bg-white rounded-2xl p-6 border border-[#E6D0A0] shadow-sm flex flex-col justify-between">
                     <div>
                       <h3 className="font-extrabold text-slate-900 text-base">{cluster.district}</h3>
                       <p className="text-xs text-slate-500 font-medium mb-3">{cluster.affectedFarmers.toLocaleString()} Affected Farmers</p>
                       
-                      <div className="p-3.5 rounded-xl bg-purple-50 border border-purple-200 text-xs text-purple-900 mb-4 font-medium">
+                      <div className="p-3.5 rounded-xl bg-[#F3E8CF]/60 border border-[#E6D0A0] text-xs text-[#785114] mb-4 font-medium">
                         <p className="font-bold">Escalation Grounds:</p>
                         <p className="mt-1 text-slate-700">Repetitive yield dispute between insurance company and state harvest reporting staff.</p>
                       </div>
@@ -248,7 +248,7 @@ export default function StateDashboardPage() {
                       onClick={() => openSLGRCModal(cluster)}
                       className="w-full py-3 rounded-xl bg-slate-900 text-white font-bold text-xs hover:bg-slate-800 transition-colors flex items-center justify-center gap-2"
                     >
-                      <FileText className="w-4 h-4 text-purple-400" />
+                      <FileText className="w-4 h-4 text-[#F3E8CF]" />
                       View SLGRC Brief
                     </button>
                   </div>
@@ -259,7 +259,7 @@ export default function StateDashboardPage() {
 
           {/* TAB 3: Insurer Audit */}
           {activeTab === 'audit' && (
-            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-4">
+            <div className="bg-white rounded-2xl p-6 border border-[#E6D0A0] shadow-sm space-y-4">
               <h3 className="font-extrabold text-slate-900 text-lg">Insurer Yield Dispute Audit</h3>
               <p className="text-xs text-slate-600 font-medium">
                 Highlights repetitive yield disputes between insurance companies and state harvest reporting staff.
@@ -271,14 +271,14 @@ export default function StateDashboardPage() {
                     <p className="font-bold text-slate-900">AIC of India — Medak Block #3</p>
                     <p className="text-slate-500">Disputed CCE harvest yield figures for Kharif Paddy</p>
                   </div>
-                  <span className="px-3 py-1 rounded-full bg-rose-50 text-rose-700 border border-rose-200 font-bold">Audit Audit Pending</span>
+                  <span className="px-3 py-1 rounded-full bg-rose-50 text-[#A94A4A] border border-rose-200 font-bold">Audit Audit Pending</span>
                 </div>
                 <div className="py-3 flex justify-between items-center">
                   <div>
                     <p className="font-bold text-slate-900">HDFC ERGO — Rangareddy Cotton Belt</p>
                     <p className="text-slate-500">Delay in subsidy reconciliation approval</p>
                   </div>
-                  <span className="px-3 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200 font-bold">SLGRC Hearing Scheduled</span>
+                  <span className="px-3 py-1 rounded-full bg-[#F3E8CF] text-[#785114] border border-[#E6D0A0] font-bold">SLGRC Hearing Scheduled</span>
                 </div>
               </div>
             </div>
@@ -291,7 +291,7 @@ export default function StateDashboardPage() {
             <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 border border-slate-200 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                 <div>
-                  <span className="text-xs font-bold text-purple-700 uppercase tracking-wider">State Committee Document</span>
+                  <span className="text-xs font-bold text-[#785114] uppercase tracking-wider">State Committee Document</span>
                   <h3 className="text-xl font-extrabold text-slate-900 mt-0.5">
                     SLGRC Escalation Brief — {selectedCluster.district}
                   </h3>
@@ -328,7 +328,7 @@ export default function StateDashboardPage() {
               <div className="flex items-center justify-end gap-3 pt-2">
                 <button
                   onClick={() => window.print()}
-                  className="px-5 py-2.5 rounded-xl bg-purple-700 text-white font-bold text-xs hover:bg-purple-800 transition-colors flex items-center gap-1.5"
+                  className="px-5 py-2.5 rounded-xl bg-[#A94A4A] text-white font-bold text-xs hover:bg-[#8F3E3E] transition-colors flex items-center gap-1.5"
                 >
                   <Printer className="w-4 h-4" /> Export Brief
                 </button>
