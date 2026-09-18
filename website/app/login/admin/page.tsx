@@ -23,56 +23,56 @@ export default function AdminLoginPage() {
       roleKey: 'district_officer',
       title: 'District Agriculture Officer (DAO)',
       subtitle: 'District-level inspection & claim verification',
-      icon: <Building2 className="w-6 h-6 text-emerald-700 stroke-[2.5]" />,
-      badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+      icon: <Building2 className="w-6 h-6 text-[#A94A4A] stroke-[2.5]" />,
+      badgeColor: 'bg-[#F3E8CF] text-[#785114] border-[#E6D0A0]',
     },
     {
       roleKey: 'csc_operator',
       title: 'Local Center / CSC VLE Operator',
       subtitle: 'Village VLE policy enrolment & assistance',
-      icon: <Store className="w-6 h-6 text-emerald-700 stroke-[2.5]" />,
-      badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+      icon: <Store className="w-6 h-6 text-[#A94A4A] stroke-[2.5]" />,
+      badgeColor: 'bg-[#F3E8CF] text-[#785114] border-[#E6D0A0]',
     },
     {
       roleKey: 'state_officer',
       title: 'State Agriculture Department',
       subtitle: 'State-wide subsidy release & oversight',
-      icon: <Landmark className="w-6 h-6 text-emerald-700 stroke-[2.5]" />,
-      badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+      icon: <Landmark className="w-6 h-6 text-[#A94A4A] stroke-[2.5]" />,
+      badgeColor: 'bg-[#F3E8CF] text-[#785114] border-[#E6D0A0]',
     },
     {
       roleKey: 'ministry_officer',
       title: 'Ministry of Agriculture & Farmers Welfare',
       subtitle: 'Central PMFBY policy & national monitoring',
-      icon: <ShieldCheck className="w-6 h-6 text-emerald-700 stroke-[2.5]" />,
-      badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+      icon: <ShieldCheck className="w-6 h-6 text-[#A94A4A] stroke-[2.5]" />,
+      badgeColor: 'bg-[#F3E8CF] text-[#785114] border-[#E6D0A0]',
     },
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between relative overflow-hidden">
-      {/* Background Soft Green Glow */}
-      <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-emerald-100/70 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-green-100/70 rounded-full blur-[120px] pointer-events-none" />
+    <div className="min-h-screen bg-[#FFF6DA] text-slate-900 flex flex-col justify-between relative overflow-hidden">
+      {/* Background Soft Glows */}
+      <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-[#fbeaea]/70 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-[#feebaf]/70 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Header */}
-      <header className="border-b border-emerald-100 bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+      <header className="border-b border-[#f7d5d5] bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <button
               onClick={() => router.push('/login')}
-              className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-100 transition-colors flex items-center gap-1.5 text-xs font-bold"
+              className="p-2.5 rounded-xl bg-[#fdf5f5] border border-[#f7d5d5] text-[#8c3a3a] hover:bg-[#fbeaea] transition-colors flex items-center gap-1.5 text-xs font-bold"
             >
-              <ArrowLeft className="w-4 h-4 text-emerald-700" /> Back to Main Login
+              <ArrowLeft className="w-4 h-4 text-[#a94a4a]" /> Back to Main Login
             </button>
             <div className="h-6 w-px bg-slate-200 hidden sm:block" />
             <span className="font-extrabold text-xl tracking-tight font-mono text-slate-900 hidden sm:inline">
-              cropins<span className="text-emerald-600">'</span>
+              cropins<span className="text-[#A94A4A]">'</span>
             </span>
           </div>
 
-          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
+          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#F3E8CF] text-[#785114] border border-[#E6D0A0] shadow-sm">
+            <Sparkles className="w-3.5 h-3.5 text-[#b8860b] animate-pulse" />
             <span>Administrative Selection</span>
           </span>
         </div>
@@ -95,14 +95,14 @@ export default function AdminLoginPage() {
             <div
               key={item.roleKey}
               onClick={() => loginAs(item.roleKey)}
-              className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-emerald-100 hover:border-emerald-500 shadow-md hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 transform hover:-translate-y-1 cursor-pointer flex flex-col justify-between group min-h-[190px]"
+              className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-[#f7d5d5] hover:border-[#a94a4a] shadow-md hover:shadow-xl hover:shadow-[#a94a4a]/10 transition-all duration-300 transform hover:-translate-y-1 cursor-pointer flex flex-col justify-between group min-h-[190px]"
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className={`px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider border ${item.badgeColor}`}>
                     {item.title}
                   </span>
-                  <div className="p-2.5 rounded-2xl bg-emerald-50 border border-emerald-200 group-hover:scale-110 transition-transform">
+                  <div className="p-2.5 rounded-2xl bg-[#fdf5f5] border border-[#f7d5d5] group-hover:scale-110 transition-transform">
                     {item.icon}
                   </div>
                 </div>
@@ -110,11 +110,11 @@ export default function AdminLoginPage() {
                 <p className="text-sm text-slate-600 mb-6 font-medium leading-relaxed">{item.subtitle}</p>
               </div>
 
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-emerald-700 group-hover:translate-x-1 transition-transform">
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#8c3a3a] group-hover:translate-x-1 transition-transform">
                 <span className="flex items-center gap-1.5">
-                  <UserCheck className="w-4 h-4 text-emerald-600" /> Enter Portal
+                  <UserCheck className="w-4 h-4 text-[#a94a4a]" /> Enter Portal
                 </span>
-                <ArrowRight className="w-4 h-4 text-emerald-600" />
+                <ArrowRight className="w-4 h-4 text-[#a94a4a]" />
               </div>
             </div>
           ))}
@@ -122,12 +122,12 @@ export default function AdminLoginPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-emerald-100 py-4 text-center text-xs text-slate-500 bg-white/80">
+      <footer className="border-t border-[#f7d5d5] py-4 text-center text-xs text-slate-500 bg-white/80">
         <p>
           <span className="font-extrabold font-mono text-slate-900">
-            cropins<span className="text-emerald-600">'</span>
+            cropins<span className="text-[#A94A4A]">'</span>
           </span>{' '}
-          • Administrative Selection • White &amp; Green Theme
+          • Administrative Selection • Rose Vale &amp; Cornsilk Theme
         </p>
       </footer>
     </div>

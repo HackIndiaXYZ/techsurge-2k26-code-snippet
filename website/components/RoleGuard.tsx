@@ -51,8 +51,8 @@ export default function RoleGuard({ children }: RoleGuardProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-slate-900">
-        <div className="w-12 h-12 rounded-full border-4 border-emerald-500/30 border-t-emerald-600 animate-spin mb-4" />
+      <div className="min-h-screen bg-[#FFF6DA] flex flex-col items-center justify-center text-slate-900">
+        <div className="w-12 h-12 rounded-full border-4 border-[#A94A4A]/30 border-t-[#A94A4A] animate-spin mb-4" />
         <p className="text-sm font-semibold text-slate-600">Authenticating cropins' session...</p>
       </div>
     );
@@ -64,46 +64,46 @@ export default function RoleGuard({ children }: RoleGuardProps) {
   const getPersonaIcon = (role: string) => {
     switch (role.toLowerCase()) {
       case 'farmer':
-        return <Tractor className="w-4 h-4 text-emerald-600" />;
+        return <Tractor className="w-4 h-4 text-[#A94A4A]" />;
       case 'district_officer':
       case 'district_agriculture_officer':
-        return <Building2 className="w-4 h-4 text-emerald-700" />;
+        return <Building2 className="w-4 h-4 text-[#A94A4A]" />;
       case 'csc_operator':
-        return <Store className="w-4 h-4 text-emerald-700" />;
+        return <Store className="w-4 h-4 text-[#A94A4A]" />;
       case 'state_officer':
       case 'state_agriculture_department':
-        return <Landmark className="w-4 h-4 text-emerald-700" />;
+        return <Landmark className="w-4 h-4 text-[#A94A4A]" />;
       case 'ministry_officer':
       case 'ministry_agriculture':
-        return <ShieldCheck className="w-4 h-4 text-emerald-700" />;
+        return <ShieldCheck className="w-4 h-4 text-[#A94A4A]" />;
       default:
-        return <UserCheck className="w-4 h-4 text-emerald-600" />;
+        return <UserCheck className="w-4 h-4 text-[#A94A4A]" />;
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col">
-      {/* PERSISTENT WHITE & GREEN TOP-BAR */}
-      <header className="border-b border-emerald-100 bg-white/95 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+    <div className="min-h-screen bg-[#FFF6DA] text-slate-900 flex flex-col">
+      {/* PERSISTENT HEADER */}
+      <header className="border-b border-[#f7d5d5] bg-white/95 backdrop-blur-md sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
           
           {/* Logo */}
           <div className="flex items-center space-x-3 cursor-pointer" onClick={() => router.push('/login')}>
-            <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center shadow-md shadow-emerald-600/20">
+            <div className="w-9 h-9 rounded-xl bg-[#A94A4A] flex items-center justify-center shadow-md shadow-[#A94A4A]/20">
               <ShieldCheck className="w-5 h-5 text-white stroke-[2.5]" />
             </div>
             <span className="font-extrabold text-xl tracking-tight font-mono text-slate-900">
-              cropins<span className="text-emerald-600">'</span>
+              cropins<span className="text-[#A94A4A]">'</span>
             </span>
           </div>
 
           {/* Active Persona Badge & Role Switcher Dropdown */}
           <div className="flex items-center space-x-3">
             {/* Active Persona Badge */}
-            <div className="hidden md:flex items-center gap-2 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs text-slate-500 font-medium">Viewing as:</span>
-              <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+            <div className="hidden md:flex items-center gap-2 bg-[#F3E8CF] border border-[#E6D0A0] px-3 py-1.5 rounded-xl">
+              <span className="w-2 h-2 rounded-full bg-[#A94A4A] animate-pulse" />
+              <span className="text-xs text-[#785114] font-medium">Viewing as:</span>
+              <span className="text-xs font-bold text-[#644216] flex items-center gap-1.5">
                 {getPersonaIcon(activeProfile.role)}
                 {activeProfile.full_name}
               </span>
@@ -113,9 +113,9 @@ export default function RoleGuard({ children }: RoleGuardProps) {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100 transition-all flex items-center gap-2 cursor-pointer shadow-sm"
+                className="px-3.5 py-2 rounded-xl text-xs font-bold bg-[#F3E8CF] text-[#785114] border border-[#E6D0A0] hover:bg-[#e6d0a0] transition-all flex items-center gap-2 cursor-pointer shadow-sm"
               >
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                <Sparkles className="w-3.5 h-3.5 text-[#b8860b]" />
                 <span>Switch Role</span>
                 <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
