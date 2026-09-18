@@ -297,3 +297,54 @@ VALUES (
   'Area Correction Factor reduction applied due to insured area mismatch across village survey unit.'
 ) ON CONFLICT (claim_ref) DO NOTHING;
 
+-- ============================================================================
+-- 9. CHATS TABLE (For Real-Time Messaging & Grievance Discussions)
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS public.chats (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  last_message TEXT NOT NULL,
+  timestamp TEXT,
+  unread_count INT DEFAULT 0,
+  role_tag TEXT,
+  avatar_url TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE public.chats ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public select on chats"
+  ON public.chats FOR SELECT USING (true);
+
+CREATE POLICY "Allow public insert on chats"
+  ON public.chats FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Allow public update on chats"
+  ON public.chats FOR UPDATE USING (true);
+
+INSERT INTO public.chats (id, name, last_message, timestamp, unread_count, role_tag, avatar_url)
+VALUES
+  ('c1', 'Ramesh Kumar (Farmer)', 'Has my Kharif Paddy claim #CLM-8902 been verified by the DAO?', '10:42 AM', 2, 'farmer', 'https://images.unsplash.com/photo-1595273670150-bd0c3c392e46?w=150&auto=format&fit=crop&q=80'),
+  ('c2', 'Dr. S. K. Sharma (DAO)', 'Joint inspection team approved CCE loss report for Medak mandal.', '09:15 AM', 0, 'district_officer', 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&auto=format&fit=crop&q=80'),
+  ('c3', 'Pooja Verma (CSC VLE)', 'Batch non-loanee farmer applications uploaded for village #402.', 'Yesterday', 1, 'csc_operator', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80'),
+  ('c4', 'State Agriculture Grievances', 'Subsidy tranche #2 matching fund credited to insurance pool.', 'Sep 17', 0, 'state_officer', 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80')
+ON CONFLICT (id) DO NOTHING;
+
+-- ============================================================================
+-- 10. ENABLE REALTIME PUBLICATION FOR VERCEL / CLIENT WEBSOCKETS
+-- ============================================================================
+-- Note: Required so Supabase broadcasts table changes over Realtime WebSockets
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_publication WHERE pubname = 'supabase_realtime') THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.profiles;
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.claims;
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.enrolments;
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.rti_applications;
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.chats;
+  END IF;
+EXCEPTION
+  WHEN OTHERS THEN NULL;
+END $$;
+
+

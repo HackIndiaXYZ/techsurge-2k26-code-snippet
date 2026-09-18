@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { matchPmfbyRule, ClaimScenario } from '@/lib/pmfby-rules';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: Request) {
   try {
     const payload: ClaimScenario = await request.json();

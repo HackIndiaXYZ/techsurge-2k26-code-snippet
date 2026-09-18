@@ -59,37 +59,55 @@ export default function ChatList({ onSelectChat }: { onSelectChat?: (chat: Chat)
   const [activeChatId, setActiveChatId] = useState<string | null>('c1');
 
   useEffect(() => {
+    let isMounted = true;
+    let ch: ReturnType<typeof supabase.channel> | null = null;
     const supabase = createClient();
 
-    // 1. Fetch initial chats from Supabase table 'chats'
-    supabase
-      .from('chats')
-      .select('*')
-      .then(({ data, error }) => {
-        if (data && data.length > 0 && !error) {
+    const fetchChats = async () => {
+      try {
+        const { data, error } = await supabase.from('chats').select('*');
+        if (isMounted && data && data.length > 0 && !error) {
           setChats(data as Chat[]);
         }
-      });
+      } catch (err) {
+        console.warn('Realtime fetch warning (operating in fallback mode):', err);
+      }
+    };
 
-    // 2. Realtime Postgres Changes Subscription
-    const ch = supabase
-      .channel('chats-rt')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'chats' }, (p) => {
-        setChats((c) => {
-          if (p.eventType === 'INSERT') return [p.new as Chat, ...c];
-          if (p.eventType === 'UPDATE')
-            return c.map((x) => (x.id === (p.new as Chat).id ? (p.new as Chat) : x));
-          if (p.eventType === 'DELETE')
-            return c.filter((x) => x.id !== (p.old as Chat).id);
-          return c;
+    fetchChats();
+
+    // 2. Realtime Postgres Changes Subscription with status handling
+    try {
+      ch = supabase
+        .channel('chats-rt')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'chats' }, (p) => {
+          if (!isMounted) return;
+          setChats((c) => {
+            if (p.eventType === 'INSERT') return [p.new as Chat, ...c];
+            if (p.eventType === 'UPDATE')
+              return c.map((x) => (x.id === (p.new as Chat).id ? (p.new as Chat) : x));
+            if (p.eventType === 'DELETE')
+              return c.filter((x) => x.id !== (p.old as Chat).id);
+            return c;
+          });
+        })
+        .subscribe((status) => {
+          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+            console.warn(`Supabase Realtime Channel Status: ${status}. Falling back to default state.`);
+          }
         });
-      })
-      .subscribe();
+    } catch (err) {
+      console.warn('Failed to initialize Supabase Realtime channel:', err);
+    }
 
     return () => {
-      supabase.removeChannel(ch);
+      isMounted = false;
+      if (ch) {
+        supabase.removeChannel(ch);
+      }
     };
   }, []);
+
 
   const filtered = chats.filter(
     (c) =>
