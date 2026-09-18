@@ -32,7 +32,7 @@ export default function DAODashboardPage() {
           </div>
           <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
             <p className="text-xs text-slate-500 font-bold mb-1">Pending Field Inspection</p>
-            <p className="text-2xl font-extrabold text-amber-600">342 Claims</p>
+            <p className="text-2xl font-extrabold text-emerald-700">342 Claims</p>
             <p className="text-[11px] text-slate-500 mt-1 font-medium">Target SLA: 72 Hours</p>
           </div>
           <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">

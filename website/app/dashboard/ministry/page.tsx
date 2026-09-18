@@ -11,8 +11,8 @@ export default function MinistryDashboardPage() {
   return (
     <RoleGuard>
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
-        <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-900 to-rose-950/30">
-          <div className="flex items-center gap-2 text-xs font-semibold text-rose-400 mb-2">
+        <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/30">
+          <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400 mb-2">
             <ShieldCheck className="w-4 h-4" />
             <span>Ministry of Agriculture & Farmers Welfare • New Delhi</span>
           </div>
@@ -32,12 +32,12 @@ export default function MinistryDashboardPage() {
           </div>
           <div className="glass-card rounded-2xl p-5">
             <p className="text-xs text-slate-400 font-medium mb-1">Central Share Budget</p>
-            <p className="text-2xl font-bold text-rose-400">₹ 8,450 Crore</p>
+            <p className="text-2xl font-bold text-emerald-400">₹ 8,450 Crore</p>
             <p className="text-[11px] text-slate-500 mt-1">FY 2026-27 Allocation</p>
           </div>
           <div className="glass-card rounded-2xl p-5">
             <p className="text-xs text-slate-400 font-medium mb-1">Empanelled Insurers</p>
-            <p className="text-2xl font-bold text-amber-400">18 Companies</p>
+            <p className="text-2xl font-bold text-emerald-400">18 Companies</p>
             <p className="text-[11px] text-slate-500 mt-1">Public & Private Insurers</p>
           </div>
           <div className="glass-card rounded-2xl p-5">
