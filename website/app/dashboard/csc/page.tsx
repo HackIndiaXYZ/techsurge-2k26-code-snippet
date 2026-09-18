@@ -48,6 +48,7 @@ export default function CSCDashboardPage() {
 
   return (
     <RoleGuard>
+<<<<<<< HEAD
       <div className="min-h-screen bg-slate-50 text-slate-900 pb-16 font-sans">
         {/* Header Banner */}
         <div className="bg-white border-b border-emerald-100 shadow-sm">
@@ -106,6 +107,13 @@ export default function CSCDashboardPage() {
               <Printer className="w-4 h-4 text-emerald-600" />
               Single-Click Printable Package
             </button>
+=======
+      <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+        <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/30">
+          <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400 mb-2">
+            <Store className="w-4 h-4" />
+            <span>Common Service Centre #402 • Medak</span>
+>>>>>>> 30c7a308f814d9df961021c94e3113530f54ae65
           </div>
         </div>
 
@@ -412,7 +420,21 @@ export default function CSCDashboardPage() {
               </div>
             </div>
           </div>
+<<<<<<< HEAD
         )}
+=======
+          <div className="glass-card rounded-2xl p-5">
+            <p className="text-xs text-slate-400 font-medium mb-1">Premiums Collected</p>
+            <p className="text-2xl font-bold text-emerald-400">₹ 89,200</p>
+            <p className="text-[11px] text-slate-500 mt-1">Wallet balance intact</p>
+          </div>
+          <div className="glass-card rounded-2xl p-5">
+            <p className="text-xs text-slate-400 font-medium mb-1">Loss Intimations Filed</p>
+            <p className="text-2xl font-bold text-emerald-400">14 Intimations</p>
+            <p className="text-[11px] text-slate-500 mt-1">Assisted farmer filings</p>
+          </div>
+        </div>
+>>>>>>> 30c7a308f814d9df961021c94e3113530f54ae65
       </div>
     </RoleGuard>
   );

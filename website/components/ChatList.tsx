@@ -109,7 +109,7 @@ export default function ChatList({ onSelectChat }: { onSelectChat?: (chat: Chat)
       case 'district_officer':
         return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
       case 'csc_operator':
-        return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+        return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
       case 'state_officer':
         return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
       default:

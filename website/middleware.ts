@@ -89,11 +89,7 @@ export async function middleware(request: NextRequest) {
     return ROLE_ROUTE_MATRIX[key] || '/dashboard/farmer';
   };
 
-  // Rule 2: Authenticated user visiting / -> Redirect to their dashboard
-  if (isAuthenticated && pathname === '/' && role) {
-    const targetPath = getRoleDestination(role);
-    return NextResponse.redirect(new URL(targetPath, request.url));
-  }
+  // Rule 2: Allow root / to always display landing page & persona selector
 
   // Rule 3: Farmers accessing admin routes -> /dashboard/farmer
   if (isAuthenticated && role && FARMER_ROLES.includes(role.toLowerCase()) && isAdminRoute) {
