@@ -45,7 +45,7 @@ export default function RoleGuard({ children }: RoleGuardProps) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-slate-900">
         <div className="w-12 h-12 rounded-full border-4 border-emerald-500/30 border-t-emerald-600 animate-spin mb-4" />
-        <p className="text-sm font-semibold text-slate-600">Authenticating crop.ins session...</p>
+        <p className="text-sm font-semibold text-slate-600">Authenticating cropins' session...</p>
       </div>
     );
   }
@@ -86,7 +86,7 @@ export default function RoleGuard({ children }: RoleGuardProps) {
               <ShieldCheck className="w-5 h-5 text-white stroke-[2.5]" />
             </div>
             <span className="font-extrabold text-xl tracking-tight font-mono text-slate-900">
-              crop<span className="text-emerald-600">.ins</span>
+              cropins<span className="text-emerald-600">'</span>
             </span>
           </div>
 

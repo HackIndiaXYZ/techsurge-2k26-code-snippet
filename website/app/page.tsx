@@ -29,7 +29,7 @@ export default function HomePage() {
             </div>
             <div className="flex flex-col">
               <span className="font-extrabold text-2xl tracking-tight font-mono text-slate-900">
-                crop<span className="text-emerald-600">.ins</span>
+                cropins<span className="text-emerald-600">'</span>
               </span>
               <p className="text-[11px] text-slate-500 font-medium">PMFBY / RWBCIS Crop Insurance Portal</p>
             </div>
@@ -46,7 +46,7 @@ export default function HomePage() {
       <main className="max-w-4xl mx-auto px-6 py-12 flex-1 w-full flex flex-col justify-center relative z-10">
         <div className="text-center max-w-2xl mx-auto mb-10">
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 mb-3">
-            Welcome to <span className="font-mono">crop<span className="text-emerald-600">.ins</span></span>
+            Welcome to <span className="font-mono">cropins<span className="text-emerald-600">'</span></span>
           </h1>
           <p className="text-slate-600 text-sm sm:text-base font-medium">
             Select your portal access category below to proceed:
@@ -121,7 +121,7 @@ export default function HomePage() {
       <footer className="border-t border-emerald-100 py-4 text-center text-xs text-slate-500 bg-white/80">
         <p>
           <span className="font-extrabold font-mono text-slate-900">
-            crop<span className="text-emerald-600">.ins</span>
+            cropins<span className="text-emerald-600">'</span>
           </span>{' '}
           • PMFBY Portal Access • White &amp; Green Theme
         </p>

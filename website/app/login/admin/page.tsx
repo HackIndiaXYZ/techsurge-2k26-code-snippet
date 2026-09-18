@@ -67,7 +67,7 @@ export default function AdminLoginPage() {
             </button>
             <div className="h-6 w-px bg-slate-200 hidden sm:block" />
             <span className="font-extrabold text-xl tracking-tight font-mono text-slate-900 hidden sm:inline">
-              crop<span className="text-emerald-600">.ins</span>
+              cropins<span className="text-emerald-600">'</span>
             </span>
           </div>
 
@@ -125,7 +125,7 @@ export default function AdminLoginPage() {
       <footer className="border-t border-emerald-100 py-4 text-center text-xs text-slate-500 bg-white/80">
         <p>
           <span className="font-extrabold font-mono text-slate-900">
-            crop<span className="text-emerald-600">.ins</span>
+            cropins<span className="text-emerald-600">'</span>
           </span>{' '}
           • Administrative Selection • White &amp; Green Theme
         </p>
