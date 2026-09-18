@@ -1,0 +1,3 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}/AI_agent/.venv/Scripts/python.exe"
+}
