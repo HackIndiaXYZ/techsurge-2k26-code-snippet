@@ -77,9 +77,9 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
     elevenlabs_key = os.getenv("ELEVENLABS_API_KEY", "")
 
     if not gemini_key:
-        print("⚠️ Warning: GEMINI_API_KEY is not set in AI_agent/.env")
+        print("[!] Warning: GEMINI_API_KEY is not set in AI_agent/.env")
     if not elevenlabs_key:
-        print("⚠️ Warning: ELEVENLABS_API_KEY is not set in AI_agent/.env")
+        print("[!] Warning: ELEVENLABS_API_KEY is not set in AI_agent/.env")
 
     # Read initial Twilio setup packet to extract streamSid
     stream_sid = "stream_default"
@@ -109,7 +109,7 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
 
     # 1. Deepgram STT for Telugu ("te")
     stt = DeepgramSTTService(
-        api_key=deepgram_key,
+        api_key=deepgram_key if deepgram_key else "dummy_deepgram_key",
         settings=DeepgramSTTService.Settings(
             model="nova-2",
             language="te",
@@ -121,7 +121,7 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
 
     # 2. Gemini 2.5 Flash LLM Brain with Telugu Conversational Prompt
     llm = GoogleLLMService(
-        api_key=gemini_key,
+        api_key=gemini_key if gemini_key else "AIzaSy_Placeholder_Gemini_Key",
         settings=GoogleLLMService.Settings(
             model="gemini-2.5-flash",
         ),
@@ -129,7 +129,7 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
 
     # 3. ElevenLabs Multilingual v2 TTS for natural spoken Telugu
     tts = ElevenLabsTTSService(
-        api_key=elevenlabs_key,
+        api_key=elevenlabs_key if elevenlabs_key else "dummy_elevenlabs_key",
         settings=ElevenLabsTTSService.Settings(
             voice="21m00Tcm4TlvDq8ikWAM",
             model="eleven_multilingual_v2",
@@ -174,7 +174,7 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
     try:
         await runner.run(task)
     except WebSocketDisconnect:
-        print("🔌 Twilio WebSocket disconnected.")
+        print("[-] Twilio WebSocket disconnected.")
     except Exception as err:
         print(f"Stream error: {err}")
 
@@ -238,7 +238,7 @@ async def run_local_mic_mode():
     ])
 
     task = PipelineTask(pipeline, params=PipelineParams(allow_interruptions=True))
-    print("🎙️ Local Voice Agent initialized! Listening on microphone...")
+    print("[+] Local Voice Agent initialized! Listening on microphone...")
     runner = PipelineRunner()
     await runner.run(task)
 
