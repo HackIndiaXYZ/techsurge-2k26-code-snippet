@@ -71,9 +71,8 @@ export default function FarmerDashboardPage() {
                   </p>
                 </div>
                 <ChevronDown
-                  className={`w-6 h-6 text-[#A94A4A] shrink-0 transition-transform duration-300 ${
-                    open === "new" ? "rotate-180" : ""
-                  }`}
+                  className={`w-6 h-6 text-[#A94A4A] shrink-0 transition-transform duration-300 ${open === "new" ? "rotate-180" : ""
+                    }`}
                 />
               </button>
 
@@ -157,9 +156,8 @@ export default function FarmerDashboardPage() {
                   </p>
                 </div>
                 <ChevronDown
-                  className={`w-6 h-6 text-emerald-700 shrink-0 transition-transform duration-300 ${
-                    open === "enrolled" ? "rotate-180" : ""
-                  }`}
+                  className={`w-6 h-6 text-emerald-700 shrink-0 transition-transform duration-300 ${open === "enrolled" ? "rotate-180" : ""
+                    }`}
                 />
               </button>
 

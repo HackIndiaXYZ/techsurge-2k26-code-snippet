@@ -3,13 +3,13 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { 
-  LuTractor as Tractor, 
-  LuBuilding2 as Building2, 
-  LuShieldCheck as ShieldCheck, 
-  LuArrowRight as ArrowRight, 
-  LuSparkles as Sparkles, 
-  LuUserCheck as UserCheck 
+import {
+  LuTractor as Tractor,
+  LuBuilding2 as Building2,
+  LuShieldCheck as ShieldCheck,
+  LuArrowRight as ArrowRight,
+  LuSparkles as Sparkles,
+  LuUserCheck as UserCheck
 } from 'react-icons/lu';
 
 export default function HomePage() {
@@ -62,7 +62,7 @@ export default function HomePage() {
 
         {/* 2 Primary Action Cards: Farmer vs Admin */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto w-full">
-          
+
           {/* OPTION 1: FARMER ACCESS */}
           <div
             onClick={() => loginAs('farmer')}
@@ -123,16 +123,6 @@ export default function HomePage() {
 
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="border-t border-[#f7d5d5] py-4 text-center text-xs text-slate-500 bg-white/80">
-        <p>
-          <span className="font-extrabold font-mono text-slate-900">
-            cropins<span className="text-[#A94A4A]">'</span>
-          </span>{' '}
-          • PMFBY Portal Access • Rose Vale &amp; Cornsilk Theme
-        </p>
-      </footer>
     </div>
   );
 }

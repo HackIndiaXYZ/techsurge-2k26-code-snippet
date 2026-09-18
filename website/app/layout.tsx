@@ -3,9 +3,9 @@ import type { Metadata } from 'next';
 import { Montserrat } from 'next/font/google';
 import { AuthProvider } from '@/context/AuthContext';
 
-const montserrat = Montserrat({ 
+const montserrat = Montserrat({
   subsets: ['latin'],
-  display: 'swap' 
+  display: 'swap'
 });
 
 export const metadata: Metadata = {

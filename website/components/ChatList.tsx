@@ -2,14 +2,14 @@
 
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
-import { 
-  LuSearch as Search, 
-  LuMessageSquare as MessageSquare, 
-  LuSparkles as Sparkles, 
-  LuX as X, 
-  LuUser as User, 
-  LuCheckCheck as CheckCheck, 
-  LuClock as Clock 
+import {
+  LuSearch as Search,
+  LuMessageSquare as MessageSquare,
+  LuSparkles as Sparkles,
+  LuX as X,
+  LuUser as User,
+  LuCheckCheck as CheckCheck,
+  LuClock as Clock
 } from 'react-icons/lu';
 
 export type Chat = {
@@ -197,11 +197,10 @@ export default function ChatList({ onSelectChat }: { onSelectChat?: (chat: Chat)
               <div
                 key={c.id}
                 onClick={() => handleChatClick(c)}
-                className={`rounded-2xl p-3.5 flex items-start justify-between border transition-all duration-200 cursor-pointer ${
-                  isActive
+                className={`rounded-2xl p-3.5 flex items-start justify-between border transition-all duration-200 cursor-pointer ${isActive
                     ? 'bg-gradient-to-r from-emerald-950/50 to-slate-900 border-emerald-500/40 shadow-lg shadow-emerald-500/10'
                     : 'bg-slate-900/60 hover:bg-slate-900 border-slate-800/80 hover:border-slate-700'
-                }`}
+                  }`}
               >
                 <div className="flex items-start gap-3 flex-1 min-w-0">
                   {c.avatar_url ? (
