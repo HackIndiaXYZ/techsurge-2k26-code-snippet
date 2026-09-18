@@ -123,12 +123,7 @@ export default function AdminLoginPage() {
 
       {/* Footer */}
       <footer className="border-t border-[#f7d5d5] py-4 text-center text-xs text-slate-500 bg-white/80">
-        <p>
-          <span className="font-extrabold font-mono text-slate-900">
-            cropins<span className="text-[#A94A4A]">'</span>
-          </span>{' '}
-          • Administrative Selection • Rose Vale &amp; Cornsilk Theme
-        </p>
+
       </footer>
     </div>
   );
