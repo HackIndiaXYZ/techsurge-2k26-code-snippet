@@ -20,16 +20,25 @@ interface RoleGuardProps {
 }
 
 export default function RoleGuard({ children }: RoleGuardProps) {
-  const { currentProfile, isLoading, loginAs, logout } = useAuth();
+  const { currentProfile, loginAs, logout } = useAuth();
   const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!isLoading && !currentProfile) {
-      router.push('/login');
-    }
-  }, [currentProfile, isLoading, router]);
+  // Instant zero-delay profile resolution for demo mode
+  const activeProfile =
+    currentProfile ||
+    (typeof window !== 'undefined'
+      ? DEMO_PERSONAS.find((p) => {
+          const path = window.location.pathname.toLowerCase();
+          if (path.includes('/dao')) return p.role === 'district_officer';
+          if (path.includes('/csc')) return p.role === 'csc_operator';
+          if (path.includes('/state')) return p.role === 'state_officer';
+          if (path.includes('/ministry')) return p.role === 'ministry_officer';
+          return p.role === 'farmer';
+        })
+      : null) ||
+    DEMO_PERSONAS[0];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -40,19 +49,6 @@ export default function RoleGuard({ children }: RoleGuardProps) {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-slate-900">
-        <div className="w-12 h-12 rounded-full border-4 border-emerald-500/30 border-t-emerald-600 animate-spin mb-4" />
-        <p className="text-sm font-semibold text-slate-600">Authenticating crop.ins session...</p>
-      </div>
-    );
-  }
-
-  if (!currentProfile) {
-    return null;
-  }
 
   const getPersonaIcon = (role: string) => {
     switch (role.toLowerCase()) {
@@ -97,8 +93,8 @@ export default function RoleGuard({ children }: RoleGuardProps) {
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span className="text-xs text-slate-500 font-medium">Viewing as:</span>
               <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                {getPersonaIcon(currentProfile.role)}
-                {currentProfile.full_name}
+                {getPersonaIcon(activeProfile.role)}
+                {activeProfile.full_name}
               </span>
             </div>
 
@@ -124,7 +120,7 @@ export default function RoleGuard({ children }: RoleGuardProps) {
 
                   <div className="space-y-1">
                     {DEMO_PERSONAS.map((persona) => {
-                      const isActive = currentProfile.id === persona.id;
+                      const isActive = activeProfile.id === persona.id;
                       return (
                         <button
                           key={persona.id}
