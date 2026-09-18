@@ -58,7 +58,7 @@ async def main():
     llm = GoogleLLMService(
         api_key=gemini_key or "",
         settings=GoogleLLMService.Settings(
-            model="gemini-2.5-flash",
+            model="gemini-3.6-flash",
         ),
     )
 
