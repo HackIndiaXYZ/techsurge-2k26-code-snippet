@@ -67,7 +67,7 @@ export default function AdminLoginPage() {
             </button>
             <div className="h-6 w-px bg-slate-200 hidden sm:block" />
             <span className="font-extrabold text-xl tracking-tight font-mono text-slate-900 hidden sm:inline">
-              crop<span className="text-emerald-600">.ins</span>
+              cropins<span className="text-emerald-600">'</span>
             </span>
           </div>
 
@@ -95,7 +95,7 @@ export default function AdminLoginPage() {
             <div
               key={item.roleKey}
               onClick={() => loginAs(item.roleKey)}
-              className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-emerald-100 hover:border-emerald-500 shadow-md hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 transform hover:-translate-y-1 cursor-pointer flex flex-col justify-between group"
+              className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-emerald-100 hover:border-emerald-500 shadow-md hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 transform hover:-translate-y-1 cursor-pointer flex flex-col justify-between group min-h-[190px]"
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -125,7 +125,7 @@ export default function AdminLoginPage() {
       <footer className="border-t border-emerald-100 py-4 text-center text-xs text-slate-500 bg-white/80">
         <p>
           <span className="font-extrabold font-mono text-slate-900">
-            crop<span className="text-emerald-600">.ins</span>
+            cropins<span className="text-emerald-600">'</span>
           </span>{' '}
           • Administrative Selection • White &amp; Green Theme
         </p>

@@ -127,7 +127,7 @@ export default function ChatList({ onSelectChat }: { onSelectChat?: (chat: Chat)
           </div>
           <div>
             <h2 className="font-extrabold text-base tracking-tight font-mono text-slate-100">
-              crop<span className="text-emerald-400">.ins</span> Chat &amp; Helpdesk
+              cropins<span className="text-emerald-400">'</span> Chat &amp; Helpdesk
             </h2>
             <p className="text-[10px] text-slate-400 font-medium">Realtime PMFBY Stakeholder Communication</p>
           </div>
