@@ -12,7 +12,7 @@ from pipecat.processors.aggregators.llm_response_universal import (
     LLMContextAggregatorPair,
 )
 from pipecat.services.deepgram.stt import DeepgramSTTService
-from pipecat.services.elevenlabs.tts import ElevenLabsTTSService
+from pipecat.services.sarvam.tts import SarvamTTSService, SarvamTTSSettings
 from pipecat.services.google.llm import GoogleLLMService
 from pipecat.transports.local.audio import LocalAudioTransport, LocalAudioTransportParams
 
@@ -22,12 +22,12 @@ async def main():
 
     deepgram_key = os.getenv("DEEPGRAM_API_KEY")
     gemini_key = os.getenv("GEMINI_API_KEY")
-    elevenlabs_key = os.getenv("ELEVENLABS_API_KEY")
+    sarvam_key = os.getenv("SARVAM_API_KEY")
 
     if not gemini_key:
         print("⚠️ Warning: GEMINI_API_KEY is not set in AI_agent/.env")
-    if not elevenlabs_key:
-        print("⚠️ Warning: ELEVENLABS_API_KEY is not set in AI_agent/.env")
+    if not sarvam_key:
+        print("⚠️ Warning: SARVAM_API_KEY is not set in AI_agent/.env")
 
     # 1. Local microphone and speaker transport with Silero VAD
     vad = SileroVADAnalyzer()
@@ -62,12 +62,13 @@ async def main():
         ),
     )
 
-    # 4. Multilingual TTS (ElevenLabs supports Telugu script via multilingual_v2)
-    tts = ElevenLabsTTSService(
-        api_key=elevenlabs_key or "",
-        settings=ElevenLabsTTSService.Settings(
-            voice="21m00Tcm4TlvDq8ikWAM",  # Rachel or any voice supporting multilingual_v2
-            model="eleven_multilingual_v2",
+    # 4. Native Telugu TTS (Sarvam AI bulbul:v3 model)
+    tts = SarvamTTSService(
+        api_key=sarvam_key or "",
+        settings=SarvamTTSSettings(
+            model="bulbul:v3",
+            language="te-IN",
+            voice="aditya",
         ),
     )
 
