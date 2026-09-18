@@ -1,130 +1,182 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React from 'react';
 import { useAuth } from '@/context/AuthContext';
-import { Tractor, Building2, ShieldCheck, ArrowRight, Sparkles, UserCheck } from 'lucide-react';
+import {
+  Tractor,
+  Building2,
+  Store,
+  Landmark,
+  ShieldCheck,
+  ArrowRight,
+  Sparkles,
+  PhoneCall,
+  MapPin,
+  CheckCircle2
+} from 'lucide-react';
 
 export default function HomePage() {
-  const router = useRouter();
-  const { loginAs } = useAuth();
+  const { demoProfiles, loginAs, isLoading, currentProfile } = useAuth();
 
-  useEffect(() => {
-    router.prefetch('/dashboard/farmer');
-    router.prefetch('/login/admin');
-  }, [router]);
+  const getRoleIcon = (role: string) => {
+    switch (role.toLowerCase()) {
+      case 'farmer':
+        return <Tractor className="w-6 h-6 text-emerald-400" />;
+      case 'district_officer':
+      case 'district_agriculture_officer':
+        return <Building2 className="w-6 h-6 text-blue-400" />;
+      case 'csc_operator':
+        return <Store className="w-6 h-6 text-amber-400" />;
+      case 'state_officer':
+      case 'state_agriculture_department':
+        return <Landmark className="w-6 h-6 text-purple-400" />;
+      case 'ministry_officer':
+      case 'ministry_agriculture':
+        return <ShieldCheck className="w-6 h-6 text-rose-400" />;
+      default:
+        return <Tractor className="w-6 h-6 text-emerald-400" />;
+    }
+  };
+
+  const getBadgeColor = (role: string) => {
+    switch (role.toLowerCase()) {
+      case 'farmer':
+        return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+      case 'district_officer':
+      case 'district_agriculture_officer':
+        return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+      case 'csc_operator':
+        return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+      case 'state_officer':
+      case 'state_agriculture_department':
+        return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+      case 'ministry_officer':
+      case 'ministry_agriculture':
+        return 'bg-rose-500/10 text-rose-400 border-rose-500/20';
+      default:
+        return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between relative overflow-hidden">
-      {/* Background Soft Green Glows */}
-      <div className="absolute top-0 left-1/3 w-[500px] h-[500px] bg-emerald-100/70 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/3 w-[500px] h-[500px] bg-green-100/70 rounded-full blur-[120px] pointer-events-none" />
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between relative overflow-hidden">
+      {/* Background Glow Accents */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Header Bar */}
-      <header className="border-b border-emerald-100 bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+      <header className="border-b border-slate-800/80 glass-panel sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-600 flex items-center justify-center shadow-md shadow-emerald-600/20">
-              <ShieldCheck className="w-6 h-6 text-white stroke-[2.5]" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+              <ShieldCheck className="w-6 h-6 text-slate-950 stroke-[2.5]" />
             </div>
-            <div className="flex flex-col">
-              <span className="font-extrabold text-2xl tracking-tight font-mono text-slate-900">
-                crop<span className="text-emerald-600">.ins</span>
-              </span>
-              <p className="text-[11px] text-slate-500 font-medium">PMFBY / RWBCIS Crop Insurance Portal</p>
+            <div>
+              <h1 className="font-bold text-lg leading-tight tracking-tight bg-gradient-to-r from-emerald-400 via-teal-200 to-cyan-400 bg-clip-text text-transparent">
+                PMFBY / RWBCIS
+              </h1>
+              <p className="text-xs text-slate-400 font-medium">Crop Insurance Portal • Auth Architecture</p>
             </div>
           </div>
-
-          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
-            <span>1-Click Demo &amp; Evaluation Mode</span>
-          </span>
+          <div className="flex items-center space-x-3">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <Sparkles className="w-3.5 h-3.5 animate-pulse" /> Passwordless Demo Mode
+            </span>
+          </div>
         </div>
       </header>
 
-      {/* Main Login Options Container */}
-      <main className="max-w-4xl mx-auto px-6 py-12 flex-1 w-full flex flex-col justify-center relative z-10">
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 mb-3">
-            Welcome to <span className="font-mono">crop<span className="text-emerald-600">.ins</span></span>
-          </h1>
-          <p className="text-slate-600 text-sm sm:text-base font-medium">
-            Select your portal access category below to proceed:
+      {/* Main Container */}
+      <main className="max-w-7xl mx-auto px-6 py-12 flex-1 flex flex-col justify-center">
+        {/* Hero Section */}
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-900 border border-slate-800 text-slate-300 mb-4">
+            <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Supabase RLS & Role-Based Middleware Active
+          </div>
+          <h2 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-100 mb-4">
+            Select a Demo Persona to Test One-Click Login
+          </h2>
+          <p className="text-slate-400 text-base sm:text-lg leading-relaxed">
+            Experience role-based dashboard routing across 5 key PMFBY stakeholders without OTPs, passwords, or emails.
           </p>
         </div>
 
-        {/* 2 Primary Action Cards: Farmer vs Admin */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto w-full">
-          
-          {/* OPTION 1: FARMER ACCESS */}
-          <div
-            onClick={() => loginAs('farmer')}
-            className="bg-white rounded-3xl p-8 border-2 border-emerald-200 hover:border-emerald-500 shadow-lg hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 transform hover:-translate-y-1 cursor-pointer flex flex-col justify-between group relative overflow-hidden min-h-[260px]"
-          >
-            <div>
-              <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-sm">
-                <Tractor className="w-8 h-8 stroke-[2]" />
+        {/* 5 Demo Persona Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {demoProfiles.map((persona) => {
+            const isCurrent = currentProfile?.id === persona.id;
+            return (
+              <div
+                key={persona.id}
+                className={`glass-card rounded-2xl p-6 flex flex-col justify-between border relative overflow-hidden group ${isCurrent ? 'ring-2 ring-emerald-500 border-emerald-500/50 bg-slate-900/90' : ''
+                  }`}
+              >
+                {/* Persona Top Info */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold uppercase tracking-wider border ${getBadgeColor(
+                        persona.role
+                      )}`}
+                    >
+                      {getRoleIcon(persona.role)}
+                      {persona.role.replace(/_/g, ' ')}
+                    </span>
+                    {persona.phone_number && (
+                      <span className="text-xs text-slate-400 flex items-center gap-1 font-mono">
+                        <PhoneCall className="w-3 h-3 text-slate-500" /> {persona.phone_number}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex items-start gap-4 mb-4">
+                    {persona.avatar_url ? (
+                      <img
+                        src={persona.avatar_url}
+                        alt={persona.full_name}
+                        className="w-14 h-14 rounded-full object-cover ring-2 ring-slate-700 shadow-md flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center ring-2 ring-slate-700 font-bold text-lg text-emerald-400 flex-shrink-0">
+                        {persona.full_name[0]}
+                      </div>
+                    )}
+                    <div>
+                      <h3 className="font-bold text-lg text-slate-100 group-hover:text-emerald-300 transition-colors">
+                        {persona.full_name}
+                      </h3>
+                      <p className="text-xs text-slate-400 font-medium mb-1">
+                        {persona.designation || 'Stakeholder'}
+                      </p>
+                      <div className="flex items-center gap-1 text-xs text-slate-400">
+                        <MapPin className="w-3 h-3 text-emerald-400 flex-shrink-0" />
+                        <span className="truncate">{persona.jurisdiction || 'Jurisdiction N/A'}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Login Action Button */}
+                <button
+                  onClick={() => loginAs(persona.role)}
+                  disabled={isLoading}
+                  className="w-full mt-4 py-3 px-4 rounded-xl font-semibold text-sm bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all flex items-center justify-center gap-2 group/btn cursor-pointer"
+                >
+                  <span>Login as {persona.full_name.split(' ')[0]}</span>
+                  <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                </button>
               </div>
-
-              <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300">
-                Individual Access
-              </span>
-
-              <h2 className="text-2xl font-extrabold text-slate-900 mt-3 group-hover:text-emerald-700 transition-colors">
-                Farmer
-              </h2>
-              <p className="text-xs text-slate-600 mt-1 leading-relaxed font-medium">
-                Log in as Ramesh Kumar to view active crop insurance policies, submit intimations, and track claims.
-              </p>
-            </div>
-
-            <div className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between text-sm font-bold text-emerald-700 group-hover:translate-x-1 transition-transform">
-              <span className="flex items-center gap-2">
-                <UserCheck className="w-4 h-4" /> Enter as Farmer
-              </span>
-              <ArrowRight className="w-5 h-5 text-emerald-600" />
-            </div>
-          </div>
-
-          {/* OPTION 2: ADMIN ACCESS */}
-          <div
-            onClick={() => router.push('/login/admin')}
-            className="bg-white rounded-3xl p-8 border-2 border-emerald-200 hover:border-emerald-500 shadow-lg hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 transform hover:-translate-y-1 cursor-pointer flex flex-col justify-between group relative overflow-hidden min-h-[260px]"
-          >
-            <div>
-              <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-sm">
-                <Building2 className="w-8 h-8 stroke-[2]" />
-              </div>
-
-              <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 border border-emerald-300">
-                Department &amp; Officers
-              </span>
-
-              <h2 className="text-2xl font-extrabold text-slate-900 mt-3 group-hover:text-emerald-700 transition-colors">
-                Admin
-              </h2>
-              <p className="text-xs text-slate-600 mt-1 leading-relaxed font-medium">
-                Access administrative options: DAO officers, CSC local centers, State Department, and Ministry portal.
-              </p>
-            </div>
-
-            <div className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between text-sm font-bold text-emerald-700 group-hover:translate-x-1 transition-transform">
-              <span>View Admin Options</span>
-              <ArrowRight className="w-5 h-5 text-emerald-600" />
-            </div>
-          </div>
-
+            );
+          })}
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-emerald-100 py-4 text-center text-xs text-slate-500 bg-white/80">
-        <p>
-          <span className="font-extrabold font-mono text-slate-900">
-            crop<span className="text-emerald-600">.ins</span>
-          </span>{' '}
-          • PMFBY Portal Access • White &amp; Green Theme
-        </p>
+      <footer className="border-t border-slate-800/80 py-6 text-center text-xs text-slate-400 glass-panel">
+        <div className="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p>© 2026 PMFBY / RWBCIS - Pradhan Mantri Fasal Bima Yojana</p>
+          <p className="font-mono text-slate-400">Next.js App Router • Supabase Auth & RLS Architecture</p>
+        </div>
       </footer>
     </div>
   );
