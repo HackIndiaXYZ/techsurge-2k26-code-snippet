@@ -4,16 +4,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, DEMO_PERSONAS } from '@/context/AuthContext';
 import { 
-  ChevronDown, 
-  LogOut, 
-  Sparkles, 
-  ShieldCheck, 
-  Tractor, 
-  Building2, 
-  Store, 
-  Landmark,
-  UserCheck
-} from 'lucide-react';
+  LuChevronDown as ChevronDown, 
+  LuLogOut as LogOut, 
+  LuSparkles as Sparkles, 
+  LuShieldCheck as ShieldCheck, 
+  LuTractor as Tractor, 
+  LuBuilding2 as Building2, 
+  LuStore as Store, 
+  LuLandmark as Landmark,
+  LuUserCheck as UserCheck
+} from 'react-icons/lu';
 
 interface RoleGuardProps {
   children: React.ReactNode;

@@ -4,15 +4,15 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import {
-  Building2,
-  Store,
-  Landmark,
-  ShieldCheck,
-  ArrowLeft,
-  ArrowRight,
-  Sparkles,
-  UserCheck
-} from 'lucide-react';
+  LuBuilding2 as Building2,
+  LuStore as Store,
+  LuLandmark as Landmark,
+  LuShieldCheck as ShieldCheck,
+  LuArrowLeft as ArrowLeft,
+  LuArrowRight as ArrowRight,
+  LuSparkles as Sparkles,
+  LuUserCheck as UserCheck
+} from 'react-icons/lu';
 
 export default function AdminLoginPage() {
   const router = useRouter();

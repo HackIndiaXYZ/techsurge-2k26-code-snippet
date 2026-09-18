@@ -2,7 +2,15 @@
 
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
-import { Search, MessageSquare, Sparkles, X, User, CheckCheck, Clock } from 'lucide-react';
+import { 
+  LuSearch as Search, 
+  LuMessageSquare as MessageSquare, 
+  LuSparkles as Sparkles, 
+  LuX as X, 
+  LuUser as User, 
+  LuCheckCheck as CheckCheck, 
+  LuClock as Clock 
+} from 'react-icons/lu';
 
 export type Chat = {
   id: string;

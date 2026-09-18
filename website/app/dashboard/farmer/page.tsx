@@ -4,22 +4,22 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import RoleGuard from "@/components/RoleGuard";
 import {
-  FilePlus,
-  CheckCircle,
-  Cloud,
-  Wheat,
-  ShieldCheck,
-  Clock,
-  ChevronDown,
-  Sparkles,
-  CheckCircle2,
-  HelpCircle,
-  FileText,
-  Printer,
-  X,
-  Calendar,
-  AlertCircle
-} from "lucide-react";
+  LuFilePlus as FilePlus,
+  LuCircleCheck as CheckCircle,
+  LuCloud as Cloud,
+  LuWheat as Wheat,
+  LuShieldCheck as ShieldCheck,
+  LuClock as Clock,
+  LuChevronDown as ChevronDown,
+  LuSparkles as Sparkles,
+  LuCircleCheck as CheckCircle2,
+  LuCircleHelp as HelpCircle,
+  LuFileText as FileText,
+  LuPrinter as Printer,
+  LuX as X,
+  LuCalendar as Calendar,
+  LuCircleAlert as AlertCircle
+} from "react-icons/lu";
 
 type PathwayKey = "new" | "enrolled" | null;
 

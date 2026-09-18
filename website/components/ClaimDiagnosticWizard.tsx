@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, ArrowRight, FileText, Check, Copy, Download, X } from "lucide-react";
+import { 
+  LuSparkles as Sparkles,
+  LuArrowRight as ArrowRight, 
+  LuFileText as FileText, 
+  LuCheck as Check, 
+  LuCopy as Copy, 
+  LuDownload as Download, 
+  LuX as X 
+} from "react-icons/lu";
 
 export default function ClaimDiagnosticWizard({ onClose }: { onClose?: () => void }) {
   const [step, setStep] = useState(1);

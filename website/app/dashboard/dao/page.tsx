@@ -4,22 +4,22 @@ import React, { useState } from 'react';
 import RoleGuard from '@/components/RoleGuard';
 import { useAuth } from '@/context/AuthContext';
 import { 
-  Building2, 
-  FileText, 
-  Scale, 
-  AlertOctagon, 
-  CheckCircle2, 
-  Clock, 
-  Download, 
-  Printer, 
-  Search, 
-  Filter, 
-  ChevronRight, 
-  Calendar, 
-  FileCheck,
-  Building,
-  DollarSign
-} from 'lucide-react';
+  LuBuilding2 as Building2, 
+  LuFileText as FileText, 
+  LuScale as Scale, 
+  LuTriangleAlert as AlertOctagon, 
+  LuCircleCheck as CheckCircle2, 
+  LuClock as Clock, 
+  LuDownload as Download, 
+  LuPrinter as Printer, 
+  LuSearch as Search, 
+  LuFilter as Filter, 
+  LuChevronRight as ChevronRight, 
+  LuCalendar as Calendar, 
+  LuFileCheck as FileCheck,
+  LuBuilding as Building,
+  LuDollarSign as DollarSign
+} from 'react-icons/lu';
 
 interface CaseItem {
   id: string;
