@@ -200,3 +200,100 @@ INSERT INTO public.profiles (
   'Ministry of Agriculture & Farmers Welfare',
   'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80'
 );
+
+-- ============================================================================
+-- 6. ENROLMENTS TABLE (Crop Insurance Enrolment Records)
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS public.enrolments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  farmer_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+  application_no TEXT UNIQUE NOT NULL,
+  season TEXT NOT NULL, -- e.g., Kharif 2025
+  crop_name TEXT NOT NULL,
+  land_area_hectares NUMERIC(6, 2) NOT NULL,
+  sum_insured NUMERIC(10, 2) NOT NULL,
+  farmer_premium NUMERIC(10, 2) NOT NULL,
+  gov_subsidy NUMERIC(10, 2) NOT NULL,
+  status TEXT NOT NULL DEFAULT 'Active',
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE public.enrolments ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public select on enrolments"
+  ON public.enrolments FOR SELECT USING (true);
+
+-- ============================================================================
+-- 7. CLAIMS & DISCREPANCIES TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS public.claims (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  enrolment_id UUID REFERENCES public.enrolments(id) ON DELETE CASCADE,
+  farmer_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+  claim_ref TEXT UNIQUE NOT NULL,
+  crop_name TEXT NOT NULL,
+  discrepancy_rule_code TEXT, -- e.g., RULE-ACF-01
+  claimed_amount NUMERIC(10, 2) NOT NULL,
+  sanctioned_amount NUMERIC(10, 2) DEFAULT 0,
+  shortfall_percentage NUMERIC(5, 2),
+  status TEXT NOT NULL DEFAULT 'Under Review', -- Approved, Rejected, Under Review, Discrepancy Flagged
+  remarks TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE public.claims ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public select on claims"
+  ON public.claims FOR SELECT USING (true);
+
+-- ============================================================================
+-- 8. RTI APPLICATIONS TABLE (Generated RTI petitions & status tracking)
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS public.rti_applications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  farmer_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+  claim_ref TEXT NOT NULL,
+  rule_code TEXT NOT NULL,
+  target_authority TEXT NOT NULL,
+  petition_body TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'Drafted', -- Drafted, Submitted, Response Received
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE public.rti_applications ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow public select on rti_applications"
+  ON public.rti_applications FOR SELECT USING (true);
+
+-- ============================================================================
+-- SEED ENROLMENTS & CLAIMS FOR DEMO
+-- ============================================================================
+INSERT INTO public.enrolments (id, farmer_id, application_no, season, crop_name, land_area_hectares, sum_insured, farmer_premium, gov_subsidy, status)
+VALUES (
+  'a1b2c3d4-0000-0000-0000-000000000001',
+  '11111111-1111-1111-1111-111111111111',
+  'PMFBY-2025-TEL-8892',
+  'Kharif 2025',
+  'Paddy (Rice)',
+  2.50,
+  125000.00,
+  2500.00,
+  10000.00,
+  'Active'
+) ON CONFLICT (application_no) DO NOTHING;
+
+INSERT INTO public.claims (id, enrolment_id, farmer_id, claim_ref, crop_name, discrepancy_rule_code, claimed_amount, sanctioned_amount, shortfall_percentage, status, remarks)
+VALUES (
+  'c1c2c3c4-0000-0000-0000-000000000001',
+  'a1b2c3d4-0000-0000-0000-000000000001',
+  '11111111-1111-1111-1111-111111111111',
+  'CLM-8892',
+  'Paddy (Rice)',
+  'RULE-ACF-01',
+  45000.00,
+  18000.00,
+  60.00,
+  'Discrepancy Flagged',
+  'Area Correction Factor reduction applied due to insured area mismatch across village survey unit.'
+) ON CONFLICT (claim_ref) DO NOTHING;
+
