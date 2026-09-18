@@ -110,7 +110,7 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
 
     # 1. Sarvam AI STT for Telugu ("te-IN")
     stt = SarvamSTTService(
-        api_key=sarvam_key,
+        api_key=sarvam_key or "dummy_sarvam_key",
         settings=SarvamSTTSettings(
             model="saaras:v3",
             language="te-IN",
@@ -119,7 +119,7 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
 
     # 2. Gemini 3.6 Flash LLM Brain with Telugu Conversational Prompt
     llm = GoogleLLMService(
-        api_key=gemini_key,
+        api_key=gemini_key or "AIzaSy_Placeholder_Gemini_Key",
         settings=GoogleLLMService.Settings(
             model="gemini-3.6-flash",
         ),
@@ -127,7 +127,7 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
 
     # 3. Sarvam AI TTS (bulbul:v3) for natural spoken Telugu
     tts = SarvamTTSService(
-        api_key=sarvam_key,
+        api_key=sarvam_key or "dummy_sarvam_key",
         settings=SarvamTTSSettings(
             model="bulbul:v3",
             language="te-IN",
@@ -173,7 +173,7 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
     try:
         await runner.run(task)
     except WebSocketDisconnect:
-        print("🔌 Twilio WebSocket disconnected.")
+        print("[-] Twilio WebSocket disconnected.")
     except Exception as err:
         print(f"Stream error: {err}")
 
@@ -238,7 +238,7 @@ async def run_local_mic_mode():
     ])
 
     task = PipelineTask(pipeline, params=PipelineParams(allow_interruptions=True))
-    print("🎙️ Local Voice Agent initialized! Listening on microphone...")
+    print("[+] Local Voice Agent initialized! Listening on microphone...")
     runner = PipelineRunner()
     await runner.run(task)
 

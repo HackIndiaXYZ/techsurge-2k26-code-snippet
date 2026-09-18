@@ -4,28 +4,30 @@
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 antialiased selection:bg-emerald-500 selection:text-white;
+    background-color: #FFF6DA; /* Cornsilk Background */
+    @apply text-slate-900 antialiased selection:bg-rosevale-600 selection:text-white;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
 
 .glass-panel {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 253, 245, 0.9);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
+  border: 1px solid rgba(230, 215, 168, 0.6);
 }
 
 .glass-card {
   background: #ffffff;
   backdrop-filter: blur(12px);
-  border: 1px solid #e2e8f0;
+  border: 1px solid #f3e8cf;
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-card:hover {
   background: #ffffff;
-  border-color: #10b981;
-  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.1), 0 8px 10px -6px rgba(16, 185, 129, 0.05);
+  border-color: #a94a4a; /* Rose Vale */
+  box-shadow: 0 10px 25px -5px rgba(169, 74, 74, 0.15), 0 8px 10px -6px rgba(169, 74, 74, 0.08);
   transform: translateY(-2px);
 }
+
