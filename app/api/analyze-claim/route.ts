@@ -1,42 +1,71 @@
 import { NextResponse } from 'next/server';
+import { matchPmfbyRule, ClaimScenario } from '@/lib/pmfby-rules';
+import { GoogleGenAI } from '@google/genai';
+
+const apiKey = process.env.GEMINI_API_KEY || '';
+const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
-    const { crop, sumInsured, claimReceived, damageType, reportingDelay } = body;
+    const payload: ClaimScenario = await request.json();
 
-    const cropName = crop || 'Paddy / Crop';
-    const expectedAmt = sumInsured ? `₹${sumInsured}` : '₹50,000';
-    const actualAmt = claimReceived ? `₹${claimReceived}` : '₹12,500';
+    // 1. Pass parsed payload to deterministic rule engine
+    const matchedRule = matchPmfbyRule(payload);
 
-    let rule = 'Section 25: Area Correction Factor (ACF)';
-    let plainLanguageExplanation =
-      `Based on PMFBY rules, your claim for ${cropName} was likely reduced because the total insured area in your block exceeded the government's official sown area. To prevent over-insurance, all claims in this unit were scaled down by the Area Correction Factor (ACF).`;
-    let rtiDraft =
-      `To the Public Information Officer,\nState Agriculture Department & PMFBY Nodal Agency,\n\nSubject: Request for Information under RTI Act, 2005 regarding PMFBY Claim Application #CLM-8892.\n\nDear Sir/Madam,\n\nI received a partial PMFBY claim for Application #CLM-8892 (${cropName}). Expected: ${expectedAmt} | Received: ${actualAmt}.\n\nI request the following data under the RTI Act, 2005:\n1. The total notified sown area for ${cropName} in my Insurance Unit.\n2. The total insured area under PMFBY policies in this unit.\n3. The exact Area Correction Factor (ACF) calculation applied to my claim.\n\nSincerely,\nRamesh Kumar\nFarmer ID: FRM-90824152`;
+    // 2. Prepare GenAI Prompts & Instructions
+    const systemInstruction =
+      "You are an assistant for the crop.ins portal. Your task is to take a PMFBY operational rule matched by our backend and output a JSON response with two keys: 'plainLanguageExplanation' (explaining the rule simply, without stating the claim is definitely right or wrong) and 'rtiDraft' (a formal Right to Information draft addressed to the Public Information Officer requesting ONLY the missing data points provided). CRITICAL: You must use generic placeholders like [Farmer Name] and strictly use [Aadhaar Redacted] for any identification numbers. NEVER generate or echo real sensitive identification numbers.";
 
-    if (damageType === 'LOCALIZED') {
-      if (reportingDelay === 'OVER_72') {
-        rule = 'Section 21.4: 72-Hour Loss Intimation Requirement';
-        plainLanguageExplanation =
-          `Under PMFBY guidelines for localized calamities (such as hailstorm or inundation), farmers are required to intimate crop loss within 72 hours of the event. Because the intimation was recorded after 72 hours, individual field assessment was disallowed and the claim was defaulted to standard unit yield calculations.`;
-        rtiDraft =
-          `To the Public Information Officer,\nState Agriculture Department & PMFBY Nodal Agency,\n\nSubject: Request for Information under RTI Act, 2005 regarding 72-Hour Intimation Record for Application #CLM-8892.\n\nDear Sir/Madam,\n\nRegarding my PMFBY claim for ${cropName} (Expected: ${expectedAmt}, Received: ${actualAmt}), please provide:\n1. The exact timestamp of the loss intimation record in the portal.\n2. Certified copy of the Mandal-level localized calamity report.\n3. The reason for disallowance under Section 21.4 individual assessment.\n\nSincerely,\nRamesh Kumar\nFarmer ID: FRM-90824152`;
-      } else {
-        rule = 'Section 21.2: Joint Inspection Committee (JIC) Assessment';
-        plainLanguageExplanation =
-          `For localized damage reported within 72 hours, loss assessment is conducted by a Joint Inspection Committee (DAO & Insurer). Your claim payout was determined by the verified damage percentage of your specific survey number as recorded in the JIC field report.`;
-        rtiDraft =
-          `To the Public Information Officer,\nState Agriculture Department & PMFBY Nodal Agency,\n\nSubject: Request for Information under RTI Act, 2005 regarding Joint Inspection Report for Application #CLM-8892.\n\nDear Sir/Madam,\n\nI request certified copies of the following under the RTI Act, 2005:\n1. The Joint Inspection Committee (JIC) field report for my survey number (${cropName}).\n2. The surveyor loss percentage calculation sheet.\n3. Final claim approval voucher.\n\nSincerely,\nRamesh Kumar\nFarmer ID: FRM-90824152`;
+    const prompt = `
+Crop: ${payload.crop || 'Paddy / Notified Crop'}
+Matched Rule Code: ${matchedRule.ruleCode}
+Clause Title: ${matchedRule.clauseTitle}
+Technical Description: ${matchedRule.technicalDescription}
+Missing Data Points Required:
+${matchedRule.missingDataRequired.map((dp, i) => `${i + 1}. ${dp}`).join('\n')}
+`;
+
+    let plainLanguageExplanation = '';
+    let rtiDraft = '';
+
+    // 3. Generative AI Integration via Gemini 2.5 Flash
+    if (ai) {
+      try {
+        const genResponse = await ai.models.generateContent({
+          model: 'gemini-2.5-flash',
+          contents: prompt,
+          config: {
+            systemInstruction,
+            responseMimeType: 'application/json',
+          },
+        });
+
+        const textOutput = genResponse.text || '';
+        const jsonParsed = JSON.parse(textOutput);
+        plainLanguageExplanation = jsonParsed.plainLanguageExplanation || '';
+        rtiDraft = jsonParsed.rtiDraft || '';
+      } catch (genErr) {
+        console.warn('Gemini API call warning, relying on rule-engine fallback:', genErr);
       }
     }
 
+    // Fallback formatting if AI API key is unconfigured or call returns empty
+    if (!plainLanguageExplanation) {
+      plainLanguageExplanation = matchedRule.technicalDescription;
+    }
+    if (!rtiDraft) {
+      rtiDraft = `To the Public Information Officer,\nState Agriculture Department & PMFBY Nodal Agency,\n\nSubject: Request for Information under RTI Act, 2005 regarding PMFBY Claim Rule [${matchedRule.ruleCode}].\n\nDear Sir/Madam,\n\nRegarding my PMFBY claim for ${payload.crop || 'Crop'} (Rule: ${matchedRule.clauseTitle}), please provide certified copies of the following under RTI Act 2005:\n${matchedRule.missingDataRequired.map((dp, idx) => `${idx + 1}. ${dp}`).join('\n')}\n\nSincerely,\n[Farmer Name]\nAadhaar: [Aadhaar Redacted]\nApplication Ref: [CLM-8892]`;
+    }
+
+    // 4. Return combined response payload
     return NextResponse.json({
-      rule,
+      ruleCode: matchedRule.ruleCode,
+      clauseTitle: matchedRule.clauseTitle,
       plainLanguageExplanation,
       rtiDraft,
     });
   } catch (error) {
+    console.error('Error in analyze-claim API route:', error);
     return NextResponse.json(
       { error: 'Failed to process claim analysis' },
       { status: 500 }
