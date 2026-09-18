@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,9 +7,18 @@
 @layer base {
   body {
     background-color: #FFF6DA; /* Cornsilk Background */
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
     @apply text-slate-900 antialiased selection:bg-rosevale-600 selection:text-white;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+}
+
+.montserrat-main {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
 }
 
 .glass-panel {
