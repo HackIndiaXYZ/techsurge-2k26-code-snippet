@@ -192,7 +192,6 @@ export default function DAODashboardPage() {
               <p className="text-[11px] text-slate-500 mt-1 font-medium">Prepared for District Collector</p>
             </div>
           </div>
-<<<<<<< HEAD
 
           {/* TAB 1: Case Requisition Sheet Generator */}
           {activeTab === 'requisition' && (
@@ -483,12 +482,6 @@ export default function DAODashboardPage() {
                 </button>
               </div>
             </div>
-=======
-          <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
-            <p className="text-xs text-slate-500 font-bold mb-1">Pending Field Inspection</p>
-            <p className="text-2xl font-extrabold text-emerald-700">342 Claims</p>
-            <p className="text-[11px] text-slate-500 mt-1 font-medium">Target SLA: 72 Hours</p>
->>>>>>> 30c7a308f814d9df961021c94e3113530f54ae65
           </div>
         )}
       </div>
