@@ -9,6 +9,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['"Montserrat"', 'sans-serif'],
+        montserrat: ['"Montserrat"', 'sans-serif'],
+      },
       colors: {
         // Rose Vale (#A94A4A) Primary Brand Palette
         rosevale: {
