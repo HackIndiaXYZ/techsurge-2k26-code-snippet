@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth, DEMO_PERSONAS } from '@/context/AuthContext';
+import { useAuth } from '@/context/AuthContext';
 import { 
   Building2, 
   Store, 
@@ -23,7 +23,6 @@ export default function AdminLoginPage() {
       roleKey: 'district_officer',
       title: 'District Agriculture Officer (DAO)',
       subtitle: 'District-level inspection & claim verification',
-      persona: DEMO_PERSONAS.find((p) => p.role === 'district_officer')!,
       icon: <Building2 className="w-6 h-6 text-emerald-700 stroke-[2.5]" />,
       badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
     },
@@ -31,7 +30,6 @@ export default function AdminLoginPage() {
       roleKey: 'csc_operator',
       title: 'Local Center / CSC VLE Operator',
       subtitle: 'Village VLE policy enrolment & assistance',
-      persona: DEMO_PERSONAS.find((p) => p.role === 'csc_operator')!,
       icon: <Store className="w-6 h-6 text-emerald-700 stroke-[2.5]" />,
       badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
     },
@@ -39,7 +37,6 @@ export default function AdminLoginPage() {
       roleKey: 'state_officer',
       title: 'State Agriculture Department',
       subtitle: 'State-wide subsidy release & oversight',
-      persona: DEMO_PERSONAS.find((p) => p.role === 'state_officer')!,
       icon: <Landmark className="w-6 h-6 text-emerald-700 stroke-[2.5]" />,
       badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
     },
@@ -47,7 +44,6 @@ export default function AdminLoginPage() {
       roleKey: 'ministry_officer',
       title: 'Ministry of Agriculture & Farmers Welfare',
       subtitle: 'Central PMFBY policy & national monitoring',
-      persona: DEMO_PERSONAS.find((p) => p.role === 'ministry_officer')!,
       icon: <ShieldCheck className="w-6 h-6 text-emerald-700 stroke-[2.5]" />,
       badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
     },
@@ -99,7 +95,7 @@ export default function AdminLoginPage() {
             <div
               key={item.roleKey}
               onClick={() => loginAs(item.roleKey)}
-              className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-emerald-100 hover:border-emerald-500 shadow-md hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 transform hover:-translate-y-1 cursor-pointer flex flex-col justify-between group"
+              className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-emerald-100 hover:border-emerald-500 shadow-md hover:shadow-xl hover:shadow-emerald-500/10 transition-all duration-300 transform hover:-translate-y-1 cursor-pointer flex flex-col justify-between group min-h-[190px]"
             >
               <div>
                 <div className="flex items-center justify-between mb-4">
@@ -111,28 +107,12 @@ export default function AdminLoginPage() {
                   </div>
                 </div>
 
-                <p className="text-xs text-slate-600 mb-4 font-medium">{item.subtitle}</p>
-
-                {/* Persona Profile Card */}
-                <div className="flex items-center gap-3.5 bg-slate-50 rounded-2xl p-3.5 border border-slate-200 mb-4">
-                  <img
-                    src={item.persona.avatar_url}
-                    alt={item.persona.full_name}
-                    className="w-12 h-12 rounded-full object-cover ring-2 ring-emerald-500/30 flex-shrink-0"
-                  />
-                  <div>
-                    <p className="text-sm font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">
-                      {item.persona.full_name}
-                    </p>
-                    <p className="text-xs text-slate-600 font-medium">{item.persona.designation}</p>
-                    <p className="text-[11px] text-slate-500 font-mono mt-0.5">{item.persona.jurisdiction}</p>
-                  </div>
-                </div>
+                <p className="text-sm text-slate-600 mb-6 font-medium leading-relaxed">{item.subtitle}</p>
               </div>
 
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-emerald-700 group-hover:translate-x-1 transition-transform">
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-emerald-700 group-hover:translate-x-1 transition-transform">
                 <span className="flex items-center gap-1.5">
-                  <UserCheck className="w-4 h-4 text-emerald-600" /> Enter Portal as {item.persona.full_name.split(' ')[0]}
+                  <UserCheck className="w-4 h-4 text-emerald-600" /> Enter Portal
                 </span>
                 <ArrowRight className="w-4 h-4 text-emerald-600" />
               </div>
