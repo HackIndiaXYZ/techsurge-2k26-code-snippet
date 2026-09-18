@@ -3,15 +3,15 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { 
-  Building2, 
-  Store, 
-  Landmark, 
-  ShieldCheck, 
-  ArrowLeft, 
-  ArrowRight, 
-  Sparkles, 
-  UserCheck 
+import {
+  Building2,
+  Store,
+  Landmark,
+  ShieldCheck,
+  ArrowLeft,
+  ArrowRight,
+  Sparkles,
+  UserCheck
 } from 'lucide-react';
 
 export default function AdminLoginPage() {
