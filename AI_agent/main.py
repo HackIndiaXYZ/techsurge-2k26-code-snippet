@@ -13,6 +13,7 @@ from typing import Any, cast
 
 from pipecat.audio.vad.silero import SileroVADAnalyzer
 from pipecat.processors.audio.vad_processor import VADProcessor
+from pipecat.processors.frame_processor import FrameProcessor
 from pipecat.pipeline.pipeline import Pipeline
 from pipecat.pipeline.runner import PipelineRunner
 from pipecat.pipeline.task import PipelineParams, PipelineTask
@@ -37,6 +38,8 @@ from pipecat.transports.websocket.fastapi import (
     FastAPIWebsocketTransport,
 )
 from pipecat.transports.local.audio import LocalAudioTransport, LocalAudioTransportParams
+from langchain_chroma import Chroma
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 load_dotenv()
 ELEVENLABS_KEY_DEFAULT = "sk_756ddf9c2657821945dd50e9284ba1f8d934f855a8b50495"
@@ -483,10 +486,43 @@ async def generate_rti_application_tool(
         received_amt=float(args.get("received_amt", received_amt)),
     )
 
+
+# Chroma Vector Store for PMFBY Knowledge Base RAG
+_chroma_dir = os.path.join(os.path.dirname(__file__), "chroma_db")
+_vectorstore = None
+if os.path.exists(_chroma_dir):
+    try:
+        _embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
+        _vectorstore = Chroma(persist_directory=_chroma_dir, embedding_function=_embeddings)
+    except Exception as _e:
+        print(f"Notice: Could not load Chroma DB: {_e}")
+
+async def search_pmfby_knowledge_base(query: str) -> str:
+    """Searches KNOWLEDGE_BASE.pdf for PMFBY rules, claim procedures, and guidelines."""
+    if not _vectorstore:
+        return "Knowledge base vector database is not loaded. Please run read_pdf.py first."
+    try:
+        results = _vectorstore.similarity_search(query, k=3)
+        if not results:
+            return "No matching clauses found in PMFBY knowledge base."
+        return "\n\n---\n\n".join([doc.page_content for doc in results])
+    except Exception as e:
+        return f"Error querying knowledge base: {e}"
+
+async def search_pmfby_knowledge_base_tool(
+    params: FunctionCallParams,
+    query: str = "PMFBY claim guidelines",
+):
+    """Searches official PMFBY operational guidelines and knowledge base for rules, timelines, formulas, and clauses."""
+    args = params.arguments if hasattr(params, "arguments") and params.arguments else {}
+    q = str(args.get("query", query))
+    return await search_pmfby_knowledge_base(q)
+
 tools = [
     calculate_insurance_estimate_tool,
     diagnose_claim_discrepancy_tool,
     generate_rti_application_tool,
+    search_pmfby_knowledge_base_tool,
 ]
 
 # ---------------------------------------------------------
@@ -677,7 +713,7 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
     context = LLMContext(messages=messages, tools=cast(Any, tools))
     context_aggregator = LLMContextAggregatorPair(context)
 
-    pipeline_steps = [transport.input(), stt, context_aggregator.user(), llm]
+    pipeline_steps: list[FrameProcessor] = [transport.input(), stt, context_aggregator.user(), llm]
     if tts:
         pipeline_steps.append(tts)
     pipeline_steps.extend([transport.output(), context_aggregator.assistant()])
@@ -703,7 +739,7 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
 
 async def run_local_mic_mode():
     """Fallback runner for testing on local microphone and speakers with Sarvam STT & ElevenLabs TTS."""
-    vad = SileroVADAnalyzer()
+    vad = VADProcessor(vad_analyzer=SileroVADAnalyzer())
     transport = LocalAudioTransport(
         LocalAudioTransportParams(
             audio_in_enabled=True,
@@ -741,14 +777,14 @@ async def run_local_mic_mode():
     context = LLMContext(messages=messages, tools=cast(Any, tools))
     context_aggregator = LLMContextAggregatorPair(context)
 
-    pipeline_steps = [transport.input(), stt, context_aggregator.user(), llm]
+    pipeline_steps: list[FrameProcessor] = [transport.input(), vad, stt, context_aggregator.user(), llm]
     if tts:
         pipeline_steps.append(tts)
     pipeline_steps.extend([transport.output(), context_aggregator.assistant()])
 
     pipeline = Pipeline(pipeline_steps)
 
-    task = PipelineTask(pipeline, params=PipelineParams(allow_interruptions=True))
+    task = PipelineTask(pipeline, params=PipelineParams())
     print("[+] Local Voice Agent initialized using Sarvam STT & ElevenLabs TTS Engine!")
     runner = PipelineRunner()
     await runner.run(task)
@@ -760,4 +796,3 @@ if __name__ == "__main__":
     else:
         print("Starting crop.ins Twilio Voice AI Server on http://0.0.0.0:8765...")
         uvicorn.run("main:app", host="0.0.0.0", port=8765, reload=False)
-
