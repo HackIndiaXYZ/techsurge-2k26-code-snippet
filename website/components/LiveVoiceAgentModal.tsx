@@ -273,8 +273,8 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
     }
   };
 
-  // Process message STT -> Decision Tools -> Assistant Spoken Reply
-  const handleSendMessage = (textToSend?: string) => {
+  // Process message STT -> Direct Python AI Agent Backend (AI_agent/main.py) -> Assistant Spoken Reply
+  const handleSendMessage = async (textToSend?: string) => {
     const text = textToSend || inputText;
     if (!text.trim()) return;
 
@@ -288,12 +288,30 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
     setMessages((prev) => [...prev, userMsg]);
     if (!textToSend) setInputText('');
 
-    setTimeout(() => {
-      const lower = text.toLowerCase();
-      let assistantText = '';
-      let spokenTeluguText = '';
-      let toolResult: any = null;
+    let assistantText = '';
+    let spokenTeluguText = '';
+    let toolResult: any = null;
 
+    try {
+      // Connect directly to Python AI Agent Backend (AI_agent/main.py)
+      const res = await fetch('http://localhost:8765/agent/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: text, language: language })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        assistantText = data.text;
+        spokenTeluguText = data.spokenTeluguText;
+        toolResult = data.toolResult;
+      }
+    } catch (err) {
+      console.warn('Python AI agent backend fallback:', err);
+    }
+
+    // Client fallback if Python backend endpoint is offline
+    if (!assistantText) {
+      const lower = text.toLowerCase();
       if (lower.includes('1 lakh') || lower.includes('40,000') || lower.includes('40000') || lower.includes('cotton') || lower.includes('reduced') || lower.includes('పత్తి') || lower.includes('తక్కువ')) {
         assistantText = "Ram Ram Kisan Bhai. Under PMFBY rules, widespread crop loss is calculated based on village Crop Cutting Experiments (CCEs). If your village average yield was 40% of normal, the company pays 40% of sum insured (PMFBY Clause 13.1). However, you can file an official RTI to get the exact calculation sheet.";
         spokenTeluguText = "నమస్తే కిసాన్ భాయ్. PMFBY నిబంధనల ప్రకారం ఊరంతా పంట నష్టం జరిగితే గ్రామ పంట కోత ప్రయోగాల ఆధారంగా క్లెయిమ్ లెక్కిస్తారు. మీ క్లెయిమ్ గణన పత్రం కోసం RTI దరఖాస్తును తయారు చేయమంటారా?";
@@ -334,19 +352,19 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
         assistantText = "Namaste Kisan Bhai! I am your Kisan Bima Sahayak. Are you looking to calculate insurance for a new crop, or resolve a reduced claim payout?";
         spokenTeluguText = "నమస్తే కిసాన్ భాయ్! నేను మీ బీమా సహాయక్. మీరు కొత్త పంట ఇన్సూరెన్స్ వివరాలు తెలుసుకోవాలనుకుంటున్నారా లేదా ఉన్న క్లెయిమ్ సమస్య గురించి మాట్లాడాలనుకుంటున్నారా?";
       }
+    }
 
-      const assistantMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        sender: 'assistant',
-        text: assistantText,
-        spokenTeluguText: spokenTeluguText,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        toolResult: toolResult
-      };
+    const assistantMsg: Message = {
+      id: (Date.now() + 1).toString(),
+      sender: 'assistant',
+      text: assistantText,
+      spokenTeluguText: spokenTeluguText,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      toolResult: toolResult
+    };
 
-      setMessages((prev) => [...prev, assistantMsg]);
-      speakText(spokenTeluguText || assistantText);
-    }, 400);
+    setMessages((prev) => [...prev, assistantMsg]);
+    speakText(spokenTeluguText || assistantText);
   };
 
   const handleEndCall = () => {
