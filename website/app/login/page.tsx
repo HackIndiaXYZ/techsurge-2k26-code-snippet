@@ -39,14 +39,8 @@ export default function LoginPage() {
               <span className="font-extrabold text-2xl tracking-tight font-sans text-slate-900">
                 cropins<span className="text-[#A94A4A]">'</span>
               </span>
-              <p className="text-[11px] text-slate-500 font-medium">PMFBY / RWBCIS Crop Insurance Portal</p>
             </div>
           </div>
-
-          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#F3E8CF] text-[#785114] border border-[#E6D0A0] shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-[#b8860b] animate-pulse" />
-            <span>1-Click Demo &amp; Evaluation Mode</span>
-          </span>
         </div>
       </header>
 
@@ -74,10 +68,6 @@ export default function LoginPage() {
                 <Tractor className="w-8 h-8 stroke-[2]" />
               </div>
 
-              <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#F3E8CF] text-[#785114] border border-[#E6D0A0]">
-                Individual Access
-              </span>
-
               <h2 className="text-2xl font-extrabold text-slate-900 mt-3 group-hover:text-[#a94a4a] transition-colors">
                 Farmer
               </h2>
@@ -103,10 +93,6 @@ export default function LoginPage() {
               <div className="w-14 h-14 rounded-2xl bg-[#fdf5f5] border border-[#f7d5d5] text-[#a94a4a] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-sm">
                 <Building2 className="w-8 h-8 stroke-[2]" />
               </div>
-
-              <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#F3E8CF] text-[#785114] border border-[#E6D0A0]">
-                Department &amp; Officers
-              </span>
 
               <h2 className="text-2xl font-extrabold text-slate-900 mt-3 group-hover:text-[#a94a4a] transition-colors">
                 Admin
