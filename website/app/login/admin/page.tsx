@@ -169,7 +169,7 @@ export default function AdminLoginPage() {
             lineHeight={1.0}
           />
           <p className="text-xs text-slate-400 font-light tracking-wide mt-1">
-            Choose an officer or center role to instantly enter their dedicated dashboard (Hover card to flip):
+            Choose an officer or center role to instantly enter their dedicated dashboard:
           </p>
         </div>
 

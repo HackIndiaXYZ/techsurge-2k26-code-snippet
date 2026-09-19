@@ -100,7 +100,7 @@ export default function HomePage() {
             lineHeight={1.0}
           />
           <p className="text-xs text-slate-400 font-light tracking-wide mt-1">
-            Select your portal access category below to proceed (Hover card to flip):
+            Select your portal access category below to proceed:
           </p>
         </div>
 

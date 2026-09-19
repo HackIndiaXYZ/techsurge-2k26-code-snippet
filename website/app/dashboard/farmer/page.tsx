@@ -89,9 +89,6 @@ export default function FarmerDashboardPage() {
                 letterSpacing={-0.04}
                 lineHeight={1.0}
               />
-              <p className="text-xs text-slate-400 font-light tracking-wide mt-1">
-                Hover to flip cards, then select an option to view details:
-              </p>
             </div>
 
             <BellToggle
