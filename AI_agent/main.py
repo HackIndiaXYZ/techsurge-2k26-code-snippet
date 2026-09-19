@@ -17,7 +17,7 @@ from pipecat.processors.audio.vad_processor import VADProcessor
 from pipecat.processors.frame_processor import FrameProcessor
 from pipecat.pipeline.pipeline import Pipeline
 from pipecat.workers.runner import WorkerRunner
-from pipecat.pipeline.worker import PipelineParams, PipelineTask
+from pipecat.pipeline.worker import PipelineParams, PipelineWorker
 from pipecat.processors.aggregators.llm_context import (
     LLMContext,
     LLMContextMessage,
@@ -721,7 +721,7 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
 
     pipeline = Pipeline(pipeline_steps)
 
-    task = PipelineTask(
+    task = PipelineWorker(
         pipeline,
         params=PipelineParams(
             enable_metrics=True,
@@ -785,7 +785,7 @@ async def run_local_mic_mode():
 
     pipeline = Pipeline(pipeline_steps)
 
-    task = PipelineTask(pipeline, params=PipelineParams())
+    task = PipelineWorker(pipeline, params=PipelineParams())
     print("[+] Local Voice Agent initialized using Sarvam STT & ElevenLabs TTS Engine!")
     runner = WorkerRunner()
     await runner.run(task)
