@@ -96,16 +96,13 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
     scrollToBottom();
   }, [messages]);
 
+  const speakingTimerRef = useRef<any>(null);
+
   // Web Speech Synthesis for spoken audio output
   const speakText = (text: string) => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window) || !speakerOn) return;
     
     try {
-      // Pause mic recognition while agent is speaking to prevent acoustic feedback
-      if (recognitionRef.current) {
-        try { recognitionRef.current.stop(); } catch(e) {}
-      }
-
       window.speechSynthesis.cancel();
       window.speechSynthesis.resume();
 
@@ -119,31 +116,39 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
       const targetVoice = voices.find(v => v.lang.includes('te') || v.lang.includes('hi') || v.lang.includes('IN')) || voices[0];
       if (targetVoice) utterance.voice = targetVoice;
 
+      if (speakingTimerRef.current) clearTimeout(speakingTimerRef.current);
+
       utterance.onstart = () => {
         setIsSpeaking(true);
       };
 
-      utterance.onend = () => {
+      const finishSpeaking = () => {
         setIsSpeaking(false);
-        // Start continuous hands-free listening ONLY AFTER agent greeting/response finishes
+        if (speakingTimerRef.current) clearTimeout(speakingTimerRef.current);
         if (shouldListenRef.current && !isMuted) {
-          setTimeout(() => startContinuousListening(), 400);
+          startContinuousListening();
         }
       };
 
+      utterance.onend = finishSpeaking;
       utterance.onerror = (e) => {
-        console.warn('Speech synthesis utterance error/canceled:', e);
-        setIsSpeaking(false);
-        if (shouldListenRef.current && !isMuted) {
-          setTimeout(() => startContinuousListening(), 400);
-        }
+        console.warn('Speech synthesis utterance notice:', e);
+        finishSpeaking();
       };
 
       window.speechSynthesis.speak(utterance);
       setIsSpeaking(true);
+
+      // Safety timeout: auto reset isSpeaking state after estimated speech duration to prevent Chrome lockup
+      const safeDurationMs = Math.min(6000, Math.max(2500, text.length * 70));
+      speakingTimerRef.current = setTimeout(() => {
+        finishSpeaking();
+      }, safeDurationMs);
+
     } catch (e) {
       console.error('Speech synthesis error:', e);
       setIsSpeaking(false);
+      startContinuousListening();
     }
   };
 
@@ -153,9 +158,9 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
     speakText(greetingText);
   };
 
-  // Continuous Hands-Free Speech Recognition Loop (Real-time Feedback & Multi-language STT)
+  // Continuous Hands-Free Speech Recognition Loop (Always active to listen to farmer questions)
   const startContinuousListening = async () => {
-    if (typeof window === 'undefined' || isMuted || !shouldListenRef.current || isSpeaking) return;
+    if (typeof window === 'undefined' || isMuted || !shouldListenRef.current) return;
     
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) return;
@@ -178,8 +183,8 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
 
       recognition.onend = () => {
         setIsListening(false);
-        // Automatically restart continuous speech loop if call is active & agent is not speaking
-        if (shouldListenRef.current && !isMuted && !isSpeaking) {
+        // Automatically restart continuous speech loop so mic stays active
+        if (shouldListenRef.current && !isMuted) {
           setTimeout(() => {
             try { recognition.start(); } catch(e) {}
           }, 300);
@@ -188,7 +193,7 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
 
       recognition.onerror = (e: any) => {
         setIsListening(false);
-        if (shouldListenRef.current && !isMuted && !isSpeaking) {
+        if (shouldListenRef.current && !isMuted) {
           setTimeout(() => {
             try { recognition.start(); } catch(err) {}
           }, 400);
@@ -211,7 +216,7 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
           setLiveTranscript(trimmed);
         }
 
-        if (isFinal && trimmed.length > 2 && !isSpeaking) {
+        if (isFinal && trimmed.length > 1) {
           setLiveTranscript('');
           handleSendMessage(trimmed);
         }
@@ -225,14 +230,19 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
     }
   };
 
-  // Auto initialize call: Speak initial greeting synchronously & request mic permission
+  // Auto initialize call: Speak initial greeting synchronously & start mic loop
   useEffect(() => {
     shouldListenRef.current = true;
 
     // 1. Play spoken Telugu greeting immediately on call initialization
     playGreeting();
 
-    // 2. Request mic permission in parallel without blocking initial greeting
+    // 2. Start continuous microphone speech recognition loop after 1 second
+    setTimeout(() => {
+      startContinuousListening();
+    }, 1000);
+
+    // 3. Request mic permission in parallel
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices.getUserMedia({ audio: true })
         .then(() => setHasMicPermission(true))
