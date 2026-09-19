@@ -34,6 +34,8 @@ from pipecat.transports.websocket.fastapi import (
     FastAPIWebsocketTransport,
 )
 from pipecat.transports.local.audio import LocalAudioTransport, LocalAudioTransportParams
+from langchain_chroma import Chroma
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 load_dotenv()
 
@@ -450,10 +452,43 @@ async def generate_rti_application_tool(
         received_amt=float(args.get("received_amt", received_amt)),
     )
 
+
+# Chroma Vector Store for PMFBY Knowledge Base RAG
+_chroma_dir = os.path.join(os.path.dirname(__file__), "chroma_db")
+_vectorstore = None
+if os.path.exists(_chroma_dir):
+    try:
+        _embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
+        _vectorstore = Chroma(persist_directory=_chroma_dir, embedding_function=_embeddings)
+    except Exception as _e:
+        print(f"Notice: Could not load Chroma DB: {_e}")
+
+async def search_pmfby_knowledge_base(query: str) -> str:
+    """Searches KNOWLEDGE_BASE.pdf for PMFBY rules, claim procedures, and guidelines."""
+    if not _vectorstore:
+        return "Knowledge base vector database is not loaded. Please run read_pdf.py first."
+    try:
+        results = _vectorstore.similarity_search(query, k=3)
+        if not results:
+            return "No matching clauses found in PMFBY knowledge base."
+        return "\n\n---\n\n".join([doc.page_content for doc in results])
+    except Exception as e:
+        return f"Error querying knowledge base: {e}"
+
+async def search_pmfby_knowledge_base_tool(
+    params: FunctionCallParams,
+    query: str = "PMFBY claim guidelines",
+):
+    """Searches official PMFBY operational guidelines and knowledge base for rules, timelines, formulas, and clauses."""
+    args = params.arguments if hasattr(params, "arguments") and params.arguments else {}
+    q = str(args.get("query", query))
+    return await search_pmfby_knowledge_base(q)
+
 tools = [
     calculate_insurance_estimate_tool,
     diagnose_claim_discrepancy_tool,
     generate_rti_application_tool,
+    search_pmfby_knowledge_base_tool,
 ]
 
 # ---------------------------------------------------------
@@ -741,4 +776,3 @@ if __name__ == "__main__":
     else:
         print("Starting crop.ins Twilio Voice AI Server on http://0.0.0.0:8765...")
         uvicorn.run("main:app", host="0.0.0.0", port=8765, reload=False)
-
