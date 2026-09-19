@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import RoleGuard from "@/components/RoleGuard";
+import LiveVoiceAgentModal from "@/components/LiveVoiceAgentModal";
 import {
   LuFilePlus as FilePlus,
   LuCircleCheck as CheckCircle,
@@ -18,7 +19,8 @@ import {
   LuPrinter as Printer,
   LuX as X,
   LuCalendar as Calendar,
-  LuCircleAlert as AlertCircle
+  LuCircleAlert as AlertCircle,
+  LuPhoneCall as PhoneCall
 } from "react-icons/lu";
 
 type PathwayKey = "new" | "enrolled" | null;
@@ -28,6 +30,7 @@ export default function FarmerDashboardPage() {
   const [showDiagnosticModal, setShowDiagnosticModal] = useState<boolean>(false);
   const [showRtiDocModal, setShowRtiDocModal] = useState<boolean>(false);
   const [showTimelineModal, setShowTimelineModal] = useState<boolean>(false);
+  const [showLiveVoiceAgent, setShowLiveVoiceAgent] = useState<boolean>(false);
 
   const toggle = (key: PathwayKey) => setOpen((prev) => (prev === key ? null : key));
 
@@ -41,13 +44,25 @@ export default function FarmerDashboardPage() {
       <div className="min-h-screen bg-[#FFF6DA] flex flex-col font-sans">
         {/* Main Journey Container */}
         <main className="flex-1 flex flex-col items-center px-4 sm:px-6 py-8 sm:py-12 max-w-4xl mx-auto w-full">
-          <div className="w-full max-w-2xl text-center mb-10">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">
-              What's your enrollment status?
-            </h1>
-            <p className="text-slate-600 text-sm sm:text-base font-medium">
-              Select the option that matches your current situation to continue.
-            </p>
+          {/* HEADING & TALK LIVE TO AGENT BUTTON */}
+          <div className="w-full max-w-2xl flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 pb-6 border-b border-[#f7d5d5]/80">
+            <div className="text-center sm:text-left">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-1">
+                What's your enrollment status?
+              </h1>
+              <p className="text-slate-600 text-sm font-medium">
+                Select the option that matches your current situation to continue.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowLiveVoiceAgent(true)}
+              className="px-5 py-3 rounded-2xl bg-[#A94A4A] text-white font-extrabold text-sm hover:bg-[#8f3c3c] transition-all flex items-center gap-2.5 shadow-lg shadow-[#A94A4A]/25 shrink-0 cursor-pointer animate-bounce hover:animate-none border border-[#8f3c3c]"
+            >
+              <PhoneCall className="w-5 h-5 text-emerald-300" />
+              <span>Talk Live to Agent</span>
+            </button>
           </div>
 
           <div className="w-full max-w-2xl space-y-5">
@@ -437,6 +452,11 @@ export default function FarmerDashboardPage() {
               </div>
             </motion.div>
           </div>
+        )}
+
+        {/* LIVE VOICE AGENT MODAL */}
+        {showLiveVoiceAgent && (
+          <LiveVoiceAgentModal onClose={() => setShowLiveVoiceAgent(false)} />
         )}
       </div>
     </RoleGuard>
