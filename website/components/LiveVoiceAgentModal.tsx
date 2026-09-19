@@ -53,6 +53,7 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
   const [showCaptions, setShowCaptions] = useState<boolean>(true);
   const [showKeypad, setShowKeypad] = useState<boolean>(false);
   const [inputText, setInputText] = useState<string>('');
+  const [liveTranscript, setLiveTranscript] = useState<string>('');
   const [hasMicPermission, setHasMicPermission] = useState<boolean>(false);
   
   const [messages, setMessages] = useState<Message[]>([
@@ -68,6 +69,7 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const shouldListenRef = useRef<boolean>(true);
+  const silenceTimerRef = useRef<any>(null);
 
   // Call Duration Timer (mm:ss)
   useEffect(() => {
@@ -151,7 +153,7 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
     speakText(greetingText);
   };
 
-  // Continuous Hands-Free Speech Recognition Loop (Filters noise & stays active)
+  // Continuous Hands-Free Speech Recognition Loop (Real-time Feedback & Multi-language STT)
   const startContinuousListening = async () => {
     if (typeof window === 'undefined' || isMuted || !shouldListenRef.current || isSpeaking) return;
     
@@ -166,7 +168,7 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
       const recognition = new SpeechRecognition();
       recognition.lang = language;
       recognition.continuous = true;
-      recognition.interimResults = false;
+      recognition.interimResults = true;
       recognition.maxAlternatives = 1;
 
       recognition.onstart = () => {
@@ -186,7 +188,6 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
 
       recognition.onerror = (e: any) => {
         setIsListening(false);
-        // Ignore aborted/no-speech errors and restart mic automatically
         if (shouldListenRef.current && !isMuted && !isSpeaking) {
           setTimeout(() => {
             try { recognition.start(); } catch(err) {}
@@ -195,13 +196,24 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
       };
 
       recognition.onresult = (event: any) => {
-        const lastIndex = event.results.length - 1;
-        const result = event.results[lastIndex];
-        const transcript = result[0].transcript ? result[0].transcript.trim() : '';
+        let currentTranscript = '';
+        let isFinal = false;
 
-        // Filter out small background noises, single-letter breaths, or empty speech
-        if (transcript && transcript.length > 2 && !isSpeaking) {
-          handleSendMessage(transcript);
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          currentTranscript += event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            isFinal = true;
+          }
+        }
+
+        const trimmed = currentTranscript.trim();
+        if (trimmed) {
+          setLiveTranscript(trimmed);
+        }
+
+        if (isFinal && trimmed.length > 2 && !isSpeaking) {
+          setLiveTranscript('');
+          handleSendMessage(trimmed);
         }
       };
 
@@ -357,13 +369,27 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/80 backdrop-blur-xl animate-in fade-in duration-200 font-sans">
       <div className="w-full max-w-md bg-slate-950 text-white rounded-[36px] border border-slate-800/80 shadow-2xl flex flex-col overflow-hidden h-[92vh] max-h-[850px] relative">
         
-        {/* PHONE STATUS BAR */}
+        {/* PHONE STATUS BAR WITH LANGUAGE TOGGLE */}
         <div className="px-6 pt-5 pb-2 flex items-center justify-between text-xs font-semibold text-slate-400 shrink-0">
           <div className="flex items-center gap-2">
             <Radio className="w-4 h-4 text-emerald-400 animate-pulse" />
             <span className="text-emerald-400 font-bold uppercase tracking-wider text-[11px]">
-              HD Phone Call ({language})
+              HD Call
             </span>
+            <div className="flex items-center gap-1 bg-slate-900 px-1.5 py-0.5 rounded-full border border-slate-800 ml-1">
+              <button
+                onClick={() => { setLanguage('te-IN'); startContinuousListening(); }}
+                className={`px-2 py-0.5 rounded-full text-[10px] font-bold transition-all cursor-pointer ${language === 'te-IN' ? 'bg-amber-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'}`}
+              >
+                తెలుగు
+              </button>
+              <button
+                onClick={() => { setLanguage('en-IN'); startContinuousListening(); }}
+                className={`px-2 py-0.5 rounded-full text-[10px] font-bold transition-all cursor-pointer ${language === 'en-IN' ? 'bg-amber-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'}`}
+              >
+                English
+              </button>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-slate-300 font-mono text-xs">{formatDuration(callDuration)}</span>
@@ -411,20 +437,28 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
             PMFBY Voice Helpdesk • Spoken Telugu (వ్యవహారిక తెలుగు)
           </p>
 
-          <div className="flex flex-col items-center gap-2 mb-4">
+          <div className="flex flex-col items-center gap-2 mb-3">
             <div className="inline-flex items-center gap-2 bg-slate-900/90 border border-slate-800 px-3.5 py-1.5 rounded-full text-xs font-semibold text-slate-300 shadow-inner">
               <span className={`w-2.5 h-2.5 rounded-full ${isSpeaking ? 'bg-emerald-400 animate-bounce' : isListening ? 'bg-amber-400 animate-ping' : 'bg-emerald-500'}`} />
               <span>
                 {isSpeaking
                   ? 'Agent Speaking Spoken Telugu...'
                   : isListening
-                  ? '🎤 Mic Active • Speak Hands-Free in Telugu/English'
+                  ? `🎤 Mic Active (${language === 'te-IN' ? 'Telugu' : 'English'}) • Speak Hands-Free`
                   : isMuted
                   ? '🔇 Call Muted'
                   : '🟢 Phone Call Active'}
               </span>
             </div>
           </div>
+
+          {/* REAL-TIME LIVE SPEECH HEARING BANNER */}
+          {liveTranscript && (
+            <div className="w-full bg-amber-950/90 border border-amber-500/60 rounded-xl p-3 text-xs text-amber-200 font-bold mb-3 animate-pulse flex items-center gap-2 shadow-lg">
+              <Mic className="w-4 h-4 text-amber-400 shrink-0 animate-bounce" />
+              <span className="truncate">Hearing: "{liveTranscript}"</span>
+            </div>
+          )}
 
           {/* REAL-TIME CLOSED CAPTIONS & SUBTITLES OVERLAY */}
           {showCaptions && lastAssistantMsg && (
