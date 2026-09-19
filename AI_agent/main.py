@@ -13,6 +13,7 @@ from typing import Any, cast
 
 from pipecat.audio.vad.silero import SileroVADAnalyzer
 from pipecat.processors.audio.vad_processor import VADProcessor
+from pipecat.processors.frame_processor import FrameProcessor
 from pipecat.pipeline.pipeline import Pipeline
 from pipecat.pipeline.runner import PipelineRunner
 from pipecat.pipeline.task import PipelineParams, PipelineTask
@@ -24,9 +25,12 @@ from pipecat.processors.aggregators.llm_response_universal import (
     LLMContextAggregatorPair,
 )
 from pipecat.serializers.twilio import TwilioFrameSerializer
-from pipecat.services.deepgram.stt import DeepgramSTTService
 from pipecat.services.sarvam.stt import SarvamSTTService, SarvamSTTSettings
-from pipecat.services.sarvam.tts import SarvamTTSService, SarvamTTSSettings
+try:
+    from pipecat.services.elevenlabs.tts import ElevenLabsTTSService
+except ImportError:
+    ElevenLabsTTSService = None
+
 from pipecat.services.google.llm import GoogleLLMService
 from pipecat.services.llm_service import FunctionCallParams
 from pipecat.transports.websocket.fastapi import (
@@ -38,6 +42,7 @@ from langchain_chroma import Chroma
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 load_dotenv()
+ELEVENLABS_KEY_DEFAULT = "sk_756ddf9c2657821945dd50e9284ba1f8d934f855a8b50495"
 
 # ---------------------------------------------------------
 # 1. THE DOMAIN KNOWLEDGE BASE (SYSTEM PROMPT)
@@ -311,75 +316,94 @@ def generate_rti_and_grievance_draft(farmer_name: str, issue_type: str, details:
 
 
 # ---------------------------------------------------------
-# 2.5 SARVAM AI UNIFIED REST HANDLER (STT + TTS + LLM)
+# 2.5 HYBRID VOICE AGENT (SARVAM STT + ELEVENLABS TTS)
 # ---------------------------------------------------------
-# ---------------------------------------------------------
-# 2.5 SARVAM AI UNIFIED REST HANDLER (TELUGU STT + TTS + LLM)
-# ---------------------------------------------------------
-class SarvamVoiceAgent:
-    def __init__(self, language="te-IN", api_key=None):
-        self.api_key = api_key or os.getenv("SARVAM_API_KEY", "")
-        self.headers = {"api-subscription-key": self.api_key}
+class ElevenLabsVoiceAgent:
+    def __init__(self, elevenlabs_key=None, sarvam_key=None, voice_id="JBFqnCBsd6RMkjVDRZzb", language="te-IN"):
+        self.elevenlabs_key = elevenlabs_key or os.getenv("ELEVENLABS_API_KEY", ELEVENLABS_KEY_DEFAULT)
+        self.sarvam_key = sarvam_key or os.getenv("SARVAM_API_KEY", "")
+        self.voice_id = voice_id
         self.language = language
 
     def speech_to_text(self, audio_bytes: bytes) -> str:
-        """Sends raw Twilio mulaw audio to Sarvam for Telugu STT transcription."""
-        if not self.api_key:
+        """Transcribes incoming farmer audio using Sarvam AI STT (saaras:v3) for Telugu."""
+        key = self.sarvam_key or os.getenv("SARVAM_API_KEY", "")
+        if not key:
             return ""
         try:
+            headers = {"api-subscription-key": key}
             files = {"file": ("audio.wav", audio_bytes, "audio/wav")}
             data = {"language_code": self.language, "model": "saaras:v3"}
             response = requests.post(
                 "https://api.sarvam.ai/speech-to-text", 
-                files=files, data=data, headers=self.headers, timeout=10
+                files=files, data=data, headers=headers, timeout=10
             )
-            return response.json().get("transcript", "")
+            if response.status_code == 200:
+                return response.json().get("transcript", "")
+            return ""
         except Exception as e:
             print(f"Sarvam STT REST error: {e}")
             return ""
 
     def text_to_speech(self, text: str) -> str:
-        """Sends LLM text to Sarvam and returns base64 mulaw Telugu audio for Twilio."""
-        if not self.api_key:
+        """Sends LLM response to ElevenLabs TTS and returns base64 audio string."""
+        key = self.elevenlabs_key or os.getenv("ELEVENLABS_API_KEY", ELEVENLABS_KEY_DEFAULT)
+        if not key:
             return ""
         try:
-            payload = {
-                "inputs": [text],
-                "target_language_code": self.language,
-                "speaker": "aditya",
-                "model": "bulbul:v3",
-                "audio_format": "mulaw"
+            url = f"https://api.elevenlabs.io/v1/text-to-speech/{self.voice_id}"
+            headers = {
+                "xi-api-key": key,
+                "Content-Type": "application/json"
             }
-            headers = {**self.headers, "Content-Type": "application/json"}
-            response = requests.post(
-                "https://api.sarvam.ai/text-to-speech", 
-                json=payload, headers=headers, timeout=10
-            )
-            audios = response.json().get("audios", [])
-            return audios[0] if audios else ""
+            payload = {
+                "text": text,
+                "model_id": "eleven_multilingual_v2",
+                "voice_settings": {
+                    "stability": 0.5,
+                    "similarity_boost": 0.75
+                }
+            }
+            response = requests.post(url, json=payload, headers=headers, timeout=10)
+            if response.status_code == 200:
+                return base64.b64encode(response.content).decode("utf-8")
+            else:
+                print(f"ElevenLabs API status {response.status_code}: {response.text}")
+                return ""
         except Exception as e:
-            print(f"Sarvam TTS REST error: {e}")
+            print(f"ElevenLabs TTS error: {e}")
             return ""
 
 
 def generate_llm_response(transcript: str, chat_history: list) -> str:
-    """Passes the farmer's text to the LLM and returns spoken Telugu response."""
+    """Passes the farmer's text to Gemini LLM and returns spoken Telugu response."""
     chat_history.append({"role": "user", "content": transcript})
     
-    openai_key = os.getenv("OPENAI_API_KEY", "")
+    gemini_key = os.getenv("GEMINI_API_KEY", "")
 
-    if openai_key:
+    if gemini_key:
         try:
-            headers = {"Authorization": f"Bearer {openai_key}", "Content-Type": "application/json"}
-            payload = {"model": "gpt-4o-mini", "messages": chat_history}
-            response = requests.post("https://api.openai.com/v1/chat/completions", json=payload, headers=headers, timeout=10)
-            reply_text = response.json()["choices"][0]["message"]["content"]
-            chat_history.append({"role": "assistant", "content": reply_text})
-            return reply_text
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key={gemini_key}"
+            prompt_content = f"{SYSTEM_PROMPT}\n\nFarmer Question: {transcript}\nRespond concisely in 1-2 simple sentences."
+            payload = {
+                "contents": [{"parts": [{"text": prompt_content}]}]
+            }
+            headers = {"Content-Type": "application/json"}
+            response = requests.post(url, json=payload, headers=headers, timeout=10)
+            if response.status_code == 200:
+                res_data = response.json()
+                candidates = res_data.get("candidates", [])
+                if candidates:
+                    parts = candidates[0].get("content", {}).get("parts", [])
+                    if parts:
+                        reply_text = parts[0].get("text", "").strip()
+                        if reply_text:
+                            chat_history.append({"role": "assistant", "content": reply_text})
+                            return reply_text
         except Exception as e:
-            print(f"OpenAI LLM Notice: {e}")
+            print(f"Gemini LLM API Notice: {e}")
 
-    # Decision logic Telugu fallback response
+    # Decision logic fallback response
     lower = transcript.lower()
     if any(k in lower for k in ["1 lakh", "40,000", "40000", "cotton", "reduced", "పత్తి", "తక్కువ"]):
         reply_text = "నమస్తే కిసాన్ భాయ్. PMFBY నిబంధనల ప్రకారం ఊరంతా పంట నష్టం జరిగితే గ్రామ పంట కోత ప్రయోగాల ఆధారంగా క్లెయిమ్ లెక్కిస్తారు. మీ క్లెయిమ్ గణన పత్రం కోసం RTI దరఖాస్తును తయారు చేయమంటారా?"
@@ -614,18 +638,13 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
     """
     Twilio Media Streams WebSocket Handler.
     Handles bidirectional 8kHz audio streaming with Sarvam STT (Telugu),
-    Gemini LLM, and Sarvam TTS.
+    Gemini LLM Brain, and ElevenLabs TTS.
     """
     await websocket.accept()
 
-    deepgram_key = os.getenv("DEEPGRAM_API_KEY", "")
-    gemini_key = os.getenv("GEMINI_API_KEY", "")
+    elevenlabs_key = os.getenv("ELEVENLABS_API_KEY", ELEVENLABS_KEY_DEFAULT)
     sarvam_key = os.getenv("SARVAM_API_KEY", "")
-
-    if not gemini_key:
-        print("⚠️ Warning: GEMINI_API_KEY is not set in AI_agent/.env")
-    if not sarvam_key:
-        print("⚠️ Warning: SARVAM_API_KEY is not set in AI_agent/.env")
+    gemini_key = os.getenv("GEMINI_API_KEY", "")
 
     # Read initial Twilio setup packet to extract streamSid
     stream_sid = "stream_default"
@@ -662,7 +681,7 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
         ),
     )
 
-    # 2. Gemini 3.6 Flash LLM Brain with Kisan Bima Sahayak System Prompt
+    # 2. Gemini 3.6 / 2.0 Flash LLM Brain
     llm = GoogleLLMService(
         api_key=gemini_key or "AIzaSy_Placeholder_Gemini_Key",
         settings=GoogleLLMService.Settings(
@@ -670,29 +689,25 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
         ),
     )
 
-    # 3. Sarvam AI TTS (bulbul:v3) for natural spoken Telugu
-    tts = SarvamTTSService(
-        api_key=sarvam_key or "dummy_sarvam_key",
-        settings=SarvamTTSSettings(
-            model="bulbul:v3",
-            language="te-IN",
-            voice="aditya",
-        ),
-    )
+    # 3. ElevenLabs TTS Service for Natural Spoken Audio Output
+    if ElevenLabsTTSService:
+        tts = ElevenLabsTTSService(
+            api_key=elevenlabs_key,
+            voice_id="21m00Tcm4TlvDq8ikWAM"
+        )
+    else:
+        tts = None
 
     messages = cast(list[LLMContextMessage], list(chat_history))
     context = LLMContext(messages=messages, tools=cast(Any, tools))
     context_aggregator = LLMContextAggregatorPair(context)
 
-    pipeline = Pipeline([
-        transport.input(),
-        stt,
-        context_aggregator.user(),
-        llm,
-        tts,
-        transport.output(),
-        context_aggregator.assistant(),
-    ])
+    pipeline_steps: list[FrameProcessor] = [transport.input(), stt, context_aggregator.user(), llm]
+    if tts:
+        pipeline_steps.append(tts)
+    pipeline_steps.extend([transport.output(), context_aggregator.assistant()])
+
+    pipeline = Pipeline(pipeline_steps)
 
     task = PipelineTask(
         pipeline,
@@ -701,7 +716,7 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
         ),
     )
 
-    print(f"[+] Twilio Stream connected! StreamSid: {stream_sid}")
+    print(f"[+] Twilio Stream connected (Sarvam STT + ElevenLabs TTS)! StreamSid: {stream_sid}")
     runner = PipelineRunner()
     try:
         await runner.run(task)
@@ -712,7 +727,7 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
 
 
 async def run_local_mic_mode():
-    """Fallback runner for testing on local microphone and speakers."""
+    """Fallback runner for testing on local microphone and speakers with Sarvam STT & ElevenLabs TTS."""
     vad = VADProcessor(vad_analyzer=SileroVADAnalyzer())
     transport = LocalAudioTransport(
         LocalAudioTransportParams(
@@ -721,10 +736,10 @@ async def run_local_mic_mode():
         )
     )
 
+    elevenlabs_key = os.getenv("ELEVENLABS_API_KEY", ELEVENLABS_KEY_DEFAULT)
     sarvam_key = os.getenv("SARVAM_API_KEY", "")
     gemini_key = os.getenv("GEMINI_API_KEY", "")
 
-    # 1. Sarvam AI STT for Telugu ("te-IN")
     stt = SarvamSTTService(
         api_key=sarvam_key,
         settings=SarvamSTTSettings(
@@ -733,39 +748,32 @@ async def run_local_mic_mode():
         ),
     )
 
-    # 2. Gemini 3.6 Flash LLM Brain
     llm = GoogleLLMService(
         api_key=gemini_key,
         settings=GoogleLLMService.Settings(model="gemini-3.6-flash"),
     )
 
-    # 3. Sarvam AI TTS (bulbul:v3) for natural spoken Telugu
-    tts = SarvamTTSService(
-        api_key=sarvam_key,
-        settings=SarvamTTSSettings(
-            model="bulbul:v3",
-            language="te-IN",
-            voice="aditya",
-        ),
-    )
+    if ElevenLabsTTSService:
+        tts = ElevenLabsTTSService(
+            api_key=elevenlabs_key,
+            voice_id="21m00Tcm4TlvDq8ikWAM"
+        )
+    else:
+        tts = None
 
     messages = cast(list[LLMContextMessage], list(chat_history))
     context = LLMContext(messages=messages, tools=cast(Any, tools))
     context_aggregator = LLMContextAggregatorPair(context)
 
-    pipeline = Pipeline([
-        transport.input(),
-        vad,
-        stt,
-        context_aggregator.user(),
-        llm,
-        tts,
-        transport.output(),
-        context_aggregator.assistant(),
-    ])
+    pipeline_steps: list[FrameProcessor] = [transport.input(), vad, stt, context_aggregator.user(), llm]
+    if tts:
+        pipeline_steps.append(tts)
+    pipeline_steps.extend([transport.output(), context_aggregator.assistant()])
+
+    pipeline = Pipeline(pipeline_steps)
 
     task = PipelineTask(pipeline, params=PipelineParams())
-    print("[+] Local Voice Agent initialized! Listening on microphone...")
+    print("[+] Local Voice Agent initialized using Sarvam STT & ElevenLabs TTS Engine!")
     runner = PipelineRunner()
     await runner.run(task)
 
