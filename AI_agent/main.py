@@ -16,8 +16,8 @@ from pipecat.audio.vad.silero import SileroVADAnalyzer
 from pipecat.processors.audio.vad_processor import VADProcessor
 from pipecat.processors.frame_processor import FrameProcessor
 from pipecat.pipeline.pipeline import Pipeline
-from pipecat.pipeline.runner import PipelineRunner
-from pipecat.pipeline.task import PipelineParams, PipelineTask
+from pipecat.workers.runner import WorkerRunner
+from pipecat.pipeline.worker import PipelineParams, PipelineTask
 from pipecat.processors.aggregators.llm_context import (
     LLMContext,
     LLMContextMessage,
@@ -729,7 +729,7 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
     )
 
     print(f"[+] Twilio Stream connected (Sarvam STT + ElevenLabs TTS)! StreamSid: {stream_sid}")
-    runner = PipelineRunner()
+    runner = WorkerRunner()
     try:
         await runner.run(task)
     except WebSocketDisconnect:
@@ -787,7 +787,7 @@ async def run_local_mic_mode():
 
     task = PipelineTask(pipeline, params=PipelineParams())
     print("[+] Local Voice Agent initialized using Sarvam STT & ElevenLabs TTS Engine!")
-    runner = PipelineRunner()
+    runner = WorkerRunner()
     await runner.run(task)
 
 
