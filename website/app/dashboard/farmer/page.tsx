@@ -7,6 +7,7 @@ import LiveVoiceAgentModal from "@/components/LiveVoiceAgentModal";
 import CardFlip from "@/components/CardFlip";
 import BellToggle from "@/components/BellToggle";
 import WarpText from "@/components/WarpText";
+import CursorGrid from "@/components/CursorGrid";
 import {
   LuFilePlus as FilePlus,
   LuCircleCheck as CheckCircle,
@@ -44,7 +45,28 @@ export default function FarmerDashboardPage() {
 
   return (
     <RoleGuard>
-      <div className="min-h-screen bg-[#FFF6DA] flex flex-col font-sans">
+      <div className="min-h-screen bg-[#FFF6DA] flex flex-col font-sans relative overflow-hidden">
+        {/* Background Soft Glows */}
+        <div className="absolute top-0 left-1/3 w-[500px] h-[500px] bg-[#fbeaea]/70 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 right-1/3 w-[500px] h-[500px] bg-[#feebaf]/70 rounded-full blur-[120px] pointer-events-none" />
+
+        {/* Interactive Cursor Grid Background */}
+        <CursorGrid
+          cellSize={70}
+          color="#A94A4A"
+          radius={140}
+          falloff="smooth"
+          holdTime={400}
+          fadeDuration={800}
+          lineWidth={1.2}
+          maxOpacity={0.8}
+          fillOpacity={0.06}
+          gridOpacity={0.04}
+          cellRadius={6}
+          clickPulse
+          pulseSpeed={600}
+        />
+
         {/* Main Journey Container */}
         <main className="flex-1 flex flex-col items-center px-4 sm:px-6 py-8 sm:py-12 max-w-5xl mx-auto w-full">
           {/* HEADING & TALK LIVE TO AGENT BUTTON */}

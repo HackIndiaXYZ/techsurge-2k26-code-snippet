@@ -16,6 +16,8 @@ import {
 
 import CardFlip from '@/components/CardFlip';
 import WarpText from '@/components/WarpText';
+import CursorGrid from '@/components/CursorGrid';
+import EchoText from '@/components/EchoText';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -90,6 +92,23 @@ export default function AdminLoginPage() {
       <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-[#fbeaea]/70 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-[#feebaf]/70 rounded-full blur-[120px] pointer-events-none" />
 
+      {/* Interactive Cursor Grid Background */}
+      <CursorGrid
+        cellSize={70}
+        color="#A94A4A"
+        radius={140}
+        falloff="smooth"
+        holdTime={400}
+        fadeDuration={800}
+        lineWidth={1.2}
+        maxOpacity={0.8}
+        fillOpacity={0.06}
+        gridOpacity={0.04}
+        cellRadius={6}
+        clickPulse
+        pulseSpeed={600}
+      />
+
       {/* Header */}
       <header className="border-b border-[#f7d5d5] bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -101,9 +120,25 @@ export default function AdminLoginPage() {
               <ArrowLeft className="w-4 h-4 text-[#a94a4a]" /> Back to Main Login
             </button>
             <div className="h-6 w-px bg-slate-200 hidden sm:block" />
-            <span className="font-extrabold text-xl tracking-tight font-sans text-slate-900 hidden sm:inline">
-              cropins<span className="text-[#A94A4A]">'</span>
-            </span>
+            <div className="hidden sm:flex items-center">
+              <EchoText
+                text="cropins'"
+                echoes={8}
+                lag={0.2}
+                offset={16}
+                direction="right"
+                fade={0.7}
+                blur={2}
+                tint="#A94A4A"
+                mode="both"
+                cursorRadius={200}
+                duration={800}
+                ease="ease-out"
+                fontSize="1.5rem"
+                fontWeight={800}
+                color="#0f172a"
+              />
+            </div>
           </div>
 
           <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#F3E8CF] text-[#785114] border border-[#E6D0A0] shadow-sm">
