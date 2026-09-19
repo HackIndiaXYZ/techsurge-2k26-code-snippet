@@ -82,7 +82,7 @@ export default function LoginPage() {
             letterSpacing={-0.04}
             lineHeight={1.0}
           />
-          <p className="text-slate-600 text-sm sm:text-base font-medium mt-1">
+          <p className="text-xs text-slate-400 font-light tracking-wide mt-1">
             Select your portal access category below to proceed (Hover card to flip):
           </p>
         </div>

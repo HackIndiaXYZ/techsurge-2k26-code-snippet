@@ -133,7 +133,7 @@ export default function AdminLoginPage() {
             letterSpacing={-0.04}
             lineHeight={1.0}
           />
-          <p className="text-slate-600 text-sm sm:text-base font-medium mt-1">
+          <p className="text-xs text-slate-400 font-light tracking-wide mt-1">
             Choose an officer or center role to instantly enter their dedicated dashboard (Hover card to flip):
           </p>
         </div>
