@@ -15,6 +15,7 @@ import {
 import CardFlip from '@/components/CardFlip';
 import WarpText from '@/components/WarpText';
 import CursorGrid from '@/components/CursorGrid';
+import EchoText from '@/components/EchoText';
 
 export default function HomePage() {
   const router = useRouter();
@@ -55,10 +56,24 @@ export default function HomePage() {
             <div className="w-10 h-10 rounded-xl bg-[#A94A4A] flex items-center justify-center shadow-md shadow-[#A94A4A]/20">
               <ShieldCheck className="w-6 h-6 text-white stroke-[2.5]" />
             </div>
-            <div className="flex flex-col">
-              <span className="font-extrabold text-2xl tracking-tight font-sans text-slate-900">
-                cropins<span className="text-[#A94A4A]">'</span>
-              </span>
+            <div className="flex items-center">
+              <EchoText
+                text="cropins'"
+                echoes={8}
+                lag={0.2}
+                offset={16}
+                direction="right"
+                fade={0.7}
+                blur={2}
+                tint="#A94A4A"
+                mode="both"
+                cursorRadius={200}
+                duration={800}
+                ease="ease-out"
+                fontSize="1.75rem"
+                fontWeight={800}
+                color="#0f172a"
+              />
             </div>
           </div>
         </div>
