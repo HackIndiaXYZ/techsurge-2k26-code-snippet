@@ -391,9 +391,7 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
             )}
 
             <div 
-              onClick={playGreeting}
-              className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-tr from-[#A94A4A] via-[#7a2f2f] to-amber-600 p-1 shadow-2xl shadow-[#A94A4A]/40 relative z-10 flex items-center justify-center cursor-pointer hover:scale-105 transition-transform"
-              title="Click to Hear Agent Voice Greeting"
+              className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-tr from-[#A94A4A] via-[#7a2f2f] to-amber-600 p-1 shadow-2xl shadow-[#A94A4A]/40 relative z-10 flex items-center justify-center"
             >
               <div className="w-full h-full rounded-full bg-slate-900 overflow-hidden flex items-center justify-center border-2 border-white/20">
                 <ShieldCheck className="w-14 h-14 text-amber-400 stroke-[1.8]" />
@@ -412,14 +410,6 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
           <p className="text-xs text-amber-300/90 font-medium mb-3">
             PMFBY Voice Helpdesk • Spoken Telugu (వ్యవహారిక తెలుగు)
           </p>
-
-          <button
-            onClick={playGreeting}
-            className="mb-3 px-4 py-1.5 rounded-full bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-bold text-xs flex items-center gap-2 transition-all cursor-pointer shadow-md"
-          >
-            <Volume2 className="w-4 h-4 text-amber-400 animate-pulse" />
-            <span>🔊 Click to Hear Agent Voice Greeting</span>
-          </button>
 
           <div className="flex flex-col items-center gap-2 mb-4">
             <div className="inline-flex items-center gap-2 bg-slate-900/90 border border-slate-800 px-3.5 py-1.5 rounded-full text-xs font-semibold text-slate-300 shadow-inner">
