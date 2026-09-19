@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import RoleGuard from "@/components/RoleGuard";
 import LiveVoiceAgentModal from "@/components/LiveVoiceAgentModal";
 import CardFlip from "@/components/CardFlip";
+import BellToggle from "@/components/BellToggle";
 import {
   LuFilePlus as FilePlus,
   LuCircleCheck as CheckCircle,
@@ -56,14 +57,32 @@ export default function FarmerDashboardPage() {
               </p>
             </div>
 
-            <button
-              type="button"
+            <BellToggle
+              offLabel="Talk Live to Agent"
+              onLabel="Connecting Voice Agent..."
+              color="#ffffff"
+              background="#A94A4A"
+              onColor="#ffffff"
+              onBackground="#8f3c3c"
+              size="md"
+              radius={22}
+              ringAmplitude={17}
+              ringPasses={5}
+              ringDecay={1}
+              ringDuration={820}
+              ringPivot={16}
+              crossfadeMs={200}
+              revealBounce={0}
+              count={1}
+              badge
+              badgeColor="#ef4444"
+              waves
+              clapper={false}
+              defaultPressed={false}
               onClick={() => setShowLiveVoiceAgent(true)}
-              className="px-5 py-3 rounded-2xl bg-[#A94A4A] text-white font-extrabold text-sm hover:bg-[#8f3c3c] transition-all flex items-center gap-2.5 shadow-lg shadow-[#A94A4A]/25 shrink-0 cursor-pointer animate-bounce hover:animate-none border border-[#8f3c3c]"
-            >
-              <PhoneCall className="w-5 h-5 text-emerald-300" />
-              <span>Talk Live to Agent</span>
-            </button>
+              onChange={pressed => console.log('Voice Agent Toggle:', pressed)}
+              disabled={false}
+            />
           </div>
 
           {/* 3D FLIP CARDS GRID FOR FARMER ENROLMENT PATHWAYS */}
