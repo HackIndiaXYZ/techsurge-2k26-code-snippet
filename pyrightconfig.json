@@ -1,6 +1,16 @@
 {
+  "venvPath": "AI_agent",
+  "venv": ".venv",
+  "executionEnvironments": [
+    {
+      "root": "AI_agent",
+      "venvPath": "AI_agent",
+      "venv": ".venv"
+    }
+  ],
   "reportMissingImports": false,
   "reportMissingTypeStubs": false,
   "reportUnknownMemberType": false,
   "reportGeneralTypeIssues": false
 }
+
