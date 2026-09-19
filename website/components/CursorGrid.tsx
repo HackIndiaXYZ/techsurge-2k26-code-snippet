@@ -278,14 +278,14 @@ export default function CursorGrid({
     rebuild();
     wake();
 
-    container.addEventListener("pointermove", onPointerMove);
-    container.addEventListener("pointerdown", onPointerDown);
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    window.addEventListener("pointerdown", onPointerDown, { passive: true });
 
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
-      container.removeEventListener("pointermove", onPointerMove);
-      container.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerdown", onPointerDown);
     };
   }, [cellSize]);
 

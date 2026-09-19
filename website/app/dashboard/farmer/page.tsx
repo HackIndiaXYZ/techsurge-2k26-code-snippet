@@ -69,7 +69,7 @@ export default function FarmerDashboardPage() {
         />
 
         {/* Main Journey Container */}
-        <main className="flex-1 flex flex-col items-center px-4 sm:px-6 py-8 sm:py-12 max-w-5xl mx-auto w-full">
+        <main className="flex-1 flex flex-col items-center px-4 sm:px-6 py-8 sm:py-12 max-w-5xl mx-auto w-full relative z-10">
           {/* HEADING & TALK LIVE TO AGENT BUTTON */}
           <div className="w-full max-w-4xl flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 pb-6 border-b border-[#f7d5d5]/80">
             <div className="text-center sm:text-left">
