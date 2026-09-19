@@ -316,7 +316,7 @@ def generate_rti_and_grievance_draft(farmer_name: str, issue_type: str, details:
 # 2.5 HYBRID VOICE AGENT (SARVAM STT + ELEVENLABS TTS)
 # ---------------------------------------------------------
 class ElevenLabsVoiceAgent:
-    def __init__(self, elevenlabs_key=None, sarvam_key=None, voice_id="21m00Tcm4TlvDq8ikWAM", language="te-IN"):
+    def __init__(self, elevenlabs_key=None, sarvam_key=None, voice_id="JBFqnCBsd6RMkjVDRZzb", language="te-IN"):
         self.elevenlabs_key = elevenlabs_key or os.getenv("ELEVENLABS_API_KEY", ELEVENLABS_KEY_DEFAULT)
         self.sarvam_key = sarvam_key or os.getenv("SARVAM_API_KEY", "")
         self.voice_id = voice_id
@@ -380,7 +380,7 @@ def generate_llm_response(transcript: str, chat_history: list) -> str:
 
     if gemini_key:
         try:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={gemini_key}"
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key={gemini_key}"
             prompt_content = f"{SYSTEM_PROMPT}\n\nFarmer Question: {transcript}\nRespond concisely in 1-2 simple sentences."
             payload = {
                 "contents": [{"parts": [{"text": prompt_content}]}]
