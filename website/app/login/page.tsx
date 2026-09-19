@@ -13,6 +13,7 @@ import {
 } from 'react-icons/lu';
 
 import CardFlip from '@/components/CardFlip';
+import WarpText from '@/components/WarpText';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -48,11 +49,25 @@ export default function LoginPage() {
 
       {/* Main Login Options Container */}
       <main className="max-w-5xl mx-auto px-6 py-12 flex-1 w-full flex flex-col justify-center relative z-10">
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 mb-3">
-            Welcome to <span className="font-sans">cropins<span className="text-[#A94A4A]">'</span></span>
-          </h1>
-          <p className="text-slate-600 text-sm sm:text-base font-medium">
+        <div className="text-center max-w-2xl mx-auto mb-6">
+          <WarpText
+            text="Welcome to cropins'"
+            color="#A94A4A"
+            warpStrength={0.08}
+            warpScale={1.7}
+            speed={0.55}
+            pointerInfluence={0.42}
+            pointerStrength={0.38}
+            refraction={0.018}
+            ripple
+            fontSize={52}
+            fontWeight={800}
+            style={{ height: '110px' }}
+            fontFamily="inherit"
+            letterSpacing={-0.04}
+            lineHeight={1.0}
+          />
+          <p className="text-slate-600 text-sm sm:text-base font-medium mt-1">
             Select your portal access category below to proceed (Hover card to flip):
           </p>
         </div>

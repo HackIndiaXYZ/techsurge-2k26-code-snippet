@@ -15,8 +15,9 @@ import {
   LuCircleCheck as CheckCircle2,
   LuMapPin as MapPin,
   LuRefreshCw as RefreshCw,
-  LuTractor as Tractor
+  LuTractor as Tractor,
 } from 'react-icons/lu';
+import WarpText from '@/components/WarpText';
 
 export default function AdminDashboardPage() {
   const params = useParams();
@@ -113,11 +114,24 @@ export default function AdminDashboardPage() {
             <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center shadow-lg">
               {config.icon}
             </div>
-            <div>
-              <h1 className="font-bold text-lg leading-tight bg-gradient-to-r from-slate-100 to-slate-400 bg-clip-text text-transparent">
-                {config.title}
-              </h1>
-              <p className="text-xs text-slate-400 font-medium">PMFBY / RWBCIS Administrative Portal</p>
+            <div className="flex-1 max-w-lg">
+              <WarpText
+                text={config.title}
+                color="#f8fafc"
+                warpStrength={0.08}
+                warpScale={1.7}
+                speed={0.55}
+                pointerInfluence={0.42}
+                pointerStrength={0.38}
+                refraction={0.018}
+                ripple
+                fontSize={24}
+                fontWeight={800}
+                style={{ height: '42px' }}
+                fontFamily="inherit"
+                letterSpacing={-0.03}
+                lineHeight={1.0}
+              />
             </div>
           </div>
 

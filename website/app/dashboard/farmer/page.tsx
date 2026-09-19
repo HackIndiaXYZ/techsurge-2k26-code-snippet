@@ -6,6 +6,7 @@ import RoleGuard from "@/components/RoleGuard";
 import LiveVoiceAgentModal from "@/components/LiveVoiceAgentModal";
 import CardFlip from "@/components/CardFlip";
 import BellToggle from "@/components/BellToggle";
+import WarpText from "@/components/WarpText";
 import {
   LuFilePlus as FilePlus,
   LuCircleCheck as CheckCircle,
@@ -49,9 +50,23 @@ export default function FarmerDashboardPage() {
           {/* HEADING & TALK LIVE TO AGENT BUTTON */}
           <div className="w-full max-w-4xl flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 pb-6 border-b border-[#f7d5d5]/80">
             <div className="text-center sm:text-left">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-1">
-                What's your enrollment status?
-              </h1>
+              <WarpText
+                text="What's your enrollment status?"
+                color="#A94A4A"
+                warpStrength={0.08}
+                warpScale={1.7}
+                speed={0.55}
+                pointerInfluence={0.42}
+                pointerStrength={0.38}
+                refraction={0.018}
+                ripple
+                fontSize={38}
+                fontWeight={800}
+                style={{ height: '75px' }}
+                fontFamily="inherit"
+                letterSpacing={-0.04}
+                lineHeight={1.0}
+              />
               <p className="text-slate-600 text-sm font-medium">
                 Hover to flip cards, then select an option to view details:
               </p>
