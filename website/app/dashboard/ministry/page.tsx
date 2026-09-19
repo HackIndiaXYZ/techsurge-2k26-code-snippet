@@ -3,19 +3,19 @@
 import React, { useState } from 'react';
 import RoleGuard from '@/components/RoleGuard';
 import { useAuth } from '@/context/AuthContext';
-import { 
-  LuShieldCheck as ShieldCheck, 
-  LuGlobe as Globe, 
-  LuPhoneCall as PhoneCall, 
-  LuCircleCheck as CheckCircle2, 
-  LuFileCode as FileCode, 
-  LuLock as Lock, 
-  LuCircleAlert as AlertCircle, 
-  LuDownload as Download, 
-  LuPrinter as Printer, 
-  LuShare2 as Share2, 
-  LuChartBar as BarChart, 
-  LuSparkles as Sparkles 
+import {
+  LuShieldCheck as ShieldCheck,
+  LuGlobe as Globe,
+  LuPhoneCall as PhoneCall,
+  LuCircleCheck as CheckCircle2,
+  LuFileCode as FileCode,
+  LuLock as Lock,
+  LuCircleAlert as AlertCircle,
+  LuDownload as Download,
+  LuPrinter as Printer,
+  LuShare2 as Share2,
+  LuChartBar as BarChart,
+  LuSparkles as Sparkles
 } from 'react-icons/lu';
 
 export default function MinistryDashboardPage() {
@@ -66,33 +66,30 @@ export default function MinistryDashboardPage() {
           <div className="max-w-7xl mx-auto px-6 flex space-x-2 border-t border-[#E6D0A0]/60 pt-2 overflow-x-auto">
             <button
               onClick={() => setActiveTab('krishi')}
-              className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
-                activeTab === 'krishi'
-                  ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
-              }`}
+              className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'krishi'
+                ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
+                }`}
             >
               <PhoneCall className="w-4 h-4 text-[#A94A4A]" />
               Krishi Rakshak (14447) Schema Aligner
             </button>
             <button
               onClick={() => setActiveTab('bottleneck')}
-              className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
-                activeTab === 'bottleneck'
-                  ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
-              }`}
+              className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'bottleneck'
+                ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
+                }`}
             >
               <BarChart className="w-4 h-4 text-[#A94A4A]" />
               Scheme Accountability Audit
             </button>
             <button
               onClick={() => setActiveTab('safety')}
-              className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
-                activeTab === 'safety'
-                  ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
-              }`}
+              className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'safety'
+                ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
+                }`}
             >
               <Lock className="w-4 h-4 text-[#A94A4A]" />
               Non-Adjudication Safety Boundaries

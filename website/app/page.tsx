@@ -3,13 +3,13 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
-import { 
-  LuTractor as Tractor, 
-  LuBuilding2 as Building2, 
-  LuShieldCheck as ShieldCheck, 
-  LuArrowRight as ArrowRight, 
-  LuSparkles as Sparkles, 
-  LuUserCheck as UserCheck 
+import {
+  LuTractor as Tractor,
+  LuBuilding2 as Building2,
+  LuShieldCheck as ShieldCheck,
+  LuArrowRight as ArrowRight,
+  LuSparkles as Sparkles,
+  LuUserCheck as UserCheck
 } from 'react-icons/lu';
 
 export default function HomePage() {
@@ -35,17 +35,11 @@ export default function HomePage() {
               <ShieldCheck className="w-6 h-6 text-white stroke-[2.5]" />
             </div>
             <div className="flex flex-col">
-              <span className="font-extrabold text-2xl tracking-tight font-mono text-slate-900">
+              <span className="font-extrabold text-2xl tracking-tight font-sans text-slate-900">
                 cropins<span className="text-[#A94A4A]">'</span>
               </span>
-              <p className="text-[11px] text-slate-500 font-medium">PMFBY / RWBCIS Crop Insurance Portal</p>
             </div>
           </div>
-
-          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#F3E8CF] text-[#785114] border border-[#E6D0A0] shadow-sm">
-            <Sparkles className="w-3.5 h-3.5 text-[#b8860b] animate-pulse" />
-            <span>1-Click Demo &amp; Evaluation Mode</span>
-          </span>
         </div>
       </header>
 
@@ -53,7 +47,7 @@ export default function HomePage() {
       <main className="max-w-4xl mx-auto px-6 py-12 flex-1 w-full flex flex-col justify-center relative z-10">
         <div className="text-center max-w-2xl mx-auto mb-10">
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 mb-3">
-            Welcome to <span className="font-mono">cropins<span className="text-[#A94A4A]">'</span></span>
+            Welcome to <span className="font-sans">cropins<span className="text-[#A94A4A]">'</span></span>
           </h1>
           <p className="text-slate-600 text-sm sm:text-base font-medium">
             Select your portal access category below to proceed:
@@ -62,7 +56,7 @@ export default function HomePage() {
 
         {/* 2 Primary Action Cards: Farmer vs Admin */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto w-full">
-          
+
           {/* OPTION 1: FARMER ACCESS */}
           <div
             onClick={() => loginAs('farmer')}
@@ -72,10 +66,6 @@ export default function HomePage() {
               <div className="w-14 h-14 rounded-2xl bg-[#fdf5f5] border border-[#f7d5d5] text-[#a94a4a] flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-sm">
                 <Tractor className="w-8 h-8 stroke-[2]" />
               </div>
-
-              <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#F3E8CF] text-[#785114] border border-[#E6D0A0]">
-                Individual Access
-              </span>
 
               <h2 className="text-2xl font-extrabold text-slate-900 mt-3 group-hover:text-[#a94a4a] transition-colors">
                 Farmer
@@ -103,10 +93,6 @@ export default function HomePage() {
                 <Building2 className="w-8 h-8 stroke-[2]" />
               </div>
 
-              <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#F3E8CF] text-[#785114] border border-[#E6D0A0]">
-                Department &amp; Officers
-              </span>
-
               <h2 className="text-2xl font-extrabold text-slate-900 mt-3 group-hover:text-[#a94a4a] transition-colors">
                 Admin
               </h2>
@@ -123,16 +109,6 @@ export default function HomePage() {
 
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="border-t border-[#f7d5d5] py-4 text-center text-xs text-slate-500 bg-white/80">
-        <p>
-          <span className="font-extrabold font-mono text-slate-900">
-            cropins<span className="text-[#A94A4A]">'</span>
-          </span>{' '}
-          • PMFBY Portal Access • Rose Vale &amp; Cornsilk Theme
-        </p>
-      </footer>
     </div>
   );
 }

@@ -3,19 +3,19 @@
 import React, { useState } from 'react';
 import RoleGuard from '@/components/RoleGuard';
 import { useAuth } from '@/context/AuthContext';
-import { 
-  LuBuilding2 as Building2, 
-  LuFileText as FileText, 
-  LuScale as Scale, 
-  LuTriangleAlert as AlertOctagon, 
-  LuCircleCheck as CheckCircle2, 
-  LuClock as Clock, 
-  LuDownload as Download, 
-  LuPrinter as Printer, 
-  LuSearch as Search, 
-  LuFilter as Filter, 
-  LuChevronRight as ChevronRight, 
-  LuCalendar as Calendar, 
+import {
+  LuBuilding2 as Building2,
+  LuFileText as FileText,
+  LuScale as Scale,
+  LuTriangleAlert as AlertOctagon,
+  LuCircleCheck as CheckCircle2,
+  LuClock as Clock,
+  LuDownload as Download,
+  LuPrinter as Printer,
+  LuSearch as Search,
+  LuFilter as Filter,
+  LuChevronRight as ChevronRight,
+  LuCalendar as Calendar,
   LuFileCheck as FileCheck,
   LuBuilding as Building,
   LuDollarSign as DollarSign
@@ -121,44 +121,40 @@ export default function DAODashboardPage() {
           <div className="max-w-7xl mx-auto px-6 flex space-x-2 border-t border-slate-100 pt-2 overflow-x-auto">
             <button
               onClick={() => setActiveTab('requisition')}
-              className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
-                activeTab === 'requisition'
-                  ? 'border-[#a94a4a] text-[#8c3a3a] bg-[#fdf5f5] rounded-t-xl'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
-              }`}
+              className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'requisition'
+                ? 'border-[#a94a4a] text-[#8c3a3a] bg-[#fdf5f5] rounded-t-xl'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
+                }`}
             >
               <FileText className="w-4 h-4 text-[#a94a4a]" />
               Case Requisition Sheet
             </button>
             <button
               onClick={() => setActiveTab('dlgrc')}
-              className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
-                activeTab === 'dlgrc'
-                  ? 'border-[#a94a4a] text-[#8c3a3a] bg-[#fdf5f5] rounded-t-xl'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
-              }`}
+              className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'dlgrc'
+                ? 'border-[#a94a4a] text-[#8c3a3a] bg-[#fdf5f5] rounded-t-xl'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
+                }`}
             >
               <Scale className="w-4 h-4 text-emerald-600" />
               DLGRC Hearing Brief
             </button>
             <button
               onClick={() => setActiveTab('penalty')}
-              className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
-                activeTab === 'penalty'
-                  ? 'border-emerald-600 text-emerald-800 bg-emerald-50/50 rounded-t-xl'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
-              }`}
+              className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'penalty'
+                ? 'border-emerald-600 text-emerald-800 bg-emerald-50/50 rounded-t-xl'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
+                }`}
             >
               <AlertOctagon className="w-4 h-4 text-amber-600" />
               12% Late Penalty Enforcer
             </button>
             <button
               onClick={() => setActiveTab('cases')}
-              className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
-                activeTab === 'cases'
-                  ? 'border-emerald-600 text-emerald-800 bg-emerald-50/50 rounded-t-xl'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
-              }`}
+              className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'cases'
+                ? 'border-emerald-600 text-emerald-800 bg-emerald-50/50 rounded-t-xl'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
+                }`}
             >
               <FileCheck className="w-4 h-4 text-emerald-600" />
               District Grievance Queue
@@ -168,7 +164,7 @@ export default function DAODashboardPage() {
 
         {/* Content Container */}
         <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
-          
+
           {/* Top Quick Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
@@ -223,7 +219,7 @@ export default function DAODashboardPage() {
                       </div>
                       <h3 className="text-lg font-bold text-slate-900">{item.farmerName}</h3>
                       <p className="text-xs text-slate-500 font-medium mb-3">{item.village}</p>
-                      
+
                       <div className="bg-slate-50 rounded-xl p-3 border border-slate-200 mb-4 space-y-1.5 text-xs">
                         <div className="flex justify-between">
                           <span className="text-slate-500 font-medium">Crop:</span>
@@ -275,7 +271,7 @@ export default function DAODashboardPage() {
                       <span className="text-xs font-mono font-bold text-slate-500">{item.id}</span>
                       <h3 className="text-lg font-bold text-slate-900 mt-1">{item.farmerName}</h3>
                       <p className="text-xs text-slate-500 mb-4">{item.village}</p>
-                      
+
                       <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 mb-4">
                         <p className="font-bold">DLGRC Committee Issue:</p>
                         <p className="mt-1 text-slate-700 font-medium">{item.legalIssue}</p>

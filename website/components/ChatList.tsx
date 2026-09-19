@@ -2,14 +2,14 @@
 
 import React, { useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
-import { 
-  LuSearch as Search, 
-  LuMessageSquare as MessageSquare, 
-  LuSparkles as Sparkles, 
-  LuX as X, 
-  LuUser as User, 
-  LuCheckCheck as CheckCheck, 
-  LuClock as Clock 
+import {
+  LuSearch as Search,
+  LuMessageSquare as MessageSquare,
+  LuSparkles as Sparkles,
+  LuX as X,
+  LuUser as User,
+  LuCheckCheck as CheckCheck,
+  LuClock as Clock
 } from 'react-icons/lu';
 
 export type Chat = {
@@ -152,7 +152,7 @@ export default function ChatList({ onSelectChat }: { onSelectChat?: (chat: Chat)
             <MessageSquare className="w-4 h-4" />
           </div>
           <div>
-            <h2 className="font-extrabold text-base tracking-tight font-mono text-slate-100">
+            <h2 className="font-extrabold text-base tracking-tight font-sans text-slate-100">
               cropins<span className="text-emerald-400">'</span> Chat &amp; Helpdesk
             </h2>
             <p className="text-[10px] text-slate-400 font-medium">Realtime PMFBY Stakeholder Communication</p>
@@ -197,11 +197,10 @@ export default function ChatList({ onSelectChat }: { onSelectChat?: (chat: Chat)
               <div
                 key={c.id}
                 onClick={() => handleChatClick(c)}
-                className={`rounded-2xl p-3.5 flex items-start justify-between border transition-all duration-200 cursor-pointer ${
-                  isActive
+                className={`rounded-2xl p-3.5 flex items-start justify-between border transition-all duration-200 cursor-pointer ${isActive
                     ? 'bg-gradient-to-r from-emerald-950/50 to-slate-900 border-emerald-500/40 shadow-lg shadow-emerald-500/10'
                     : 'bg-slate-900/60 hover:bg-slate-900 border-slate-800/80 hover:border-slate-700'
-                }`}
+                  }`}
               >
                 <div className="flex items-start gap-3 flex-1 min-w-0">
                   {c.avatar_url ? (

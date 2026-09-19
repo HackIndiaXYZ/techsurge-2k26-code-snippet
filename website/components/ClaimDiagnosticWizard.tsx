@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
+import {
   LuSparkles as Sparkles,
-  LuArrowRight as ArrowRight, 
-  LuFileText as FileText, 
-  LuCheck as Check, 
-  LuCopy as Copy, 
-  LuDownload as Download, 
-  LuX as X 
+  LuArrowRight as ArrowRight,
+  LuFileText as FileText,
+  LuCheck as Check,
+  LuCopy as Copy,
+  LuDownload as Download,
+  LuX as X
 } from "react-icons/lu";
 
 export default function ClaimDiagnosticWizard({ onClose }: { onClose?: () => void }) {
@@ -89,29 +89,29 @@ export default function ClaimDiagnosticWizard({ onClose }: { onClose?: () => voi
           {step === 1 && (
             <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
               <h2 className="text-sm font-bold text-slate-700 mb-3">Provide synthetic claim details for analysis:</h2>
-              <input 
-                type="text" 
-                placeholder="Insured Crop (e.g., Paddy / Soybean)" 
+              <input
+                type="text"
+                placeholder="Insured Crop (e.g., Paddy / Soybean)"
                 value={formData.crop}
                 className="w-full p-3 mb-3 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm text-slate-900"
-                onChange={(e) => setFormData({...formData, crop: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, crop: e.target.value })}
               />
-              <input 
-                type="number" 
-                placeholder="Expected Sum Insured (₹)" 
+              <input
+                type="number"
+                placeholder="Expected Sum Insured (₹)"
                 value={formData.sumInsured}
                 className="w-full p-3 mb-3 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm text-slate-900"
-                onChange={(e) => setFormData({...formData, sumInsured: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, sumInsured: e.target.value })}
               />
-              <input 
-                type="number" 
-                placeholder="Actual Amount Received (₹)" 
+              <input
+                type="number"
+                placeholder="Actual Amount Received (₹)"
                 value={formData.claimReceived}
                 className="w-full p-3 mb-4 border border-slate-200 rounded-xl outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-sm text-slate-900"
-                onChange={(e) => setFormData({...formData, claimReceived: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, claimReceived: e.target.value })}
               />
               <button onClick={() => setStep(2)} className="w-full bg-emerald-600 text-white p-3.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-700 transition-colors shadow-md shadow-emerald-600/20 cursor-pointer">
-                Continue <ArrowRight size={18}/>
+                Continue <ArrowRight size={18} />
               </button>
             </motion.div>
           )}
@@ -120,21 +120,21 @@ export default function ClaimDiagnosticWizard({ onClose }: { onClose?: () => voi
           {step === 2 && (
             <motion.div key="step2" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
               <h2 className="text-sm font-bold text-slate-700 mb-3">What type of loss occurred?</h2>
-              <select 
+              <select
                 value={formData.damageType}
                 className="w-full p-3 mb-3 border border-slate-200 rounded-xl bg-white outline-none focus:border-emerald-500 text-sm text-slate-900"
-                onChange={(e) => setFormData({...formData, damageType: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, damageType: e.target.value })}
               >
                 <option value="">Select loss type...</option>
                 <option value="LOCALIZED">Localized (Hailstorm, Inundation)</option>
                 <option value="WIDESPREAD">Widespread (Drought, General Yield Loss)</option>
               </select>
-              
+
               {formData.damageType === "LOCALIZED" && (
-                <select 
+                <select
                   value={formData.reportingDelay}
                   className="w-full p-3 mb-4 border border-slate-200 rounded-xl bg-white outline-none focus:border-emerald-500 text-sm text-slate-900"
-                  onChange={(e) => setFormData({...formData, reportingDelay: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, reportingDelay: e.target.value })}
                 >
                   <option value="">When was it reported?</option>
                   <option value="UNDER_72">Within 72 hours</option>
@@ -145,7 +145,7 @@ export default function ClaimDiagnosticWizard({ onClose }: { onClose?: () => voi
               <div className="flex gap-3 mt-4">
                 <button onClick={() => setStep(1)} className="w-1/3 bg-slate-100 text-slate-700 p-3.5 rounded-xl font-bold hover:bg-slate-200 transition-colors cursor-pointer">Back</button>
                 <button onClick={handleSubmit} className="w-2/3 bg-emerald-600 text-white p-3.5 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-700 transition-colors shadow-md shadow-emerald-600/20 cursor-pointer">
-                  <Sparkles size={18}/> Generate Explanation
+                  <Sparkles size={18} /> Generate Explanation
                 </button>
               </div>
             </motion.div>
@@ -167,13 +167,13 @@ export default function ClaimDiagnosticWizard({ onClose }: { onClose?: () => voi
             <h3 className="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2">Rule Matched: {result.rule}</h3>
             <p className="text-slate-700 leading-relaxed text-sm font-medium">{result.plainLanguageExplanation}</p>
           </div>
-          
+
           <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl">
             <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-3 flex items-center gap-2">
               <FileText size={16} className="text-emerald-600" /> Generated RTI Draft
             </h3>
-            <textarea 
-              readOnly 
+            <textarea
+              readOnly
               className="w-full h-48 p-4 border border-slate-200 rounded-xl bg-slate-900 text-slate-100 text-xs font-mono outline-none resize-none shadow-inner"
               value={result.rtiDraft}
             />
@@ -195,7 +195,7 @@ export default function ClaimDiagnosticWizard({ onClose }: { onClose?: () => voi
             </div>
           </div>
           <p className="text-[11px] text-slate-400 text-center font-medium italic">
-            Disclaimer: This tool explains PMFBY rules and requests underlying data. It does not determine if a claim is correct.
+            Disclaimer: This tool explains crop insurane rules and requests underlying data. It does not determine if a claim is correct.
           </p>
         </motion.div>
       )}

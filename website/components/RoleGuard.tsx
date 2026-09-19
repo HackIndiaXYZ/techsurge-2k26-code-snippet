@@ -3,14 +3,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth, DEMO_PERSONAS } from '@/context/AuthContext';
-import { 
-  LuChevronDown as ChevronDown, 
-  LuLogOut as LogOut, 
-  LuSparkles as Sparkles, 
-  LuShieldCheck as ShieldCheck, 
-  LuTractor as Tractor, 
-  LuBuilding2 as Building2, 
-  LuStore as Store, 
+import {
+  LuChevronDown as ChevronDown,
+  LuLogOut as LogOut,
+  LuSparkles as Sparkles,
+  LuShieldCheck as ShieldCheck,
+  LuTractor as Tractor,
+  LuBuilding2 as Building2,
+  LuStore as Store,
   LuLandmark as Landmark,
   LuUserCheck as UserCheck
 } from 'react-icons/lu';
@@ -29,13 +29,13 @@ export default function RoleGuard({ children }: RoleGuardProps) {
     currentProfile ||
     (typeof window !== 'undefined'
       ? DEMO_PERSONAS.find((p) => {
-          const path = window.location.pathname.toLowerCase();
-          if (path.includes('/dao')) return p.role === 'district_officer';
-          if (path.includes('/csc')) return p.role === 'csc_operator';
-          if (path.includes('/state')) return p.role === 'state_officer';
-          if (path.includes('/ministry')) return p.role === 'ministry_officer';
-          return p.role === 'farmer';
-        })
+        const path = window.location.pathname.toLowerCase();
+        if (path.includes('/dao')) return p.role === 'district_officer';
+        if (path.includes('/csc')) return p.role === 'csc_operator';
+        if (path.includes('/state')) return p.role === 'state_officer';
+        if (path.includes('/ministry')) return p.role === 'ministry_officer';
+        return p.role === 'farmer';
+      })
       : null) ||
     DEMO_PERSONAS[0];
 
@@ -86,13 +86,13 @@ export default function RoleGuard({ children }: RoleGuardProps) {
       {/* PERSISTENT HEADER */}
       <header className="border-b border-[#f7d5d5] bg-white/95 backdrop-blur-md sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
-          
+
           {/* Logo */}
           <div className="flex items-center space-x-3 cursor-pointer" onClick={() => router.push('/login')}>
             <div className="w-9 h-9 rounded-xl bg-[#A94A4A] flex items-center justify-center shadow-md shadow-[#A94A4A]/20">
               <ShieldCheck className="w-5 h-5 text-white stroke-[2.5]" />
             </div>
-            <span className="font-extrabold text-xl tracking-tight font-mono text-slate-900">
+            <span className="font-extrabold text-xl tracking-tight font-sans text-slate-900">
               cropins<span className="text-[#A94A4A]">'</span>
             </span>
           </div>
@@ -139,11 +139,10 @@ export default function RoleGuard({ children }: RoleGuardProps) {
                             setIsDropdownOpen(false);
                             loginAs(persona.role);
                           }}
-                          className={`w-full text-left p-2.5 rounded-xl flex items-center justify-between transition-all cursor-pointer ${
-                            isActive
+                          className={`w-full text-left p-2.5 rounded-xl flex items-center justify-between transition-all cursor-pointer ${isActive
                               ? 'bg-emerald-50 border border-emerald-300 text-emerald-900 font-bold'
                               : 'hover:bg-slate-100 text-slate-700'
-                          }`}
+                            }`}
                         >
                           <div className="flex items-center gap-2.5">
                             {getPersonaIcon(persona.role)}

@@ -3,17 +3,17 @@
 import React, { useState } from 'react';
 import RoleGuard from '@/components/RoleGuard';
 import { useAuth } from '@/context/AuthContext';
-import { 
-  LuLandmark as Landmark, 
-  LuMapPin as MapPin, 
-  LuTriangleAlert as AlertTriangle, 
-  LuScale as Scale, 
-  LuFileText as FileText, 
-  LuPrinter as Printer, 
-  LuDownload as Download, 
-  LuBuilding2 as Building2, 
-  LuCircleCheck as CheckCircle2, 
-  LuTrendingUp as TrendingUp, 
+import {
+  LuLandmark as Landmark,
+  LuMapPin as MapPin,
+  LuTriangleAlert as AlertTriangle,
+  LuScale as Scale,
+  LuFileText as FileText,
+  LuPrinter as Printer,
+  LuDownload as Download,
+  LuBuilding2 as Building2,
+  LuCircleCheck as CheckCircle2,
+  LuTrendingUp as TrendingUp,
   LuChartBar as BarChart3,
   LuLayers as Layers
 } from 'react-icons/lu';
@@ -98,33 +98,30 @@ export default function StateDashboardPage() {
           <div className="max-w-7xl mx-auto px-6 flex space-x-2 border-t border-[#E6D0A0]/60 pt-2 overflow-x-auto">
             <button
               onClick={() => setActiveTab('heatmap')}
-              className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
-                activeTab === 'heatmap'
-                  ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
-              }`}
+              className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'heatmap'
+                ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
+                }`}
             >
               <MapPin className="w-4 h-4 text-[#A94A4A]" />
               District-Wise Dispute Pattern Log
             </button>
             <button
               onClick={() => setActiveTab('slgrc')}
-              className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
-                activeTab === 'slgrc'
-                  ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
-              }`}
+              className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'slgrc'
+                ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
+                }`}
             >
               <Scale className="w-4 h-4 text-[#A94A4A]" />
               SLGRC Escalation Brief
             </button>
             <button
               onClick={() => setActiveTab('audit')}
-              className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
-                activeTab === 'audit'
-                  ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
-              }`}
+              className={`px-4 py-3 text-xs sm:text-sm font-bold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${activeTab === 'audit'
+                ? 'border-[#A94A4A] text-[#A94A4A] bg-[#F3E8CF]/60 rounded-t-xl'
+                : 'border-transparent text-slate-600 hover:text-slate-900'
+                }`}
             >
               <BarChart3 className="w-4 h-4 text-[#A94A4A]" />
               Insurer Yield Dispute Audit
@@ -237,7 +234,7 @@ export default function StateDashboardPage() {
                     <div>
                       <h3 className="font-extrabold text-slate-900 text-base">{cluster.district}</h3>
                       <p className="text-xs text-slate-500 font-medium mb-3">{cluster.affectedFarmers.toLocaleString()} Affected Farmers</p>
-                      
+
                       <div className="p-3.5 rounded-xl bg-[#F3E8CF]/60 border border-[#E6D0A0] text-xs text-[#785114] mb-4 font-medium">
                         <p className="font-bold">Escalation Grounds:</p>
                         <p className="mt-1 text-slate-700">Repetitive yield dispute between insurance company and state harvest reporting staff.</p>
