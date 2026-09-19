@@ -24,7 +24,8 @@ import {
   LuX as X,
   LuCalendar as Calendar,
   LuCircleAlert as AlertCircle,
-  LuPhoneCall as PhoneCall
+  LuPhoneCall as PhoneCall,
+  LuExternalLink as ExternalLink
 } from "react-icons/lu";
 
 type PathwayKey = "new" | "enrolled" | null;
@@ -169,46 +170,129 @@ export default function FarmerDashboardPage() {
                   className="overflow-hidden bg-white rounded-3xl border-2 border-[#f7d5d5] p-6 sm:p-8 shadow-lg"
                 >
                   <div className="space-y-4">
-                    <h2 className="text-xl font-extrabold text-slate-900 border-b border-[#f7d5d5] pb-3">
-                      Available Crop Insurance Schemes
-                    </h2>
-                    
-                    {/* Scheme A */}
-                    <div className="flex items-start gap-4 p-4 rounded-2xl bg-[#FFF6DA]/60 border border-[#E6D0A0]">
-                      <div className="shrink-0 w-11 h-11 rounded-xl bg-white border border-[#f7d5d5] flex items-center justify-center text-[#A94A4A]">
-                        <Wheat className="w-6 h-6 stroke-[2]" />
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-slate-900 text-base">
-                          PMFBY <span className="font-normal text-slate-500 text-xs">— Pradhan Mantri Fasal Bima Yojana</span>
-                        </h3>
-                        <p className="text-xs sm:text-sm text-slate-600 mt-1 font-medium">
-                          Comprehensive yield-based crop insurance protecting against natural non-preventable risks from pre-sowing to post-harvest.
-                        </p>
-                      </div>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#f7d5d5] pb-3 gap-2">
+                      <h2 className="text-xl font-extrabold text-slate-900">
+                        Available Govt Crop Insurance Schemes
+                      </h2>
+                      <span className="text-xs font-semibold text-[#8c3a3a] bg-[#fdf5f5] px-3 py-1 rounded-full border border-[#f7d5d5] w-fit">
+                        Official Govt Portals (.gov.in)
+                      </span>
                     </div>
 
-                    {/* Scheme B */}
-                    <div className="flex items-start gap-4 p-4 rounded-2xl bg-[#FFF6DA]/60 border border-[#E6D0A0]">
-                      <div className="shrink-0 w-11 h-11 rounded-xl bg-white border border-[#f7d5d5] flex items-center justify-center text-[#A94A4A]">
-                        <Cloud className="w-6 h-6 stroke-[2]" />
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-slate-900 text-base">
-                          RWBCIS <span className="font-normal text-slate-500 text-xs">— Restructured Weather Based Crop Insurance Scheme</span>
-                        </h3>
-                        <p className="text-xs sm:text-sm text-slate-600 mt-1 font-medium">
-                          Weather-index based protection compensating farmers against rainfall deficits, unseasonal frost, and adverse weather parameters.
-                        </p>
-                      </div>
-                    </div>
+                    {/* 4 Official Schemes List */}
+                    <div className="grid grid-cols-1 gap-3.5">
+                      {/* Scheme 1: PMFBY */}
+                      <a
+                        href="https://pmfby.gov.in/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[#FFF6DA]/60 border border-[#E6D0A0] hover:bg-white hover:border-[#A94A4A] hover:shadow-md transition-all cursor-pointer"
+                      >
+                        <div className="flex items-start gap-3.5">
+                          <div className="shrink-0 w-11 h-11 rounded-xl bg-white border border-[#f7d5d5] flex items-center justify-center text-[#A94A4A] group-hover:scale-105 transition-transform shadow-sm">
+                            <Wheat className="w-6 h-6 stroke-[2]" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-bold text-slate-900 text-base group-hover:text-[#A94A4A] transition-colors">
+                                PMFBY <span className="font-normal text-slate-500 text-xs sm:text-sm">— Pradhan Mantri Fasal Bima Yojana</span>
+                              </h3>
+                            </div>
+                            <p className="text-xs sm:text-sm text-slate-600 mt-1 font-medium leading-relaxed">
+                              Comprehensive yield-based crop insurance protecting against natural non-preventable risks from pre-sowing to post-harvest.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#A94A4A] text-white text-xs font-bold group-hover:bg-[#8F3E3E] transition-all self-start sm:self-auto shadow-sm">
+                          <span>Visit pmfby.gov.in</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </div>
+                      </a>
 
-                    <button
-                      type="button"
-                      className="w-full mt-2 py-4 rounded-2xl bg-[#A94A4A] text-white font-bold text-base hover:bg-[#8F3E3E] transition-colors shadow-md shadow-[#A94A4A]/25 cursor-pointer"
-                    >
-                      Proceed to Digital Enrolment
-                    </button>
+                      {/* Scheme 2: RWBCIS */}
+                      <a
+                        href="https://pmfby.gov.in/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[#FFF6DA]/60 border border-[#E6D0A0] hover:bg-white hover:border-[#A94A4A] hover:shadow-md transition-all cursor-pointer"
+                      >
+                        <div className="flex items-start gap-3.5">
+                          <div className="shrink-0 w-11 h-11 rounded-xl bg-white border border-[#f7d5d5] flex items-center justify-center text-[#A94A4A] group-hover:scale-105 transition-transform shadow-sm">
+                            <Cloud className="w-6 h-6 stroke-[2]" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-bold text-slate-900 text-base group-hover:text-[#A94A4A] transition-colors">
+                                RWBCIS <span className="font-normal text-slate-500 text-xs sm:text-sm">— Restructured Weather Based Crop Insurance Scheme</span>
+                              </h3>
+                            </div>
+                            <p className="text-xs sm:text-sm text-slate-600 mt-1 font-medium leading-relaxed">
+                              Weather-index based protection compensating farmers against rainfall deficits, unseasonal frost, heatwaves, and adverse weather.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#A94A4A] text-white text-xs font-bold group-hover:bg-[#8F3E3E] transition-all self-start sm:self-auto shadow-sm">
+                          <span>Visit pmfby.gov.in</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </div>
+                      </a>
+
+                      {/* Scheme 3: PM-KISAN */}
+                      <a
+                        href="https://pmkisan.gov.in/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[#FFF6DA]/60 border border-[#E6D0A0] hover:bg-white hover:border-[#A94A4A] hover:shadow-md transition-all cursor-pointer"
+                      >
+                        <div className="flex items-start gap-3.5">
+                          <div className="shrink-0 w-11 h-11 rounded-xl bg-white border border-[#f7d5d5] flex items-center justify-center text-[#A94A4A] group-hover:scale-105 transition-transform shadow-sm">
+                            <ShieldCheck className="w-6 h-6 stroke-[2]" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-bold text-slate-900 text-base group-hover:text-[#A94A4A] transition-colors">
+                                PM-KISAN <span className="font-normal text-slate-500 text-xs sm:text-sm">— Pradhan Mantri Kisan Samman Nidhi</span>
+                              </h3>
+                            </div>
+                            <p className="text-xs sm:text-sm text-slate-600 mt-1 font-medium leading-relaxed">
+                              Central direct financial support scheme providing ₹6,000 per year in 3 equal installments to landholding farmer families.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#A94A4A] text-white text-xs font-bold group-hover:bg-[#8F3E3E] transition-all self-start sm:self-auto shadow-sm">
+                          <span>Visit pmkisan.gov.in</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </div>
+                      </a>
+
+                      {/* Scheme 4: KCC / FASAL RIN PORTAL */}
+                      <a
+                        href="https://fasalrin.gov.in/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[#FFF6DA]/60 border border-[#E6D0A0] hover:bg-white hover:border-[#A94A4A] hover:shadow-md transition-all cursor-pointer"
+                      >
+                        <div className="flex items-start gap-3.5">
+                          <div className="shrink-0 w-11 h-11 rounded-xl bg-white border border-[#f7d5d5] flex items-center justify-center text-[#A94A4A] group-hover:scale-105 transition-transform shadow-sm">
+                            <FileText className="w-6 h-6 stroke-[2]" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-bold text-slate-900 text-base group-hover:text-[#A94A4A] transition-colors">
+                                KCC & Fasal Rin <span className="font-normal text-slate-500 text-xs sm:text-sm">— Kisan Credit Card & Subvention Portal</span>
+                              </h3>
+                            </div>
+                            <p className="text-xs sm:text-sm text-slate-600 mt-1 font-medium leading-relaxed">
+                              Institutional crop credit portal offering collateral-free crop loans up to ₹3 Lakhs with 3% prompt repayment interest subvention.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#A94A4A] text-white text-xs font-bold group-hover:bg-[#8F3E3E] transition-all self-start sm:self-auto shadow-sm">
+                          <span>Visit fasalrin.gov.in</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </div>
+                      </a>
+                    </div>
                   </div>
                 </motion.div>
               )}
