@@ -135,9 +135,6 @@ export default function CardFlip({
               <h3 className="font-extrabold text-xl text-slate-900 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#A94A4A]" /> {title} Portal
               </h3>
-              <span className="text-[10px] font-bold uppercase tracking-wider bg-[#A94A4A] text-white px-2.5 py-0.5 rounded-full">
-                Active
-              </span>
             </div>
 
             <p className="text-xs text-slate-700 leading-relaxed font-medium">
