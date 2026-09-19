@@ -9,8 +9,8 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  title: 'PMFBY / RWBCIS - Pradhan Mantri Fasal Bima Yojana Portal',
-  description: 'Authentication architecture & passwordless demo auth system for Crop Insurance Platform',
+  title: "cropins' | Modern Crop Insurance Portal",
+  description: "Modern crop insurance platform for farmers and department officers",
 };
 
 export default function RootLayout({

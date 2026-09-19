@@ -4,6 +4,10 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import RoleGuard from "@/components/RoleGuard";
 import LiveVoiceAgentModal from "@/components/LiveVoiceAgentModal";
+import CardFlip from "@/components/CardFlip";
+import BellToggle from "@/components/BellToggle";
+import WarpText from "@/components/WarpText";
+import CursorGrid from "@/components/CursorGrid";
 import {
   LuFilePlus as FilePlus,
   LuCircleCheck as CheckCircle,
@@ -20,7 +24,8 @@ import {
   LuX as X,
   LuCalendar as Calendar,
   LuCircleAlert as AlertCircle,
-  LuPhoneCall as PhoneCall
+  LuPhoneCall as PhoneCall,
+  LuExternalLink as ExternalLink
 } from "react-icons/lu";
 
 type PathwayKey = "new" | "enrolled" | null;
@@ -41,204 +46,321 @@ export default function FarmerDashboardPage() {
 
   return (
     <RoleGuard>
-      <div className="min-h-screen bg-[#FFF6DA] flex flex-col font-sans">
+      <div className="min-h-screen bg-[#FFF6DA] flex flex-col font-sans relative overflow-hidden">
+        {/* Background Soft Glows */}
+        <div className="absolute top-0 left-1/3 w-[500px] h-[500px] bg-[#fbeaea]/70 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 right-1/3 w-[500px] h-[500px] bg-[#feebaf]/70 rounded-full blur-[120px] pointer-events-none" />
+
+        {/* Interactive Cursor Grid Background */}
+        <CursorGrid
+          cellSize={70}
+          color="#A94A4A"
+          radius={140}
+          falloff="smooth"
+          holdTime={400}
+          fadeDuration={800}
+          lineWidth={1.2}
+          maxOpacity={0.8}
+          fillOpacity={0.06}
+          gridOpacity={0.04}
+          cellRadius={6}
+          clickPulse
+          pulseSpeed={600}
+        />
+
         {/* Main Journey Container */}
-        <main className="flex-1 flex flex-col items-center px-4 sm:px-6 py-8 sm:py-12 max-w-4xl mx-auto w-full">
+        <main className="flex-1 flex flex-col items-center px-4 sm:px-6 py-8 sm:py-12 max-w-5xl mx-auto w-full relative z-10">
           {/* HEADING & TALK LIVE TO AGENT BUTTON */}
-          <div className="w-full max-w-2xl flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 pb-6 border-b border-[#f7d5d5]/80">
+          <div className="w-full max-w-4xl flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 pb-6 border-b border-[#f7d5d5]/80">
             <div className="text-center sm:text-left">
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-1">
-                What's your enrollment status?
-              </h1>
-              <p className="text-slate-600 text-sm font-medium">
-                Select the option that matches your current situation to continue.
-              </p>
+              <WarpText
+                text="What's your enrollment status?"
+                color="#A94A4A"
+                warpStrength={0.08}
+                warpScale={1.7}
+                speed={0.55}
+                pointerInfluence={0.42}
+                pointerStrength={0.38}
+                refraction={0.018}
+                ripple
+                fontSize={38}
+                fontWeight={800}
+                style={{ height: '75px' }}
+                fontFamily="inherit"
+                letterSpacing={-0.04}
+                lineHeight={1.0}
+              />
             </div>
 
-            <button
-              type="button"
+            <BellToggle
+              offLabel="Talk Live to Agent"
+              onLabel="Connecting Voice Agent..."
+              color="#ffffff"
+              background="#A94A4A"
+              onColor="#ffffff"
+              onBackground="#8f3c3c"
+              size="md"
+              radius={22}
+              ringAmplitude={17}
+              ringPasses={5}
+              ringDecay={1}
+              ringDuration={820}
+              ringPivot={16}
+              crossfadeMs={200}
+              revealBounce={0}
+              count={1}
+              badge
+              badgeColor="#ef4444"
+              waves
+              clapper={false}
+              defaultPressed={false}
               onClick={() => setShowLiveVoiceAgent(true)}
-              className="px-5 py-3 rounded-2xl bg-[#A94A4A] text-white font-extrabold text-sm hover:bg-[#8f3c3c] transition-all flex items-center gap-2.5 shadow-lg shadow-[#A94A4A]/25 shrink-0 cursor-pointer animate-bounce hover:animate-none border border-[#8f3c3c]"
-            >
-              <PhoneCall className="w-5 h-5 text-emerald-300" />
-              <span>Talk Live to Agent</span>
-            </button>
+              onChange={pressed => console.log('Voice Agent Toggle:', pressed)}
+              disabled={false}
+            />
           </div>
 
-          <div className="w-full max-w-2xl space-y-5">
-            {/* PATHWAY 1: NOT ENROLLED */}
-            <div className="rounded-2xl border-2 border-[#f7d5d5] bg-white overflow-hidden transition-all hover:border-[#a94a4a] shadow-sm">
-              <button
-                type="button"
-                onClick={() => toggle("new")}
-                aria-expanded={open === "new"}
-                className="w-full flex items-center gap-4 p-5 sm:p-6 text-left min-h-[88px] active:bg-[#fdf5f5] transition-colors cursor-pointer"
-              >
-                <div className="shrink-0 w-14 h-14 rounded-xl bg-[#fdf5f5] flex items-center justify-center border border-[#f7d5d5]">
-                  <FilePlus className="w-7 h-7 text-[#A94A4A]" />
-                </div>
-                <div className="flex-1">
-                  <h2 className="text-lg sm:text-xl font-bold text-slate-900">
-                    New Farmer / Not Enrolled
-                  </h2>
-                  <p className="text-sm text-slate-600 mt-0.5 font-medium">
-                    Explore schemes and enroll for crop insurance
-                  </p>
-                </div>
-                <ChevronDown
-                  className={`w-6 h-6 text-[#A94A4A] shrink-0 transition-transform duration-300 ${open === "new" ? "rotate-180" : ""
-                    }`}
-                />
-              </button>
+          {/* 3D FLIP CARDS GRID FOR FARMER ENROLMENT PATHWAYS */}
+          <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 items-center justify-center">
+            {/* PATHWAY 1: NOT ENROLLED 3D CARD */}
+            <CardFlip
+              title="New Farmer / Not Enrolled"
+              subtitle="Explore PMFBY & RWBCIS schemes and enroll for crop insurance"
+              badgeText="New Enrolment"
+              description="Discover yield-based PMFBY and weather-index RWBCIS crop insurance schemes. Calculate estimated premiums and enroll online."
+              features={[
+                "PMFBY Yield-Based Crop Insurance",
+                "RWBCIS Weather-Based Crop Insurance",
+                "Instant Premium & Coverage Calculator",
+                "72-Hour Statutory Intimation Window"
+              ]}
+              icon={<FilePlus className="w-8 h-8 stroke-[2]" />}
+              actionText={open === "new" ? "Close Schemes" : "View Schemes & Enroll"}
+              onAction={() => toggle("new")}
+            />
 
-              <AnimatePresence initial={false}>
-                {open === "new" && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="overflow-hidden"
-                  >
-                    <div className="px-5 sm:px-6 pb-6 pt-1 space-y-3">
-                      {/* Scheme A */}
-                      <div className="flex items-start gap-4 p-4 rounded-xl bg-white border border-emerald-100 shadow-sm">
-                        <div className="shrink-0 w-11 h-11 rounded-lg bg-emerald-50 flex items-center justify-center">
-                          <Wheat className="w-5.5 h-5.5 text-emerald-600" />
+            {/* PATHWAY 2: ALREADY ENROLLED 3D CARD */}
+            <CardFlip
+              title="Already Enrolled / View Claims"
+              subtitle="Check your claim status, payout details, and draft RTI requests"
+              badgeText="View Claims"
+              description="Track claim settlement status, analyze payout deductions, draft instant RTI applications for missing data, and view 21-day SLAs."
+              features={[
+                "Realtime Claim Settlement Status",
+                "Expected vs Received Payout Audit",
+                "Automated AI RTI Draft Generator",
+                "Statutory 21-Day SLA Timeline Monitor"
+              ]}
+              icon={<CheckCircle className="w-8 h-8 stroke-[2]" />}
+              actionText={open === "enrolled" ? "Hide Claim Details" : "View Claims & RTI"}
+              onAction={() => toggle("enrolled")}
+            />
+          </div>
+
+          {/* EXPANDABLE DETAILS PANEL BELOW 3D FLIP CARDS */}
+          <div className="w-full max-w-4xl space-y-5">
+            {/* PATHWAY 1 EXPANDED CONTENT: NEW FARMER */}
+            <AnimatePresence initial={false}>
+              {open === "new" && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="overflow-hidden bg-white rounded-3xl border-2 border-[#f7d5d5] p-6 sm:p-8 shadow-lg"
+                >
+                  <div className="space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#f7d5d5] pb-3 gap-2">
+                      <h2 className="text-xl font-extrabold text-slate-900">
+                        Available Govt Crop Insurance Schemes
+                      </h2>
+                      <span className="text-xs font-semibold text-[#8c3a3a] bg-[#fdf5f5] px-3 py-1 rounded-full border border-[#f7d5d5] w-fit">
+                        Official Govt Portals (.gov.in)
+                      </span>
+                    </div>
+
+                    {/* 4 Official Schemes List */}
+                    <div className="grid grid-cols-1 gap-3.5">
+                      {/* Scheme 1: PMFBY */}
+                      <a
+                        href="https://pmfby.gov.in/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[#FFF6DA]/60 border border-[#E6D0A0] hover:bg-white hover:border-[#A94A4A] hover:shadow-md transition-all cursor-pointer"
+                      >
+                        <div className="flex items-start gap-3.5">
+                          <div className="shrink-0 w-11 h-11 rounded-xl bg-white border border-[#f7d5d5] flex items-center justify-center text-[#A94A4A] group-hover:scale-105 transition-transform shadow-sm">
+                            <Wheat className="w-6 h-6 stroke-[2]" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-bold text-slate-900 text-base group-hover:text-[#A94A4A] transition-colors">
+                                PMFBY <span className="font-normal text-slate-500 text-xs sm:text-sm">— Pradhan Mantri Fasal Bima Yojana</span>
+                              </h3>
+                            </div>
+                            <p className="text-xs sm:text-sm text-slate-600 mt-1 font-medium leading-relaxed">
+                              Comprehensive yield-based crop insurance protecting against natural non-preventable risks from pre-sowing to post-harvest.
+                            </p>
+                          </div>
                         </div>
+                        <div className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#A94A4A] text-white text-xs font-bold group-hover:bg-[#8F3E3E] transition-all self-start sm:self-auto shadow-sm">
+                          <span>Visit pmfby.gov.in</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </div>
+                      </a>
+
+                      {/* Scheme 2: RWBCIS */}
+                      <a
+                        href="https://pmfby.gov.in/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[#FFF6DA]/60 border border-[#E6D0A0] hover:bg-white hover:border-[#A94A4A] hover:shadow-md transition-all cursor-pointer"
+                      >
+                        <div className="flex items-start gap-3.5">
+                          <div className="shrink-0 w-11 h-11 rounded-xl bg-white border border-[#f7d5d5] flex items-center justify-center text-[#A94A4A] group-hover:scale-105 transition-transform shadow-sm">
+                            <Cloud className="w-6 h-6 stroke-[2]" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-bold text-slate-900 text-base group-hover:text-[#A94A4A] transition-colors">
+                                RWBCIS <span className="font-normal text-slate-500 text-xs sm:text-sm">— Restructured Weather Based Crop Insurance Scheme</span>
+                              </h3>
+                            </div>
+                            <p className="text-xs sm:text-sm text-slate-600 mt-1 font-medium leading-relaxed">
+                              Weather-index based protection compensating farmers against rainfall deficits, unseasonal frost, heatwaves, and adverse weather.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#A94A4A] text-white text-xs font-bold group-hover:bg-[#8F3E3E] transition-all self-start sm:self-auto shadow-sm">
+                          <span>Visit pmfby.gov.in</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </div>
+                      </a>
+
+                      {/* Scheme 3: PM-KISAN */}
+                      <a
+                        href="https://pmkisan.gov.in/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[#FFF6DA]/60 border border-[#E6D0A0] hover:bg-white hover:border-[#A94A4A] hover:shadow-md transition-all cursor-pointer"
+                      >
+                        <div className="flex items-start gap-3.5">
+                          <div className="shrink-0 w-11 h-11 rounded-xl bg-white border border-[#f7d5d5] flex items-center justify-center text-[#A94A4A] group-hover:scale-105 transition-transform shadow-sm">
+                            <ShieldCheck className="w-6 h-6 stroke-[2]" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-bold text-slate-900 text-base group-hover:text-[#A94A4A] transition-colors">
+                                PM-KISAN <span className="font-normal text-slate-500 text-xs sm:text-sm">— Pradhan Mantri Kisan Samman Nidhi</span>
+                              </h3>
+                            </div>
+                            <p className="text-xs sm:text-sm text-slate-600 mt-1 font-medium leading-relaxed">
+                              Central direct financial support scheme providing ₹6,000 per year in 3 equal installments to landholding farmer families.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#A94A4A] text-white text-xs font-bold group-hover:bg-[#8F3E3E] transition-all self-start sm:self-auto shadow-sm">
+                          <span>Visit pmkisan.gov.in</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </div>
+                      </a>
+
+                      {/* Scheme 4: KCC / FASAL RIN PORTAL */}
+                      <a
+                        href="https://fasalrin.gov.in/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-[#FFF6DA]/60 border border-[#E6D0A0] hover:bg-white hover:border-[#A94A4A] hover:shadow-md transition-all cursor-pointer"
+                      >
+                        <div className="flex items-start gap-3.5">
+                          <div className="shrink-0 w-11 h-11 rounded-xl bg-white border border-[#f7d5d5] flex items-center justify-center text-[#A94A4A] group-hover:scale-105 transition-transform shadow-sm">
+                            <FileText className="w-6 h-6 stroke-[2]" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-bold text-slate-900 text-base group-hover:text-[#A94A4A] transition-colors">
+                                KCC & Fasal Rin <span className="font-normal text-slate-500 text-xs sm:text-sm">— Kisan Credit Card & Subvention Portal</span>
+                              </h3>
+                            </div>
+                            <p className="text-xs sm:text-sm text-slate-600 mt-1 font-medium leading-relaxed">
+                              Institutional crop credit portal offering collateral-free crop loans up to ₹3 Lakhs with 3% prompt repayment interest subvention.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#A94A4A] text-white text-xs font-bold group-hover:bg-[#8F3E3E] transition-all self-start sm:self-auto shadow-sm">
+                          <span>Visit fasalrin.gov.in</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </div>
+                      </a>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* PATHWAY 2 EXPANDED CONTENT: ALREADY ENROLLED */}
+            <AnimatePresence initial={false}>
+              {open === "enrolled" && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="overflow-hidden bg-white rounded-3xl border-2 border-[#E6D0A0] p-6 sm:p-8 shadow-lg"
+                >
+                  <div className="space-y-4">
+                    {/* Claim Partially Settled Banner */}
+                    <div className="rounded-2xl border border-emerald-300 bg-emerald-50 p-5 shadow-sm">
+                      <div className="flex items-start gap-3">
+                        <ShieldCheck className="w-6 h-6 text-emerald-700 shrink-0 mt-0.5" />
                         <div>
-                          <h3 className="font-bold text-slate-900 text-sm sm:text-base">
-                            PMFBY
-                            <span className="font-normal text-slate-500 text-xs sm:text-sm">
-                              {" "}
-                              — Pradhan Mantri Fasal Bima Yojana
-                            </span>
-                          </h3>
-                          <p className="text-xs sm:text-sm text-slate-600 mt-0.5 font-medium">
-                            Yield-based crop insurance.
+                          <p className="font-extrabold text-emerald-950 text-base sm:text-lg">
+                            Claim Partially Settled
+                          </p>
+                          <p className="text-xs sm:text-sm text-emerald-800 font-bold mt-0.5">
+                            Expected: ₹50,000 | Received: ₹12,500
                           </p>
                         </div>
                       </div>
+                    </div>
 
-                      {/* Scheme B */}
-                      <div className="flex items-start gap-4 p-4 rounded-xl bg-white border border-emerald-100 shadow-sm">
-                        <div className="shrink-0 w-11 h-11 rounded-lg bg-emerald-50 flex items-center justify-center">
-                          <Cloud className="w-5.5 h-5.5 text-emerald-600" />
-                        </div>
+                    {/* Discrepancy Details Box */}
+                    <div className="rounded-2xl bg-slate-50 border border-slate-200 p-5 shadow-sm">
+                      <div className="flex items-start gap-3">
+                        <Clock className="w-5 h-5 text-slate-500 shrink-0 mt-0.5" />
                         <div>
-                          <h3 className="font-bold text-slate-900 text-sm sm:text-base">
-                            RWBCIS
-                            <span className="font-normal text-slate-500 text-xs sm:text-sm">
-                              {" "}
-                              — Restructured Weather Based Crop Insurance Scheme
-                            </span>
-                          </h3>
-                          <p className="text-xs sm:text-sm text-slate-600 mt-0.5 font-medium">
-                            Weather-index based insurance.
+                          <p className="text-xs font-bold text-slate-500 uppercase mb-1 tracking-wider">
+                            Discrepancy Details
+                          </p>
+                          <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                            Portal Status: Settled. No further details provided by the insurance company regarding the deduction.
                           </p>
                         </div>
                       </div>
+                    </div>
 
+                    {/* 2 Action Buttons */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
                       <button
                         type="button"
-                        className="w-full mt-2 py-4 rounded-xl bg-emerald-600 text-white font-bold text-base hover:bg-emerald-700 active:bg-emerald-800 transition-colors min-h-[56px] shadow-md shadow-emerald-600/20 cursor-pointer"
+                        onClick={() => setShowDiagnosticModal(true)}
+                        className="w-full py-4 px-4 rounded-2xl bg-[#A94A4A] text-white font-bold text-sm hover:bg-[#8F3E3E] transition-colors flex items-center justify-center gap-2 shadow-md shadow-[#A94A4A]/20 cursor-pointer"
                       >
-                        Enroll Now
+                        <Sparkles className="w-4 h-4 text-white" />
+                        Analyze Discrepancy & Draft RTI
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowTimelineModal(true)}
+                        className="w-full py-4 px-4 rounded-2xl border-2 border-[#A94A4A] text-[#785114] font-bold text-sm hover:bg-[#F3E8CF]/50 transition-colors flex items-center justify-center cursor-pointer"
+                      >
+                        View Claim Timeline
                       </button>
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* PATHWAY 2: ALREADY ENROLLED */}
-            <div className="rounded-2xl border-2 border-emerald-200 bg-emerald-50/40 overflow-hidden transition-all hover:border-emerald-400 shadow-sm">
-              <button
-                type="button"
-                onClick={() => toggle("enrolled")}
-                aria-expanded={open === "enrolled"}
-                className="w-full flex items-center gap-4 p-5 sm:p-6 text-left min-h-[88px] active:bg-emerald-100/50 transition-colors cursor-pointer"
-              >
-                <div className="shrink-0 w-14 h-14 rounded-xl bg-emerald-100 flex items-center justify-center border border-emerald-200">
-                  <CheckCircle className="w-7 h-7 text-emerald-700" />
-                </div>
-                <div className="flex-1">
-                  <h2 className="text-lg sm:text-xl font-bold text-slate-900">
-                    Already Enrolled / View Claims
-                  </h2>
-                  <p className="text-sm text-slate-600 mt-0.5 font-medium">
-                    Check your claim status and payout details
-                  </p>
-                </div>
-                <ChevronDown
-                  className={`w-6 h-6 text-emerald-700 shrink-0 transition-transform duration-300 ${open === "enrolled" ? "rotate-180" : ""
-                    }`}
-                />
-              </button>
-
-              <AnimatePresence initial={false}>
-                {open === "enrolled" && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="overflow-hidden"
-                  >
-                    <div className="px-5 sm:px-6 pb-6 pt-1 space-y-4">
-                      {/* Claim Partially Settled Banner */}
-                      <div className="rounded-2xl border border-emerald-300 bg-emerald-50 p-4 sm:p-5 shadow-sm">
-                        <div className="flex items-start gap-3">
-                          <ShieldCheck className="w-6 h-6 text-emerald-700 shrink-0 mt-0.5" />
-                          <div>
-                            <p className="font-extrabold text-emerald-950 text-base sm:text-lg">
-                              Claim Partially Settled
-                            </p>
-                            <p className="text-xs sm:text-sm text-emerald-800 font-bold mt-0.5">
-                              Expected: ₹50,000 | Received: ₹12,500
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Discrepancy Details Box */}
-                      <div className="rounded-2xl bg-white border border-slate-200 p-4 sm:p-5 shadow-sm">
-                        <div className="flex items-start gap-3">
-                          <Clock className="w-5 h-5 text-slate-500 shrink-0 mt-0.5" />
-                          <div>
-                            <p className="text-xs font-bold text-slate-500 uppercase mb-1 tracking-wider">
-                              Discrepancy Details
-                            </p>
-                            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
-                              Portal Status: Settled. No further details provided by the insurance company regarding the deduction.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* 2 Action Buttons */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-                        <button
-                          type="button"
-                          onClick={() => setShowDiagnosticModal(true)}
-                          className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 text-white font-bold text-sm hover:bg-emerald-700 active:bg-emerald-800 transition-colors flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 cursor-pointer"
-                        >
-                          <Sparkles className="w-4 h-4 text-emerald-200" />
-                          Analyze Discrepancy & Draft RTI
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setShowTimelineModal(true)}
-                          className="w-full py-3.5 px-4 rounded-xl border-2 border-emerald-600 text-emerald-800 font-bold text-sm hover:bg-emerald-50 active:bg-emerald-100 transition-colors flex items-center justify-center cursor-pointer"
-                        >
-                          View Claim Timeline
-                        </button>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </main>
 

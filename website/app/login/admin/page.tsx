@@ -14,39 +14,76 @@ import {
   LuUserCheck as UserCheck
 } from 'react-icons/lu';
 
+import CardFlip from '@/components/CardFlip';
+import WarpText from '@/components/WarpText';
+import CursorGrid from '@/components/CursorGrid';
+import EchoText from '@/components/EchoText';
+
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { loginAs, isLoading } = useAuth();
+  const { loginAs } = useAuth();
 
-  const adminOptions = [
+  const adminCards = [
     {
       roleKey: 'district_officer',
-      title: 'District Agriculture Officer (DAO)',
+      title: 'District Officer (DAO)',
       subtitle: 'District-level inspection & claim verification',
-      icon: <Building2 className="w-6 h-6 text-[#A94A4A] stroke-[2.5]" />,
-      badgeColor: 'bg-[#F3E8CF] text-[#785114] border-[#E6D0A0]',
+      badgeText: 'District DAO',
+      description: 'Access Medak District grievance queue, audit crop loss intimations, generate DLGRC hearing briefs, and enforce 12% statutory late interest penalties.',
+      features: [
+        'District Inspection & Claim Verification',
+        'DLGRC Hearing Brief Generator',
+        '12% Statutory Late Interest Enforcer',
+        'Village Cluster Discrepancy Queue'
+      ],
+      icon: <Building2 className="w-8 h-8 stroke-[2]" />,
+      actionText: 'Enter DAO Dashboard'
     },
     {
       roleKey: 'csc_operator',
-      title: 'Local Center / CSC VLE Operator',
+      title: 'CSC VLE Operator',
       subtitle: 'Village VLE policy enrolment & assistance',
-      icon: <Store className="w-6 h-6 text-[#A94A4A] stroke-[2.5]" />,
-      badgeColor: 'bg-[#F3E8CF] text-[#785114] border-[#E6D0A0]',
+      badgeText: 'Local CSC Center',
+      description: 'Assist local farmers with fast PMFBY claim intake under 3 minutes, print single-click physical claim packages, and verify mandatory documents.',
+      features: [
+        'Fast Assisted Claim Intake (< 3 Mins)',
+        'Visual Document & Land Passbook Checklist',
+        'Single-Click Physical Application Package',
+        'Realtime CSC Intimation Receipt Generation'
+      ],
+      icon: <Store className="w-8 h-8 stroke-[2]" />,
+      actionText: 'Enter CSC Portal'
     },
     {
       roleKey: 'state_officer',
-      title: 'State Agriculture Department',
+      title: 'State Agriculture Dept',
       subtitle: 'State-wide subsidy release & oversight',
-      icon: <Landmark className="w-6 h-6 text-[#A94A4A] stroke-[2.5]" />,
-      badgeColor: 'bg-[#F3E8CF] text-[#785114] border-[#E6D0A0]',
+      badgeText: 'State HQ',
+      description: 'Monitor 33 district yield dispute clusters, audit CCE harvest figures vs insurer portal payouts, and generate SLGRC escalation briefs for committee reviews.',
+      features: [
+        'Statewide 33 District Monitoring',
+        'CCE Harvest vs Insurer Payout Heatmap',
+        'SLGRC Committee Brief Generator',
+        '50% Central Matching Share Subsidy Release'
+      ],
+      icon: <Landmark className="w-8 h-8 stroke-[2]" />,
+      actionText: 'Enter State Portal'
     },
     {
       roleKey: 'ministry_officer',
-      title: 'Ministry of Agriculture & Farmers Welfare',
+      title: 'Ministry of Agriculture',
       subtitle: 'Central PMFBY policy & national monitoring',
-      icon: <ShieldCheck className="w-6 h-6 text-[#A94A4A] stroke-[2.5]" />,
-      badgeColor: 'bg-[#F3E8CF] text-[#785114] border-[#E6D0A0]',
-    },
+      badgeText: 'Central Ministry',
+      description: 'Oversee 5.4 Crore enrolled farmers across India, audit 18 empanelled insurer SLA timelines, and align ground data with Krishi Rakshak Helpline (14447) schema.',
+      features: [
+        'Krishi Rakshak (14447) Schema Aligner',
+        'Empanelled Insurer Timeline Compliance Matrix',
+        'Non-Adjudication Rule Boundary Engine',
+        'Union Budget ₹8,450 Cr Allocation Audit'
+      ],
+      icon: <ShieldCheck className="w-8 h-8 stroke-[2]" />,
+      actionText: 'Enter Ministry Portal'
+    }
   ];
 
   return (
@@ -54,6 +91,23 @@ export default function AdminLoginPage() {
       {/* Background Soft Glows */}
       <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-[#fbeaea]/70 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] bg-[#feebaf]/70 rounded-full blur-[120px] pointer-events-none" />
+
+      {/* Interactive Cursor Grid Background */}
+      <CursorGrid
+        cellSize={70}
+        color="#A94A4A"
+        radius={140}
+        falloff="smooth"
+        holdTime={400}
+        fadeDuration={800}
+        lineWidth={1.2}
+        maxOpacity={0.8}
+        fillOpacity={0.06}
+        gridOpacity={0.04}
+        cellRadius={6}
+        clickPulse
+        pulseSpeed={600}
+      />
 
       {/* Header */}
       <header className="border-b border-[#f7d5d5] bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm">
@@ -66,9 +120,25 @@ export default function AdminLoginPage() {
               <ArrowLeft className="w-4 h-4 text-[#a94a4a]" /> Back to Main Login
             </button>
             <div className="h-6 w-px bg-slate-200 hidden sm:block" />
-            <span className="font-extrabold text-xl tracking-tight font-sans text-slate-900 hidden sm:inline">
-              cropins<span className="text-[#A94A4A]">'</span>
-            </span>
+            <div className="hidden sm:flex items-center">
+              <EchoText
+                text="cropins'"
+                echoes={8}
+                lag={0.2}
+                offset={16}
+                direction="right"
+                fade={0.7}
+                blur={2}
+                tint="#A94A4A"
+                mode="both"
+                cursorRadius={200}
+                duration={800}
+                ease="ease-out"
+                fontSize="1.5rem"
+                fontWeight={800}
+                color="#0f172a"
+              />
+            </div>
           </div>
 
           <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#F3E8CF] text-[#785114] border border-[#E6D0A0] shadow-sm">
@@ -80,43 +150,43 @@ export default function AdminLoginPage() {
 
       {/* Main Admin Personas Options */}
       <main className="max-w-6xl mx-auto px-6 py-10 flex-1 w-full flex flex-col justify-center relative z-10">
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 mb-2">
-            Select Administrative Persona
-          </h1>
-          <p className="text-slate-600 text-sm sm:text-base font-medium">
+        <div className="text-center max-w-2xl mx-auto mb-6">
+          <WarpText
+            text="Select Administrative Persona"
+            color="#A94A4A"
+            warpStrength={0.08}
+            warpScale={1.7}
+            speed={0.55}
+            pointerInfluence={0.42}
+            pointerStrength={0.38}
+            refraction={0.018}
+            ripple
+            fontSize={44}
+            fontWeight={800}
+            style={{ height: '95px' }}
+            fontFamily="inherit"
+            letterSpacing={-0.04}
+            lineHeight={1.0}
+          />
+          <p className="text-xs text-slate-400 font-light tracking-wide mt-1">
             Choose an officer or center role to instantly enter their dedicated dashboard:
           </p>
         </div>
 
-        {/* 4 Admin Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {adminOptions.map((item) => (
-            <div
-              key={item.roleKey}
-              onClick={() => loginAs(item.roleKey)}
-              className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-[#f7d5d5] hover:border-[#a94a4a] shadow-md hover:shadow-xl hover:shadow-[#a94a4a]/10 transition-all duration-300 transform hover:-translate-y-1 cursor-pointer flex flex-col justify-between group min-h-[190px]"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className={`px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider border ${item.badgeColor}`}>
-                    {item.title}
-                  </span>
-                  <div className="p-2.5 rounded-2xl bg-[#fdf5f5] border border-[#f7d5d5] group-hover:scale-110 transition-transform">
-                    {item.icon}
-                  </div>
-                </div>
-
-                <p className="text-sm text-slate-600 mb-6 font-medium leading-relaxed">{item.subtitle}</p>
-              </div>
-
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#8c3a3a] group-hover:translate-x-1 transition-transform">
-                <span className="flex items-center gap-1.5">
-                  <UserCheck className="w-4 h-4 text-[#a94a4a]" /> Enter Portal
-                </span>
-                <ArrowRight className="w-4 h-4 text-[#a94a4a]" />
-              </div>
-            </div>
+        {/* 4 Admin 3D Flip Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto w-full items-center justify-center">
+          {adminCards.map((card) => (
+            <CardFlip
+              key={card.roleKey}
+              title={card.title}
+              subtitle={card.subtitle}
+              description={card.description}
+              features={card.features}
+              icon={card.icon}
+              actionText={card.actionText}
+              badgeText={card.badgeText}
+              onAction={() => loginAs(card.roleKey)}
+            />
           ))}
         </div>
       </main>

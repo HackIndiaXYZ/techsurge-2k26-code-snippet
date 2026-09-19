@@ -16,8 +16,8 @@ import {
   LuSearch as Search,
   LuSparkles as Sparkles,
   LuShieldAlert as ShieldAlert,
-  LuArrowRight as ArrowRight
 } from 'react-icons/lu';
+import CursorGrid from '@/components/CursorGrid';
 
 export default function CSCDashboardPage() {
   const { currentProfile } = useAuth();
@@ -48,9 +48,29 @@ export default function CSCDashboardPage() {
 
   return (
     <RoleGuard>
-      <div className="min-h-screen bg-[#FFF6DA] text-slate-900 pb-16 font-sans">
+      <div className="min-h-screen bg-[#FFF6DA] text-slate-900 pb-16 font-sans relative overflow-hidden">
+        {/* Background Soft Glows */}
+        <div className="absolute top-0 left-1/3 w-[500px] h-[500px] bg-[#fbeaea]/70 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-0 right-1/3 w-[500px] h-[500px] bg-[#feebaf]/70 rounded-full blur-[120px] pointer-events-none" />
+
+        {/* Interactive Cursor Grid Background */}
+        <CursorGrid
+          cellSize={70}
+          color="#A94A4A"
+          radius={140}
+          falloff="smooth"
+          holdTime={400}
+          fadeDuration={800}
+          lineWidth={1.2}
+          maxOpacity={0.8}
+          fillOpacity={0.06}
+          gridOpacity={0.04}
+          cellRadius={6}
+          clickPulse
+          pulseSpeed={600}
+        />
         {/* Header Banner */}
-        <div className="bg-white border-b border-[#f7d5d5] shadow-sm">
+        <div className="bg-white border-b border-[#f7d5d5] shadow-sm relative z-10">
           <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 text-xs font-bold text-[#8c3a3a] uppercase tracking-wider mb-1">
@@ -107,7 +127,7 @@ export default function CSCDashboardPage() {
         </div>
 
         {/* Content Container */}
-        <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+        <main className="max-w-7xl mx-auto px-6 py-8 space-y-8 relative z-10">
           {/* Quick Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">

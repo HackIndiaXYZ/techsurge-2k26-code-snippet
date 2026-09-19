@@ -24,7 +24,8 @@ import {
   Radio,
   Sliders,
   ShieldCheck,
-  User
+  User,
+  Play
 } from 'lucide-react';
 
 interface LiveVoiceAgentModalProps {
@@ -42,7 +43,7 @@ interface Message {
 }
 
 export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoiceAgentModalProps) {
-  const [callState, setCallState] = useState<'connecting' | 'connected' | 'ended'>('connecting');
+  const [callActive, setCallActive] = useState<boolean>(true);
   const [callDuration, setCallDuration] = useState<number>(0);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [speakerOn, setSpeakerOn] = useState<boolean>(true);
@@ -52,6 +53,8 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
   const [showCaptions, setShowCaptions] = useState<boolean>(true);
   const [showKeypad, setShowKeypad] = useState<boolean>(false);
   const [inputText, setInputText] = useState<string>('');
+  const [liveTranscript, setLiveTranscript] = useState<string>('');
+  const [hasMicPermission, setHasMicPermission] = useState<boolean>(false);
   
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -65,24 +68,19 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+  const shouldListenRef = useRef<boolean>(true);
+  const silenceTimerRef = useRef<any>(null);
 
-  // Call Connection Timer (mm:ss)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCallState('connected');
-    }, 1200);
-    return () => clearTimeout(timer);
-  }, []);
-
+  // Call Duration Timer (mm:ss)
   useEffect(() => {
     let interval: any;
-    if (callState === 'connected') {
+    if (callActive) {
       interval = setInterval(() => {
         setCallDuration((prev) => prev + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [callState]);
+  }, [callActive]);
 
   const formatDuration = (secs: number) => {
     const m = Math.floor(secs / 60).toString().padStart(2, '0');
@@ -98,90 +96,185 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
     scrollToBottom();
   }, [messages]);
 
-  // Initial spoken greeting
-  useEffect(() => {
-    if (callState === 'connected' && speakerOn && messages.length === 1) {
-      speakText(messages[0].spokenTeluguText || messages[0].text);
-    }
-  }, [callState]);
-
   // Web Speech Synthesis for spoken audio output
   const speakText = (text: string) => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window) || !speakerOn) return;
     
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = language;
-    utterance.rate = 0.92;
-    
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => {
-      setIsSpeaking(false);
-      // Auto listen hands-free after speaking if not muted
-      if (!isMuted) {
-        setTimeout(() => startListening(), 400);
+    try {
+      // Pause mic recognition while agent is speaking to prevent acoustic feedback
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch(e) {}
       }
-    };
-    utterance.onerror = () => setIsSpeaking(false);
 
-    window.speechSynthesis.speak(utterance);
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.resume();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = language;
+      utterance.rate = 0.92;
+      utterance.pitch = 1.0;
+
+      // Select Telugu/Hindi/Indian English voice if available in browser
+      const voices = window.speechSynthesis.getVoices();
+      const targetVoice = voices.find(v => v.lang.includes('te') || v.lang.includes('hi') || v.lang.includes('IN')) || voices[0];
+      if (targetVoice) utterance.voice = targetVoice;
+
+      utterance.onstart = () => {
+        setIsSpeaking(true);
+      };
+
+      utterance.onend = () => {
+        setIsSpeaking(false);
+        // Start continuous hands-free listening ONLY AFTER agent greeting/response finishes
+        if (shouldListenRef.current && !isMuted) {
+          setTimeout(() => startContinuousListening(), 400);
+        }
+      };
+
+      utterance.onerror = (e) => {
+        console.warn('Speech synthesis utterance error/canceled:', e);
+        setIsSpeaking(false);
+        if (shouldListenRef.current && !isMuted) {
+          setTimeout(() => startContinuousListening(), 400);
+        }
+      };
+
+      window.speechSynthesis.speak(utterance);
+      setIsSpeaking(true);
+    } catch (e) {
+      console.error('Speech synthesis error:', e);
+      setIsSpeaking(false);
+    }
   };
 
-  // Web Speech Recognition for continuous hands-free voice input
-  const startListening = () => {
-    if (typeof window === 'undefined' || isMuted) return;
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+  // Play initial spoken greeting out loud
+  const playGreeting = () => {
+    const greetingText = messages[0].spokenTeluguText || messages[0].text;
+    speakText(greetingText);
+  };
+
+  // Continuous Hands-Free Speech Recognition Loop (Real-time Feedback & Multi-language STT)
+  const startContinuousListening = async () => {
+    if (typeof window === 'undefined' || isMuted || !shouldListenRef.current || isSpeaking) return;
     
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) return;
 
     try {
       if (recognitionRef.current) {
-        recognitionRef.current.stop();
+        try { recognitionRef.current.stop(); } catch(e) {}
       }
 
       const recognition = new SpeechRecognition();
       recognition.lang = language;
-      recognition.interimResults = false;
+      recognition.continuous = true;
+      recognition.interimResults = true;
       recognition.maxAlternatives = 1;
 
-      recognition.onstart = () => setIsListening(true);
-      recognition.onend = () => setIsListening(false);
-      recognition.onerror = () => setIsListening(false);
+      recognition.onstart = () => {
+        setIsListening(true);
+        setHasMicPermission(true);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+        // Automatically restart continuous speech loop if call is active & agent is not speaking
+        if (shouldListenRef.current && !isMuted && !isSpeaking) {
+          setTimeout(() => {
+            try { recognition.start(); } catch(e) {}
+          }, 300);
+        }
+      };
+
+      recognition.onerror = (e: any) => {
+        setIsListening(false);
+        if (shouldListenRef.current && !isMuted && !isSpeaking) {
+          setTimeout(() => {
+            try { recognition.start(); } catch(err) {}
+          }, 400);
+        }
+      };
 
       recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        if (transcript) {
-          handleSendMessage(transcript);
+        let currentTranscript = '';
+        let isFinal = false;
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          currentTranscript += event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            isFinal = true;
+          }
+        }
+
+        const trimmed = currentTranscript.trim();
+        if (trimmed) {
+          setLiveTranscript(trimmed);
+        }
+
+        if (isFinal && trimmed.length > 2 && !isSpeaking) {
+          setLiveTranscript('');
+          handleSendMessage(trimmed);
         }
       };
 
       recognitionRef.current = recognition;
       recognition.start();
     } catch (e) {
-      console.error('Speech recognition error:', e);
+      console.error('Continuous speech recognition error:', e);
       setIsListening(false);
     }
   };
 
-  const stopListening = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
+  // Auto initialize call: Speak initial greeting synchronously & request mic permission
+  useEffect(() => {
+    shouldListenRef.current = true;
+
+    // 1. Play spoken Telugu greeting immediately on call initialization
+    playGreeting();
+
+    // 2. Request mic permission in parallel without blocking initial greeting
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(() => setHasMicPermission(true))
+        .catch(err => console.warn('Microphone permission request:', err));
     }
-    setIsListening(false);
-  };
+
+    // 3. Populate speech synthesis voices if delayed in browser
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        if (!isSpeaking) {
+          playGreeting();
+        }
+      };
+    }
+
+    return () => {
+      shouldListenRef.current = false;
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch(e) {}
+      }
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
   const toggleMute = () => {
     if (!isMuted) {
-      stopListening();
       setIsMuted(true);
+      shouldListenRef.current = false;
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch(e) {}
+      }
     } else {
       setIsMuted(false);
-      startListening();
+      shouldListenRef.current = true;
+      startContinuousListening();
     }
   };
 
-  // Process message STT -> Decision Tools -> Assistant Spoken Reply
-  const handleSendMessage = (textToSend?: string) => {
+  // Process message STT -> Direct Python AI Agent Backend (AI_agent/main.py) -> Assistant Spoken Reply
+  const handleSendMessage = async (textToSend?: string) => {
     const text = textToSend || inputText;
     if (!text.trim()) return;
 
@@ -195,12 +288,30 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
     setMessages((prev) => [...prev, userMsg]);
     if (!textToSend) setInputText('');
 
-    setTimeout(() => {
-      const lower = text.toLowerCase();
-      let assistantText = '';
-      let spokenTeluguText = '';
-      let toolResult: any = null;
+    let assistantText = '';
+    let spokenTeluguText = '';
+    let toolResult: any = null;
 
+    try {
+      // Connect directly to Python AI Agent Backend (AI_agent/main.py)
+      const res = await fetch('http://localhost:8765/agent/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: text, language: language })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        assistantText = data.text;
+        spokenTeluguText = data.spokenTeluguText;
+        toolResult = data.toolResult;
+      }
+    } catch (err) {
+      console.warn('Python AI agent backend fallback:', err);
+    }
+
+    // Client fallback if Python backend endpoint is offline
+    if (!assistantText) {
+      const lower = text.toLowerCase();
       if (lower.includes('1 lakh') || lower.includes('40,000') || lower.includes('40000') || lower.includes('cotton') || lower.includes('reduced') || lower.includes('పత్తి') || lower.includes('తక్కువ')) {
         assistantText = "Ram Ram Kisan Bhai. Under PMFBY rules, widespread crop loss is calculated based on village Crop Cutting Experiments (CCEs). If your village average yield was 40% of normal, the company pays 40% of sum insured (PMFBY Clause 13.1). However, you can file an official RTI to get the exact calculation sheet.";
         spokenTeluguText = "నమస్తే కిసాన్ భాయ్. PMFBY నిబంధనల ప్రకారం ఊరంతా పంట నష్టం జరిగితే గ్రామ పంట కోత ప్రయోగాల ఆధారంగా క్లెయిమ్ లెక్కిస్తారు. మీ క్లెయిమ్ గణన పత్రం కోసం RTI దరఖాస్తును తయారు చేయమంటారా?";
@@ -241,30 +352,33 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
         assistantText = "Namaste Kisan Bhai! I am your Kisan Bima Sahayak. Are you looking to calculate insurance for a new crop, or resolve a reduced claim payout?";
         spokenTeluguText = "నమస్తే కిసాన్ భాయ్! నేను మీ బీమా సహాయక్. మీరు కొత్త పంట ఇన్సూరెన్స్ వివరాలు తెలుసుకోవాలనుకుంటున్నారా లేదా ఉన్న క్లెయిమ్ సమస్య గురించి మాట్లాడాలనుకుంటున్నారా?";
       }
+    }
 
-      const assistantMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        sender: 'assistant',
-        text: assistantText,
-        spokenTeluguText: spokenTeluguText,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        toolResult: toolResult
-      };
+    const assistantMsg: Message = {
+      id: (Date.now() + 1).toString(),
+      sender: 'assistant',
+      text: assistantText,
+      spokenTeluguText: spokenTeluguText,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      toolResult: toolResult
+    };
 
-      setMessages((prev) => [...prev, assistantMsg]);
-      speakText(spokenTeluguText || assistantText);
-    }, 600);
+    setMessages((prev) => [...prev, assistantMsg]);
+    speakText(spokenTeluguText || assistantText);
   };
 
   const handleEndCall = () => {
-    setCallState('ended');
+    setCallActive(false);
+    shouldListenRef.current = false;
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
-    stopListening();
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch(e) {}
+    }
     setTimeout(() => {
       onClose();
-    }, 500);
+    }, 300);
   };
 
   const lastAssistantMsg = [...messages].reverse().find((m) => m.sender === 'assistant');
@@ -273,13 +387,27 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/80 backdrop-blur-xl animate-in fade-in duration-200 font-sans">
       <div className="w-full max-w-md bg-slate-950 text-white rounded-[36px] border border-slate-800/80 shadow-2xl flex flex-col overflow-hidden h-[92vh] max-h-[850px] relative">
         
-        {/* PHONE STATUS BAR */}
+        {/* PHONE STATUS BAR WITH LANGUAGE TOGGLE */}
         <div className="px-6 pt-5 pb-2 flex items-center justify-between text-xs font-semibold text-slate-400 shrink-0">
           <div className="flex items-center gap-2">
             <Radio className="w-4 h-4 text-emerald-400 animate-pulse" />
             <span className="text-emerald-400 font-bold uppercase tracking-wider text-[11px]">
-              {callState === 'connecting' ? 'Calling...' : `HD Voice Call (${language})`}
+              HD Call
             </span>
+            <div className="flex items-center gap-1 bg-slate-900 px-1.5 py-0.5 rounded-full border border-slate-800 ml-1">
+              <button
+                onClick={() => { setLanguage('te-IN'); startContinuousListening(); }}
+                className={`px-2 py-0.5 rounded-full text-[10px] font-bold transition-all cursor-pointer ${language === 'te-IN' ? 'bg-amber-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'}`}
+              >
+                తెలుగు
+              </button>
+              <button
+                onClick={() => { setLanguage('en-IN'); startContinuousListening(); }}
+                className={`px-2 py-0.5 rounded-full text-[10px] font-bold transition-all cursor-pointer ${language === 'en-IN' ? 'bg-amber-500 text-slate-950 shadow' : 'text-slate-400 hover:text-white'}`}
+              >
+                English
+              </button>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-slate-300 font-mono text-xs">{formatDuration(callDuration)}</span>
@@ -292,21 +420,23 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
           </div>
         </div>
 
-        {/* CALL AVATAR & SOUND WAVE VISUALIZER */}
+        {/* CALL AVATAR & CONTINUOUS VOICE SOUNDWAVE */}
         <div className="flex-1 flex flex-col items-center justify-center px-6 text-center relative py-4 overflow-y-auto scrollbar-none">
           {/* Avatar Ring Animations */}
           <div className="relative mb-6">
             {isSpeaking && (
               <>
-                <div className="absolute -inset-4 rounded-full bg-emerald-500/20 animate-ping" />
-                <div className="absolute -inset-8 rounded-full bg-emerald-500/10 animate-pulse" />
+                <div className="absolute -inset-4 rounded-full bg-emerald-500/25 animate-ping" />
+                <div className="absolute -inset-8 rounded-full bg-emerald-500/15 animate-pulse" />
               </>
             )}
             {isListening && (
-              <div className="absolute -inset-4 rounded-full bg-amber-500/25 animate-ping" />
+              <div className="absolute -inset-4 rounded-full bg-amber-500/30 animate-ping" />
             )}
 
-            <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-tr from-[#A94A4A] via-[#7a2f2f] to-amber-600 p-1 shadow-2xl shadow-[#A94A4A]/40 relative z-10 flex items-center justify-center">
+            <div 
+              className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-tr from-[#A94A4A] via-[#7a2f2f] to-amber-600 p-1 shadow-2xl shadow-[#A94A4A]/40 relative z-10 flex items-center justify-center"
+            >
               <div className="w-full h-full rounded-full bg-slate-900 overflow-hidden flex items-center justify-center border-2 border-white/20">
                 <ShieldCheck className="w-14 h-14 text-amber-400 stroke-[1.8]" />
               </div>
@@ -325,27 +455,42 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
             PMFBY Voice Helpdesk • Spoken Telugu (వ్యవహారిక తెలుగు)
           </p>
 
-          <div className="inline-flex items-center gap-2 bg-slate-900/90 border border-slate-800 px-3.5 py-1.5 rounded-full text-xs font-semibold text-slate-300 mb-4 shadow-inner">
-            <span className={`w-2 h-2 rounded-full ${isSpeaking ? 'bg-emerald-400 animate-bounce' : isListening ? 'bg-amber-400 animate-ping' : 'bg-slate-500'}`} />
-            <span>
-              {callState === 'connecting'
-                ? 'Connecting phone call...'
-                : isSpeaking
-                ? 'Agent Speaking in Telugu...'
-                : isListening
-                ? 'Listening to Farmer (Hands-Free)...'
-                : 'Connected • Tap mic or quick voice prompt'}
-            </span>
+          <div className="flex flex-col items-center gap-2 mb-3">
+            <div className="inline-flex items-center gap-2 bg-slate-900/90 border border-slate-800 px-3.5 py-1.5 rounded-full text-xs font-semibold text-slate-300 shadow-inner">
+              <span className={`w-2.5 h-2.5 rounded-full ${isSpeaking ? 'bg-emerald-400 animate-bounce' : isListening ? 'bg-amber-400 animate-ping' : 'bg-emerald-500'}`} />
+              <span>
+                {isSpeaking
+                  ? 'Agent Speaking Spoken Telugu...'
+                  : isListening
+                  ? `🎤 Mic Active (${language === 'te-IN' ? 'Telugu' : 'English'}) • Speak Hands-Free`
+                  : isMuted
+                  ? '🔇 Call Muted'
+                  : '🟢 Phone Call Active'}
+              </span>
+            </div>
           </div>
+
+          {/* REAL-TIME LIVE SPEECH HEARING BANNER */}
+          {liveTranscript && (
+            <div className="w-full bg-amber-950/90 border border-amber-500/60 rounded-xl p-3 text-xs text-amber-200 font-bold mb-3 animate-pulse flex items-center gap-2 shadow-lg">
+              <Mic className="w-4 h-4 text-amber-400 shrink-0 animate-bounce" />
+              <span className="truncate">Hearing: "{liveTranscript}"</span>
+            </div>
+          )}
 
           {/* REAL-TIME CLOSED CAPTIONS & SUBTITLES OVERLAY */}
           {showCaptions && lastAssistantMsg && (
-            <div className="w-full bg-slate-900/95 border border-slate-800/90 rounded-2xl p-4 text-left shadow-xl my-2 max-h-44 overflow-y-auto">
+            <div className="w-full bg-slate-900/95 border border-slate-800/90 rounded-2xl p-4 text-left shadow-xl my-2 max-h-48 overflow-y-auto">
               <div className="flex items-center justify-between text-[11px] text-slate-400 font-bold mb-1">
                 <span className="flex items-center gap-1.5 text-amber-400">
-                  <MessageSquare className="w-3.5 h-3.5" /> Live Subtitles
+                  <MessageSquare className="w-3.5 h-3.5" /> Agent Spoken Response
                 </span>
-                <span>{lastAssistantMsg.timestamp}</span>
+                <button
+                  onClick={() => speakText(lastAssistantMsg.spokenTeluguText || lastAssistantMsg.text)}
+                  className="text-emerald-400 hover:underline flex items-center gap-1 text-[11px]"
+                >
+                  <Volume2 className="w-3 h-3" /> Replay
+                </button>
               </div>
               <p className="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed">
                 {lastAssistantMsg.spokenTeluguText || lastAssistantMsg.text}
@@ -415,7 +560,7 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
             <div className="flex items-center gap-2">
               <input
                 type="text"
-                placeholder="Type question or policy details..."
+                placeholder="Type question in Telugu or English..."
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
@@ -435,18 +580,18 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
         {/* REAL PHONE CALL CONTROLS BAR (Circular Buttons) */}
         <div className="p-6 bg-slate-900/90 border-t border-slate-800/90 shrink-0">
           <div className="flex items-center justify-around max-w-xs mx-auto">
-            {/* Mute Button */}
+            {/* Mute Mic Button */}
             <div className="flex flex-col items-center gap-1.5">
               <button
                 onClick={toggleMute}
                 className={`w-14 h-14 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-lg ${
-                  isMuted ? 'bg-rose-500 text-white' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'
+                  isMuted ? 'bg-rose-600 text-white border-2 border-rose-400' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'
                 }`}
                 title={isMuted ? 'Unmute Mic' : 'Mute Mic'}
               >
                 {isMuted ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
               </button>
-              <span className="text-[10px] font-bold text-slate-400">{isMuted ? 'Muted' : 'Mute'}</span>
+              <span className="text-[10px] font-bold text-slate-300">{isMuted ? 'Muted' : 'Mute'}</span>
             </div>
 
             {/* Keypad / Text Overlay Toggle */}
