@@ -99,51 +99,61 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
     if (typeof window === 'undefined' || !('speechSynthesis' in window) || !speakerOn) return;
     
     try {
-      // Pause listening while agent speaks to prevent mic feedback
-      if (recognitionRef.current && isListening) {
+      // Pause mic recognition while agent is speaking to prevent acoustic feedback
+      if (recognitionRef.current) {
         try { recognitionRef.current.stop(); } catch(e) {}
       }
 
       window.speechSynthesis.cancel();
+      window.speechSynthesis.resume();
+
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = language;
       utterance.rate = 0.92;
-      
+      utterance.pitch = 1.0;
+
+      // Select Telugu/Hindi/Indian English voice if available in browser
+      const voices = window.speechSynthesis.getVoices();
+      const targetVoice = voices.find(v => v.lang.includes('te') || v.lang.includes('hi') || v.lang.includes('IN')) || voices[0];
+      if (targetVoice) utterance.voice = targetVoice;
+
       utterance.onstart = () => {
         setIsSpeaking(true);
       };
 
       utterance.onend = () => {
         setIsSpeaking(false);
-        // Automatically unpause & resume continuous hands-free listening
+        // Start continuous hands-free listening ONLY AFTER agent greeting/response finishes
         if (shouldListenRef.current && !isMuted) {
-          setTimeout(() => startContinuousListening(), 300);
+          setTimeout(() => startContinuousListening(), 400);
         }
       };
 
-      utterance.onerror = () => {
+      utterance.onerror = (e) => {
+        console.warn('Speech synthesis utterance error/canceled:', e);
         setIsSpeaking(false);
         if (shouldListenRef.current && !isMuted) {
-          setTimeout(() => startContinuousListening(), 300);
+          setTimeout(() => startContinuousListening(), 400);
         }
       };
 
       window.speechSynthesis.speak(utterance);
+      setIsSpeaking(true);
     } catch (e) {
       console.error('Speech synthesis error:', e);
       setIsSpeaking(false);
     }
   };
 
-  // Play initial spoken greeting
+  // Play initial spoken greeting out loud
   const playGreeting = () => {
     const greetingText = messages[0].spokenTeluguText || messages[0].text;
     speakText(greetingText);
   };
 
-  // Continuous Hands-Free Speech Recognition Loop (Like a real telephone call)
+  // Continuous Hands-Free Speech Recognition Loop (Filters noise & stays active)
   const startContinuousListening = async () => {
-    if (typeof window === 'undefined' || isMuted || !shouldListenRef.current) return;
+    if (typeof window === 'undefined' || isMuted || !shouldListenRef.current || isSpeaking) return;
     
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) return;
@@ -157,6 +167,7 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
       recognition.lang = language;
       recognition.continuous = true;
       recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
 
       recognition.onstart = () => {
         setIsListening(true);
@@ -165,7 +176,7 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
 
       recognition.onend = () => {
         setIsListening(false);
-        // Automatically restart speech recognition loop to stay 100% hands-free
+        // Automatically restart continuous speech loop if call is active & agent is not speaking
         if (shouldListenRef.current && !isMuted && !isSpeaking) {
           setTimeout(() => {
             try { recognition.start(); } catch(e) {}
@@ -175,18 +186,22 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
 
       recognition.onerror = (e: any) => {
         setIsListening(false);
-        if (e.error !== 'aborted' && shouldListenRef.current && !isMuted && !isSpeaking) {
+        // Ignore aborted/no-speech errors and restart mic automatically
+        if (shouldListenRef.current && !isMuted && !isSpeaking) {
           setTimeout(() => {
             try { recognition.start(); } catch(err) {}
-          }, 500);
+          }, 400);
         }
       };
 
       recognition.onresult = (event: any) => {
         const lastIndex = event.results.length - 1;
-        const transcript = event.results[lastIndex][0].transcript;
-        if (transcript && transcript.trim()) {
-          handleSendMessage(transcript.trim());
+        const result = event.results[lastIndex];
+        const transcript = result[0].transcript ? result[0].transcript.trim() : '';
+
+        // Filter out small background noises, single-letter breaths, or empty speech
+        if (transcript && transcript.length > 2 && !isSpeaking) {
+          handleSendMessage(transcript);
         }
       };
 
@@ -198,28 +213,28 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
     }
   };
 
-  // Auto initialize call & request mic permission ONCE when modal opens
+  // Auto initialize call: Speak initial greeting synchronously & request mic permission
   useEffect(() => {
     shouldListenRef.current = true;
 
-    const initCall = async () => {
-      try {
-        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          await navigator.mediaDevices.getUserMedia({ audio: true });
-          setHasMicPermission(true);
+    // 1. Play spoken Telugu greeting immediately on call initialization
+    playGreeting();
+
+    // 2. Request mic permission in parallel without blocking initial greeting
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(() => setHasMicPermission(true))
+        .catch(err => console.warn('Microphone permission request:', err));
+    }
+
+    // 3. Populate speech synthesis voices if delayed in browser
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        if (!isSpeaking) {
+          playGreeting();
         }
-      } catch (err) {
-        console.warn('Microphone permission request:', err);
-      }
-
-      // Play Telugu greeting & start continuous hands-free voice loop
-      playGreeting();
-      setTimeout(() => {
-        startContinuousListening();
-      }, 500);
-    };
-
-    initCall();
+      };
+    }
 
     return () => {
       shouldListenRef.current = false;
@@ -377,7 +392,8 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
 
             <div 
               onClick={playGreeting}
-              className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-tr from-[#A94A4A] via-[#7a2f2f] to-amber-600 p-1 shadow-2xl shadow-[#A94A4A]/40 relative z-10 flex items-center justify-center cursor-pointer"
+              className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-tr from-[#A94A4A] via-[#7a2f2f] to-amber-600 p-1 shadow-2xl shadow-[#A94A4A]/40 relative z-10 flex items-center justify-center cursor-pointer hover:scale-105 transition-transform"
+              title="Click to Hear Agent Voice Greeting"
             >
               <div className="w-full h-full rounded-full bg-slate-900 overflow-hidden flex items-center justify-center border-2 border-white/20">
                 <ShieldCheck className="w-14 h-14 text-amber-400 stroke-[1.8]" />
@@ -396,6 +412,14 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
           <p className="text-xs text-amber-300/90 font-medium mb-3">
             PMFBY Voice Helpdesk • Spoken Telugu (వ్యవహారిక తెలుగు)
           </p>
+
+          <button
+            onClick={playGreeting}
+            className="mb-3 px-4 py-1.5 rounded-full bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-bold text-xs flex items-center gap-2 transition-all cursor-pointer shadow-md"
+          >
+            <Volume2 className="w-4 h-4 text-amber-400 animate-pulse" />
+            <span>🔊 Click to Hear Agent Voice Greeting</span>
+          </button>
 
           <div className="flex flex-col items-center gap-2 mb-4">
             <div className="inline-flex items-center gap-2 bg-slate-900/90 border border-slate-800 px-3.5 py-1.5 rounded-full text-xs font-semibold text-slate-300 shadow-inner">
