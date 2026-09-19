@@ -17,10 +17,13 @@ from pipecat.processors.aggregators.llm_response_universal import (
     LLMContext,
     LLMContextAggregatorPair,
 )
-from pipecat.serializers.twilio import TwilioFrameSerializer
 from pipecat.services.deepgram.stt import DeepgramSTTService
 from pipecat.services.sarvam.stt import SarvamSTTService, SarvamSTTSettings
 from pipecat.services.sarvam.tts import SarvamTTSService, SarvamTTSSettings
+try:
+    from pipecat.services.elevenlabs.tts import ElevenLabsTTSService
+except ImportError:
+    ElevenLabsTTSService = None
 from pipecat.services.google.llm import GoogleLLMService
 from pipecat.services.llm_service import FunctionCallParams
 from pipecat.transports.websocket.fastapi import (
@@ -30,6 +33,7 @@ from pipecat.transports.websocket.fastapi import (
 from pipecat.transports.local.audio import LocalAudioTransport, LocalAudioTransportParams
 
 load_dotenv()
+ELEVENLABS_KEY_DEFAULT = "sk_756ddf9c2657821945dd50e9284ba1f8d934f855a8b50495"
 
 # ---------------------------------------------------------
 # 1. THE DOMAIN KNOWLEDGE BASE (SYSTEM PROMPT)
@@ -351,6 +355,40 @@ class SarvamVoiceAgent:
             return audios[0] if audios else ""
         except Exception as e:
             print(f"Sarvam TTS REST error: {e}")
+            return ""
+
+
+class ElevenLabsVoiceAgent:
+    def __init__(self, api_key=None, voice_id="21m00Tcm4TlvDq8ikWAM"):
+        self.api_key = api_key or os.getenv("ELEVENLABS_API_KEY", ELEVENLABS_KEY_DEFAULT)
+        self.voice_id = voice_id
+
+    def text_to_speech(self, text: str) -> str:
+        """Sends LLM text to ElevenLabs TTS and returns base64 encoded MP3/mulaw audio string."""
+        if not self.api_key:
+            return ""
+        try:
+            url = f"https://api.elevenlabs.io/v1/text-to-speech/{self.voice_id}"
+            headers = {
+                "xi-api-key": self.api_key,
+                "Content-Type": "application/json"
+            }
+            payload = {
+                "text": text,
+                "model_id": "eleven_multilingual_v2",
+                "voice_settings": {
+                    "stability": 0.5,
+                    "similarity_boost": 0.75
+                }
+            }
+            response = requests.post(url, json=payload, headers=headers, timeout=10)
+            if response.status_code == 200:
+                return base64.b64encode(response.content).decode("utf-8")
+            else:
+                print(f"ElevenLabs API status {response.status_code}: {response.text}")
+                return ""
+        except Exception as e:
+            print(f"ElevenLabs TTS error: {e}")
             return ""
 
 
