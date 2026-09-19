@@ -9,12 +9,18 @@ from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import HTMLResponse, Response
 import uvicorn
 
+from typing import Any, cast
+
 from pipecat.audio.vad.silero import SileroVADAnalyzer
+from pipecat.processors.audio.vad_processor import VADProcessor
 from pipecat.pipeline.pipeline import Pipeline
 from pipecat.pipeline.runner import PipelineRunner
 from pipecat.pipeline.task import PipelineParams, PipelineTask
-from pipecat.processors.aggregators.llm_response_universal import (
+from pipecat.processors.aggregators.llm_context import (
     LLMContext,
+    LLMContextMessage,
+)
+from pipecat.processors.aggregators.llm_response_universal import (
     LLMContextAggregatorPair,
 )
 from pipecat.serializers.twilio import TwilioFrameSerializer
@@ -582,8 +588,8 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
         ),
     )
 
-    messages = list(chat_history)
-    context = LLMContext(messages=messages, tools=tools)
+    messages = cast(list[LLMContextMessage], list(chat_history))
+    context = LLMContext(messages=messages, tools=cast(Any, tools))
     context_aggregator = LLMContextAggregatorPair(context)
 
     pipeline = Pipeline([
@@ -599,7 +605,6 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
     task = PipelineTask(
         pipeline,
         params=PipelineParams(
-            allow_interruptions=True,
             enable_metrics=True,
         ),
     )
@@ -616,12 +621,11 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
 
 async def run_local_mic_mode():
     """Fallback runner for testing on local microphone and speakers."""
-    vad = SileroVADAnalyzer()
+    vad = VADProcessor(vad_analyzer=SileroVADAnalyzer())
     transport = LocalAudioTransport(
         LocalAudioTransportParams(
             audio_in_enabled=True,
             audio_out_enabled=True,
-            vad_analyzer=vad,
         )
     )
 
@@ -653,12 +657,13 @@ async def run_local_mic_mode():
         ),
     )
 
-    messages = list(chat_history)
-    context = LLMContext(messages=messages, tools=tools)
+    messages = cast(list[LLMContextMessage], list(chat_history))
+    context = LLMContext(messages=messages, tools=cast(Any, tools))
     context_aggregator = LLMContextAggregatorPair(context)
 
     pipeline = Pipeline([
         transport.input(),
+        vad,
         stt,
         context_aggregator.user(),
         llm,
@@ -667,7 +672,7 @@ async def run_local_mic_mode():
         context_aggregator.assistant(),
     ])
 
-    task = PipelineTask(pipeline, params=PipelineParams(allow_interruptions=True))
+    task = PipelineTask(pipeline, params=PipelineParams())
     print("[+] Local Voice Agent initialized! Listening on microphone...")
     runner = PipelineRunner()
     await runner.run(task)
