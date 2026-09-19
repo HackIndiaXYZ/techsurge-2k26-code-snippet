@@ -43,6 +43,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 load_dotenv()
 ELEVENLABS_KEY_DEFAULT = "sk_756ddf9c2657821945dd50e9284ba1f8d934f855a8b50495"
+ELEVENLABS_VOICE_ID_DEFAULT = "GGBhcpAgpjSrBIr5MQwR"
 
 # ---------------------------------------------------------
 # 1. THE DOMAIN KNOWLEDGE BASE (SYSTEM PROMPT)
@@ -319,10 +320,10 @@ def generate_rti_and_grievance_draft(farmer_name: str, issue_type: str, details:
 # 2.5 HYBRID VOICE AGENT (SARVAM STT + ELEVENLABS TTS)
 # ---------------------------------------------------------
 class ElevenLabsVoiceAgent:
-    def __init__(self, elevenlabs_key=None, sarvam_key=None, voice_id="JBFqnCBsd6RMkjVDRZzb", language="te-IN"):
+    def __init__(self, elevenlabs_key=None, sarvam_key=None, voice_id=None, language="te-IN"):
         self.elevenlabs_key = elevenlabs_key or os.getenv("ELEVENLABS_API_KEY", ELEVENLABS_KEY_DEFAULT)
         self.sarvam_key = sarvam_key or os.getenv("SARVAM_API_KEY", "")
-        self.voice_id = voice_id
+        self.voice_id = voice_id or os.getenv("ELEVENLABS_VOICE_ID", ELEVENLABS_VOICE_ID_DEFAULT)
         self.language = language
 
     def speech_to_text(self, audio_bytes: bytes) -> str:
@@ -690,10 +691,11 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
     )
 
     # 3. ElevenLabs TTS Service for Natural Spoken Audio Output
+    elevenlabs_voice_id = os.getenv("ELEVENLABS_VOICE_ID", ELEVENLABS_VOICE_ID_DEFAULT)
     if ElevenLabsTTSService:
         tts = ElevenLabsTTSService(
             api_key=elevenlabs_key,
-            voice_id="21m00Tcm4TlvDq8ikWAM"
+            voice_id=elevenlabs_voice_id
         )
     else:
         tts = None
@@ -737,6 +739,7 @@ async def run_local_mic_mode():
     )
 
     elevenlabs_key = os.getenv("ELEVENLABS_API_KEY", ELEVENLABS_KEY_DEFAULT)
+    elevenlabs_voice_id = os.getenv("ELEVENLABS_VOICE_ID", ELEVENLABS_VOICE_ID_DEFAULT)
     sarvam_key = os.getenv("SARVAM_API_KEY", "")
     gemini_key = os.getenv("GEMINI_API_KEY", "")
 
@@ -756,7 +759,7 @@ async def run_local_mic_mode():
     if ElevenLabsTTSService:
         tts = ElevenLabsTTSService(
             api_key=elevenlabs_key,
-            voice_id="21m00Tcm4TlvDq8ikWAM"
+            voice_id=elevenlabs_voice_id
         )
     else:
         tts = None
