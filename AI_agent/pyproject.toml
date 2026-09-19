@@ -13,7 +13,9 @@ dependencies = [
     "pipecat-ai>=1.11.0",
     "pyaudio>=0.2.14",
     "python-dotenv>=1.2.3",
+    "requests>=2.31.0",
     "sarvamai>=0.1.28",
+    "supabase>=2.30.0",
     "uvicorn>=0.53.0",
     "websockets>=17.1",
 ]
