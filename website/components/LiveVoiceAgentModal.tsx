@@ -24,7 +24,8 @@ import {
   Radio,
   Sliders,
   ShieldCheck,
-  User
+  User,
+  Play
 } from 'lucide-react';
 
 interface LiveVoiceAgentModalProps {
@@ -42,7 +43,7 @@ interface Message {
 }
 
 export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoiceAgentModalProps) {
-  const [callState, setCallState] = useState<'connecting' | 'connected' | 'ended'>('connecting');
+  const [callActive, setCallActive] = useState<boolean>(true);
   const [callDuration, setCallDuration] = useState<number>(0);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [speakerOn, setSpeakerOn] = useState<boolean>(true);
@@ -52,6 +53,7 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
   const [showCaptions, setShowCaptions] = useState<boolean>(true);
   const [showKeypad, setShowKeypad] = useState<boolean>(false);
   const [inputText, setInputText] = useState<string>('');
+  const [hasMicPermission, setHasMicPermission] = useState<boolean>(false);
   
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -65,24 +67,18 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+  const shouldListenRef = useRef<boolean>(true);
 
-  // Call Connection Timer (mm:ss)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCallState('connected');
-    }, 1200);
-    return () => clearTimeout(timer);
-  }, []);
-
+  // Call Duration Timer (mm:ss)
   useEffect(() => {
     let interval: any;
-    if (callState === 'connected') {
+    if (callActive) {
       interval = setInterval(() => {
         setCallDuration((prev) => prev + 1);
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [callState]);
+  }, [callActive]);
 
   const formatDuration = (secs: number) => {
     const m = Math.floor(secs / 60).toString().padStart(2, '0');
@@ -98,85 +94,155 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
     scrollToBottom();
   }, [messages]);
 
-  // Initial spoken greeting
-  useEffect(() => {
-    if (callState === 'connected' && speakerOn && messages.length === 1) {
-      speakText(messages[0].spokenTeluguText || messages[0].text);
-    }
-  }, [callState]);
-
   // Web Speech Synthesis for spoken audio output
   const speakText = (text: string) => {
     if (typeof window === 'undefined' || !('speechSynthesis' in window) || !speakerOn) return;
     
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = language;
-    utterance.rate = 0.92;
-    
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => {
-      setIsSpeaking(false);
-      // Auto listen hands-free after speaking if not muted
-      if (!isMuted) {
-        setTimeout(() => startListening(), 400);
+    try {
+      // Pause listening while agent speaks to prevent mic feedback
+      if (recognitionRef.current && isListening) {
+        try { recognitionRef.current.stop(); } catch(e) {}
       }
-    };
-    utterance.onerror = () => setIsSpeaking(false);
 
-    window.speechSynthesis.speak(utterance);
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = language;
+      utterance.rate = 0.92;
+      
+      utterance.onstart = () => {
+        setIsSpeaking(true);
+      };
+
+      utterance.onend = () => {
+        setIsSpeaking(false);
+        // Automatically unpause & resume continuous hands-free listening
+        if (shouldListenRef.current && !isMuted) {
+          setTimeout(() => startContinuousListening(), 300);
+        }
+      };
+
+      utterance.onerror = () => {
+        setIsSpeaking(false);
+        if (shouldListenRef.current && !isMuted) {
+          setTimeout(() => startContinuousListening(), 300);
+        }
+      };
+
+      window.speechSynthesis.speak(utterance);
+    } catch (e) {
+      console.error('Speech synthesis error:', e);
+      setIsSpeaking(false);
+    }
   };
 
-  // Web Speech Recognition for continuous hands-free voice input
-  const startListening = () => {
-    if (typeof window === 'undefined' || isMuted) return;
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+  // Play initial spoken greeting
+  const playGreeting = () => {
+    const greetingText = messages[0].spokenTeluguText || messages[0].text;
+    speakText(greetingText);
+  };
+
+  // Continuous Hands-Free Speech Recognition Loop (Like a real telephone call)
+  const startContinuousListening = async () => {
+    if (typeof window === 'undefined' || isMuted || !shouldListenRef.current) return;
     
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognition) return;
 
     try {
       if (recognitionRef.current) {
-        recognitionRef.current.stop();
+        try { recognitionRef.current.stop(); } catch(e) {}
       }
 
       const recognition = new SpeechRecognition();
       recognition.lang = language;
+      recognition.continuous = true;
       recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
 
-      recognition.onstart = () => setIsListening(true);
-      recognition.onend = () => setIsListening(false);
-      recognition.onerror = () => setIsListening(false);
+      recognition.onstart = () => {
+        setIsListening(true);
+        setHasMicPermission(true);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+        // Automatically restart speech recognition loop to stay 100% hands-free
+        if (shouldListenRef.current && !isMuted && !isSpeaking) {
+          setTimeout(() => {
+            try { recognition.start(); } catch(e) {}
+          }, 300);
+        }
+      };
+
+      recognition.onerror = (e: any) => {
+        setIsListening(false);
+        if (e.error !== 'aborted' && shouldListenRef.current && !isMuted && !isSpeaking) {
+          setTimeout(() => {
+            try { recognition.start(); } catch(err) {}
+          }, 500);
+        }
+      };
 
       recognition.onresult = (event: any) => {
-        const transcript = event.results[0][0].transcript;
-        if (transcript) {
-          handleSendMessage(transcript);
+        const lastIndex = event.results.length - 1;
+        const transcript = event.results[lastIndex][0].transcript;
+        if (transcript && transcript.trim()) {
+          handleSendMessage(transcript.trim());
         }
       };
 
       recognitionRef.current = recognition;
       recognition.start();
     } catch (e) {
-      console.error('Speech recognition error:', e);
+      console.error('Continuous speech recognition error:', e);
       setIsListening(false);
     }
   };
 
-  const stopListening = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-    }
-    setIsListening(false);
-  };
+  // Auto initialize call & request mic permission ONCE when modal opens
+  useEffect(() => {
+    shouldListenRef.current = true;
+
+    const initCall = async () => {
+      try {
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          await navigator.mediaDevices.getUserMedia({ audio: true });
+          setHasMicPermission(true);
+        }
+      } catch (err) {
+        console.warn('Microphone permission request:', err);
+      }
+
+      // Play Telugu greeting & start continuous hands-free voice loop
+      playGreeting();
+      setTimeout(() => {
+        startContinuousListening();
+      }, 500);
+    };
+
+    initCall();
+
+    return () => {
+      shouldListenRef.current = false;
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch(e) {}
+      }
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
   const toggleMute = () => {
     if (!isMuted) {
-      stopListening();
       setIsMuted(true);
+      shouldListenRef.current = false;
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch(e) {}
+      }
     } else {
       setIsMuted(false);
-      startListening();
+      shouldListenRef.current = true;
+      startContinuousListening();
     }
   };
 
@@ -253,18 +319,21 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
 
       setMessages((prev) => [...prev, assistantMsg]);
       speakText(spokenTeluguText || assistantText);
-    }, 600);
+    }, 400);
   };
 
   const handleEndCall = () => {
-    setCallState('ended');
+    setCallActive(false);
+    shouldListenRef.current = false;
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
-    stopListening();
+    if (recognitionRef.current) {
+      try { recognitionRef.current.stop(); } catch(e) {}
+    }
     setTimeout(() => {
       onClose();
-    }, 500);
+    }, 300);
   };
 
   const lastAssistantMsg = [...messages].reverse().find((m) => m.sender === 'assistant');
@@ -278,7 +347,7 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
           <div className="flex items-center gap-2">
             <Radio className="w-4 h-4 text-emerald-400 animate-pulse" />
             <span className="text-emerald-400 font-bold uppercase tracking-wider text-[11px]">
-              {callState === 'connecting' ? 'Calling...' : `HD Voice Call (${language})`}
+              HD Phone Call ({language})
             </span>
           </div>
           <div className="flex items-center gap-3">
@@ -292,21 +361,24 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
           </div>
         </div>
 
-        {/* CALL AVATAR & SOUND WAVE VISUALIZER */}
+        {/* CALL AVATAR & CONTINUOUS VOICE SOUNDWAVE */}
         <div className="flex-1 flex flex-col items-center justify-center px-6 text-center relative py-4 overflow-y-auto scrollbar-none">
           {/* Avatar Ring Animations */}
           <div className="relative mb-6">
             {isSpeaking && (
               <>
-                <div className="absolute -inset-4 rounded-full bg-emerald-500/20 animate-ping" />
-                <div className="absolute -inset-8 rounded-full bg-emerald-500/10 animate-pulse" />
+                <div className="absolute -inset-4 rounded-full bg-emerald-500/25 animate-ping" />
+                <div className="absolute -inset-8 rounded-full bg-emerald-500/15 animate-pulse" />
               </>
             )}
             {isListening && (
-              <div className="absolute -inset-4 rounded-full bg-amber-500/25 animate-ping" />
+              <div className="absolute -inset-4 rounded-full bg-amber-500/30 animate-ping" />
             )}
 
-            <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-tr from-[#A94A4A] via-[#7a2f2f] to-amber-600 p-1 shadow-2xl shadow-[#A94A4A]/40 relative z-10 flex items-center justify-center">
+            <div 
+              onClick={playGreeting}
+              className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-tr from-[#A94A4A] via-[#7a2f2f] to-amber-600 p-1 shadow-2xl shadow-[#A94A4A]/40 relative z-10 flex items-center justify-center cursor-pointer"
+            >
               <div className="w-full h-full rounded-full bg-slate-900 overflow-hidden flex items-center justify-center border-2 border-white/20">
                 <ShieldCheck className="w-14 h-14 text-amber-400 stroke-[1.8]" />
               </div>
@@ -325,27 +397,34 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
             PMFBY Voice Helpdesk • Spoken Telugu (వ్యవహారిక తెలుగు)
           </p>
 
-          <div className="inline-flex items-center gap-2 bg-slate-900/90 border border-slate-800 px-3.5 py-1.5 rounded-full text-xs font-semibold text-slate-300 mb-4 shadow-inner">
-            <span className={`w-2 h-2 rounded-full ${isSpeaking ? 'bg-emerald-400 animate-bounce' : isListening ? 'bg-amber-400 animate-ping' : 'bg-slate-500'}`} />
-            <span>
-              {callState === 'connecting'
-                ? 'Connecting phone call...'
-                : isSpeaking
-                ? 'Agent Speaking in Telugu...'
-                : isListening
-                ? 'Listening to Farmer (Hands-Free)...'
-                : 'Connected • Tap mic or quick voice prompt'}
-            </span>
+          <div className="flex flex-col items-center gap-2 mb-4">
+            <div className="inline-flex items-center gap-2 bg-slate-900/90 border border-slate-800 px-3.5 py-1.5 rounded-full text-xs font-semibold text-slate-300 shadow-inner">
+              <span className={`w-2.5 h-2.5 rounded-full ${isSpeaking ? 'bg-emerald-400 animate-bounce' : isListening ? 'bg-amber-400 animate-ping' : 'bg-emerald-500'}`} />
+              <span>
+                {isSpeaking
+                  ? 'Agent Speaking Spoken Telugu...'
+                  : isListening
+                  ? '🎤 Mic Active • Speak Hands-Free in Telugu/English'
+                  : isMuted
+                  ? '🔇 Call Muted'
+                  : '🟢 Phone Call Active'}
+              </span>
+            </div>
           </div>
 
           {/* REAL-TIME CLOSED CAPTIONS & SUBTITLES OVERLAY */}
           {showCaptions && lastAssistantMsg && (
-            <div className="w-full bg-slate-900/95 border border-slate-800/90 rounded-2xl p-4 text-left shadow-xl my-2 max-h-44 overflow-y-auto">
+            <div className="w-full bg-slate-900/95 border border-slate-800/90 rounded-2xl p-4 text-left shadow-xl my-2 max-h-48 overflow-y-auto">
               <div className="flex items-center justify-between text-[11px] text-slate-400 font-bold mb-1">
                 <span className="flex items-center gap-1.5 text-amber-400">
-                  <MessageSquare className="w-3.5 h-3.5" /> Live Subtitles
+                  <MessageSquare className="w-3.5 h-3.5" /> Agent Spoken Response
                 </span>
-                <span>{lastAssistantMsg.timestamp}</span>
+                <button
+                  onClick={() => speakText(lastAssistantMsg.spokenTeluguText || lastAssistantMsg.text)}
+                  className="text-emerald-400 hover:underline flex items-center gap-1 text-[11px]"
+                >
+                  <Volume2 className="w-3 h-3" /> Replay
+                </button>
               </div>
               <p className="text-xs sm:text-sm text-slate-200 font-medium leading-relaxed">
                 {lastAssistantMsg.spokenTeluguText || lastAssistantMsg.text}
@@ -415,7 +494,7 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
             <div className="flex items-center gap-2">
               <input
                 type="text"
-                placeholder="Type question or policy details..."
+                placeholder="Type question in Telugu or English..."
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
@@ -435,18 +514,18 @@ export default function LiveVoiceAgentModal({ onClose, initialPrompt }: LiveVoic
         {/* REAL PHONE CALL CONTROLS BAR (Circular Buttons) */}
         <div className="p-6 bg-slate-900/90 border-t border-slate-800/90 shrink-0">
           <div className="flex items-center justify-around max-w-xs mx-auto">
-            {/* Mute Button */}
+            {/* Mute Mic Button */}
             <div className="flex flex-col items-center gap-1.5">
               <button
                 onClick={toggleMute}
                 className={`w-14 h-14 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-lg ${
-                  isMuted ? 'bg-rose-500 text-white' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'
+                  isMuted ? 'bg-rose-600 text-white border-2 border-rose-400' : 'bg-slate-800 text-slate-200 hover:bg-slate-700'
                 }`}
                 title={isMuted ? 'Unmute Mic' : 'Mute Mic'}
               >
                 {isMuted ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
               </button>
-              <span className="text-[10px] font-bold text-slate-400">{isMuted ? 'Muted' : 'Mute'}</span>
+              <span className="text-[10px] font-bold text-slate-300">{isMuted ? 'Muted' : 'Mute'}</span>
             </div>
 
             {/* Keypad / Text Overlay Toggle */}
