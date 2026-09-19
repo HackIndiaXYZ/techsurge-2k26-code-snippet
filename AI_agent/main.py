@@ -361,23 +361,34 @@ class ElevenLabsVoiceAgent:
 
 
 def generate_llm_response(transcript: str, chat_history: list) -> str:
-    """Passes the farmer's text to the LLM and returns spoken Telugu response."""
+    """Passes the farmer's text to Gemini LLM and returns spoken Telugu response."""
     chat_history.append({"role": "user", "content": transcript})
     
-    openai_key = os.getenv("OPENAI_API_KEY", "")
+    gemini_key = os.getenv("GEMINI_API_KEY", "")
 
-    if openai_key:
+    if gemini_key:
         try:
-            headers = {"Authorization": f"Bearer {openai_key}", "Content-Type": "application/json"}
-            payload = {"model": "gpt-4o-mini", "messages": chat_history}
-            response = requests.post("https://api.openai.com/v1/chat/completions", json=payload, headers=headers, timeout=10)
-            reply_text = response.json()["choices"][0]["message"]["content"]
-            chat_history.append({"role": "assistant", "content": reply_text})
-            return reply_text
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={gemini_key}"
+            prompt_content = f"{SYSTEM_PROMPT}\n\nFarmer Question: {transcript}\nRespond concisely in 1-2 simple sentences."
+            payload = {
+                "contents": [{"parts": [{"text": prompt_content}]}]
+            }
+            headers = {"Content-Type": "application/json"}
+            response = requests.post(url, json=payload, headers=headers, timeout=10)
+            if response.status_code == 200:
+                res_data = response.json()
+                candidates = res_data.get("candidates", [])
+                if candidates:
+                    parts = candidates[0].get("content", {}).get("parts", [])
+                    if parts:
+                        reply_text = parts[0].get("text", "").strip()
+                        if reply_text:
+                            chat_history.append({"role": "assistant", "content": reply_text})
+                            return reply_text
         except Exception as e:
-            print(f"OpenAI LLM Notice: {e}")
+            print(f"Gemini LLM API Notice: {e}")
 
-    # Decision logic Telugu fallback response
+    # Decision logic fallback response
     lower = transcript.lower()
     if any(k in lower for k in ["1 lakh", "40,000", "40000", "cotton", "reduced", "పత్తి", "తక్కువ"]):
         reply_text = "నమస్తే కిసాన్ భాయ్. PMFBY నిబంధనల ప్రకారం ఊరంతా పంట నష్టం జరిగితే గ్రామ పంట కోత ప్రయోగాల ఆధారంగా క్లెయిమ్ లెక్కిస్తారు. మీ క్లెయిమ్ గణన పత్రం కోసం RTI దరఖాస్తును తయారు చేయమంటారా?"
