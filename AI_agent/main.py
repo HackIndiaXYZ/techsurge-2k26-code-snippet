@@ -24,6 +24,7 @@ from pipecat.processors.aggregators.llm_response_universal import (
     LLMContextAggregatorPair,
 )
 from pipecat.serializers.twilio import TwilioFrameSerializer
+from pipecat.services.sarvam.stt import SarvamSTTService, SarvamSTTSettings
 try:
     from pipecat.services.elevenlabs.tts import ElevenLabsTTSService
 except ImportError:
@@ -312,41 +313,46 @@ def generate_rti_and_grievance_draft(farmer_name: str, issue_type: str, details:
 
 
 # ---------------------------------------------------------
-# 2.5 SARVAM AI UNIFIED REST HANDLER (STT + TTS + LLM)
-# ---------------------------------------------------------
-# 2.5 ELEVENLABS UNIFIED VOICE AGENT (ELEVENLABS STT + TTS)
+# 2.5 HYBRID VOICE AGENT (SARVAM STT + ELEVENLABS TTS)
 # ---------------------------------------------------------
 class ElevenLabsVoiceAgent:
-    def __init__(self, api_key=None, voice_id="21m00Tcm4TlvDq8ikWAM"):
-        self.api_key = api_key or os.getenv("ELEVENLABS_API_KEY", ELEVENLABS_KEY_DEFAULT)
+    def __init__(self, elevenlabs_key=None, sarvam_key=None, voice_id="21m00Tcm4TlvDq8ikWAM", language="te-IN"):
+        self.elevenlabs_key = elevenlabs_key or os.getenv("ELEVENLABS_API_KEY", ELEVENLABS_KEY_DEFAULT)
+        self.sarvam_key = sarvam_key or os.getenv("SARVAM_API_KEY", "")
         self.voice_id = voice_id
-        self.headers = {"xi-api-key": self.api_key}
+        self.language = language
 
     def speech_to_text(self, audio_bytes: bytes) -> str:
-        """Sends raw audio to ElevenLabs Scribe / STT for transcription."""
-        if not self.api_key:
+        """Transcribes incoming farmer audio using Sarvam AI STT (saaras:v3) for Telugu."""
+        key = self.sarvam_key or os.getenv("SARVAM_API_KEY", "")
+        if not key:
             return ""
         try:
-            files = {"file": ("audio.mp3", audio_bytes, "audio/mp3")}
-            data = {"model_id": "scribe_v1"}
+            headers = {"api-subscription-key": key}
+            files = {"file": ("audio.wav", audio_bytes, "audio/wav")}
+            data = {"language_code": self.language, "model": "saaras:v3"}
             response = requests.post(
-                "https://api.elevenlabs.io/v1/speech-to-text",
-                files=files, data=data, headers=self.headers, timeout=10
+                "https://api.sarvam.ai/speech-to-text", 
+                files=files, data=data, headers=headers, timeout=10
             )
             if response.status_code == 200:
-                return response.json().get("text", "")
+                return response.json().get("transcript", "")
             return ""
         except Exception as e:
-            print(f"ElevenLabs STT error: {e}")
+            print(f"Sarvam STT REST error: {e}")
             return ""
 
     def text_to_speech(self, text: str) -> str:
-        """Sends LLM text to ElevenLabs TTS and returns base64 encoded audio string."""
-        if not self.api_key:
+        """Sends LLM response to ElevenLabs TTS and returns base64 audio string."""
+        key = self.elevenlabs_key or os.getenv("ELEVENLABS_API_KEY", ELEVENLABS_KEY_DEFAULT)
+        if not key:
             return ""
         try:
             url = f"https://api.elevenlabs.io/v1/text-to-speech/{self.voice_id}"
-            headers = {**self.headers, "Content-Type": "application/json"}
+            headers = {
+                "xi-api-key": key,
+                "Content-Type": "application/json"
+            }
             payload = {
                 "text": text,
                 "model_id": "eleven_multilingual_v2",
@@ -595,16 +601,14 @@ async def twilio_twiml_webhook(request: Request):
 async def twilio_websocket_endpoint(websocket: WebSocket):
     """
     Twilio Media Streams WebSocket Handler.
-    Handles bidirectional 8kHz audio streaming with ElevenLabs STT & TTS,
-    and Gemini LLM Brain.
+    Handles bidirectional 8kHz audio streaming with Sarvam STT (Telugu),
+    Gemini LLM Brain, and ElevenLabs TTS.
     """
     await websocket.accept()
 
     elevenlabs_key = os.getenv("ELEVENLABS_API_KEY", ELEVENLABS_KEY_DEFAULT)
+    sarvam_key = os.getenv("SARVAM_API_KEY", "")
     gemini_key = os.getenv("GEMINI_API_KEY", "")
-
-    if not elevenlabs_key:
-        print("⚠️ Warning: ELEVENLABS_API_KEY is not set in AI_agent/.env")
 
     # Read initial Twilio setup packet to extract streamSid
     stream_sid = "stream_default"
@@ -632,7 +636,16 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
         )
     )
 
-    # 1. Gemini 3.6 Flash LLM Brain with Kisan Bima Sahayak System Prompt
+    # 1. Sarvam AI STT for Telugu ("te-IN")
+    stt = SarvamSTTService(
+        api_key=sarvam_key or "dummy_sarvam_key",
+        settings=SarvamSTTSettings(
+            model="saaras:v3",
+            language="te-IN",
+        ),
+    )
+
+    # 2. Gemini 3.6 / 2.0 Flash LLM Brain
     llm = GoogleLLMService(
         api_key=gemini_key or "AIzaSy_Placeholder_Gemini_Key",
         settings=GoogleLLMService.Settings(
@@ -640,7 +653,7 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
         ),
     )
 
-    # 2. ElevenLabs TTS Service for Natural Spoken Audio Output
+    # 3. ElevenLabs TTS Service for Natural Spoken Audio Output
     if ElevenLabsTTSService:
         tts = ElevenLabsTTSService(
             api_key=elevenlabs_key,
@@ -653,7 +666,7 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
     context = LLMContext(messages=messages, tools=cast(Any, tools))
     context_aggregator = LLMContextAggregatorPair(context)
 
-    pipeline_steps = [transport.input(), context_aggregator.user(), llm]
+    pipeline_steps = [transport.input(), stt, context_aggregator.user(), llm]
     if tts:
         pipeline_steps.append(tts)
     pipeline_steps.extend([transport.output(), context_aggregator.assistant()])
@@ -667,7 +680,7 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
         ),
     )
 
-    print(f"[+] Twilio Stream connected via ElevenLabs Voice Engine! StreamSid: {stream_sid}")
+    print(f"[+] Twilio Stream connected (Sarvam STT + ElevenLabs TTS)! StreamSid: {stream_sid}")
     runner = PipelineRunner()
     try:
         await runner.run(task)
@@ -678,7 +691,7 @@ async def twilio_websocket_endpoint(websocket: WebSocket):
 
 
 async def run_local_mic_mode():
-    """Fallback runner for testing on local microphone and speakers with ElevenLabs."""
+    """Fallback runner for testing on local microphone and speakers with Sarvam STT & ElevenLabs TTS."""
     vad = SileroVADAnalyzer()
     transport = LocalAudioTransport(
         LocalAudioTransportParams(
@@ -688,7 +701,16 @@ async def run_local_mic_mode():
     )
 
     elevenlabs_key = os.getenv("ELEVENLABS_API_KEY", ELEVENLABS_KEY_DEFAULT)
+    sarvam_key = os.getenv("SARVAM_API_KEY", "")
     gemini_key = os.getenv("GEMINI_API_KEY", "")
+
+    stt = SarvamSTTService(
+        api_key=sarvam_key,
+        settings=SarvamSTTSettings(
+            model="saaras:v3",
+            language="te-IN",
+        ),
+    )
 
     llm = GoogleLLMService(
         api_key=gemini_key,
@@ -707,7 +729,7 @@ async def run_local_mic_mode():
     context = LLMContext(messages=messages, tools=cast(Any, tools))
     context_aggregator = LLMContextAggregatorPair(context)
 
-    pipeline_steps = [transport.input(), context_aggregator.user(), llm]
+    pipeline_steps = [transport.input(), stt, context_aggregator.user(), llm]
     if tts:
         pipeline_steps.append(tts)
     pipeline_steps.extend([transport.output(), context_aggregator.assistant()])
@@ -715,7 +737,7 @@ async def run_local_mic_mode():
     pipeline = Pipeline(pipeline_steps)
 
     task = PipelineTask(pipeline, params=PipelineParams(allow_interruptions=True))
-    print("[+] Local Voice Agent initialized using ElevenLabs Voice Engine!")
+    print("[+] Local Voice Agent initialized using Sarvam STT & ElevenLabs TTS Engine!")
     runner = PipelineRunner()
     await runner.run(task)
 
