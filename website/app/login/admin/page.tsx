@@ -14,39 +14,73 @@ import {
   LuUserCheck as UserCheck
 } from 'react-icons/lu';
 
+import CardFlip from '@/components/CardFlip';
+
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { loginAs, isLoading } = useAuth();
+  const { loginAs } = useAuth();
 
-  const adminOptions = [
+  const adminCards = [
     {
       roleKey: 'district_officer',
-      title: 'District Agriculture Officer (DAO)',
+      title: 'District Officer (DAO)',
       subtitle: 'District-level inspection & claim verification',
-      icon: <Building2 className="w-6 h-6 text-[#A94A4A] stroke-[2.5]" />,
-      badgeColor: 'bg-[#F3E8CF] text-[#785114] border-[#E6D0A0]',
+      badgeText: 'District DAO',
+      description: 'Access Medak District grievance queue, audit crop loss intimations, generate DLGRC hearing briefs, and enforce 12% statutory late interest penalties.',
+      features: [
+        'District Inspection & Claim Verification',
+        'DLGRC Hearing Brief Generator',
+        '12% Statutory Late Interest Enforcer',
+        'Village Cluster Discrepancy Queue'
+      ],
+      icon: <Building2 className="w-8 h-8 stroke-[2]" />,
+      actionText: 'Enter DAO Dashboard'
     },
     {
       roleKey: 'csc_operator',
-      title: 'Local Center / CSC VLE Operator',
+      title: 'CSC VLE Operator',
       subtitle: 'Village VLE policy enrolment & assistance',
-      icon: <Store className="w-6 h-6 text-[#A94A4A] stroke-[2.5]" />,
-      badgeColor: 'bg-[#F3E8CF] text-[#785114] border-[#E6D0A0]',
+      badgeText: 'Local CSC Center',
+      description: 'Assist local farmers with fast PMFBY claim intake under 3 minutes, print single-click physical claim packages, and verify mandatory documents.',
+      features: [
+        'Fast Assisted Claim Intake (< 3 Mins)',
+        'Visual Document & Land Passbook Checklist',
+        'Single-Click Physical Application Package',
+        'Realtime CSC Intimation Receipt Generation'
+      ],
+      icon: <Store className="w-8 h-8 stroke-[2]" />,
+      actionText: 'Enter CSC Portal'
     },
     {
       roleKey: 'state_officer',
-      title: 'State Agriculture Department',
+      title: 'State Agriculture Dept',
       subtitle: 'State-wide subsidy release & oversight',
-      icon: <Landmark className="w-6 h-6 text-[#A94A4A] stroke-[2.5]" />,
-      badgeColor: 'bg-[#F3E8CF] text-[#785114] border-[#E6D0A0]',
+      badgeText: 'State HQ',
+      description: 'Monitor 33 district yield dispute clusters, audit CCE harvest figures vs insurer portal payouts, and generate SLGRC escalation briefs for committee reviews.',
+      features: [
+        'Statewide 33 District Monitoring',
+        'CCE Harvest vs Insurer Payout Heatmap',
+        'SLGRC Committee Brief Generator',
+        '50% Central Matching Share Subsidy Release'
+      ],
+      icon: <Landmark className="w-8 h-8 stroke-[2]" />,
+      actionText: 'Enter State Portal'
     },
     {
       roleKey: 'ministry_officer',
-      title: 'Ministry of Agriculture & Farmers Welfare',
+      title: 'Ministry of Agriculture',
       subtitle: 'Central PMFBY policy & national monitoring',
-      icon: <ShieldCheck className="w-6 h-6 text-[#A94A4A] stroke-[2.5]" />,
-      badgeColor: 'bg-[#F3E8CF] text-[#785114] border-[#E6D0A0]',
-    },
+      badgeText: 'Central Ministry',
+      description: 'Oversee 5.4 Crore enrolled farmers across India, audit 18 empanelled insurer SLA timelines, and align ground data with Krishi Rakshak Helpline (14447) schema.',
+      features: [
+        'Krishi Rakshak (14447) Schema Aligner',
+        'Empanelled Insurer Timeline Compliance Matrix',
+        'Non-Adjudication Rule Boundary Engine',
+        'Union Budget ₹8,450 Cr Allocation Audit'
+      ],
+      icon: <ShieldCheck className="w-8 h-8 stroke-[2]" />,
+      actionText: 'Enter Ministry Portal'
+    }
   ];
 
   return (
@@ -80,43 +114,29 @@ export default function AdminLoginPage() {
 
       {/* Main Admin Personas Options */}
       <main className="max-w-6xl mx-auto px-6 py-10 flex-1 w-full flex flex-col justify-center relative z-10">
-        <div className="text-center max-w-2xl mx-auto mb-10">
+        <div className="text-center max-w-2xl mx-auto mb-8">
           <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 mb-2">
             Select Administrative Persona
           </h1>
           <p className="text-slate-600 text-sm sm:text-base font-medium">
-            Choose an officer or center role to instantly enter their dedicated dashboard:
+            Choose an officer or center role to instantly enter their dedicated dashboard (Hover card to flip):
           </p>
         </div>
 
-        {/* 4 Admin Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {adminOptions.map((item) => (
-            <div
-              key={item.roleKey}
-              onClick={() => loginAs(item.roleKey)}
-              className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-[#f7d5d5] hover:border-[#a94a4a] shadow-md hover:shadow-xl hover:shadow-[#a94a4a]/10 transition-all duration-300 transform hover:-translate-y-1 cursor-pointer flex flex-col justify-between group min-h-[190px]"
-            >
-              <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className={`px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wider border ${item.badgeColor}`}>
-                    {item.title}
-                  </span>
-                  <div className="p-2.5 rounded-2xl bg-[#fdf5f5] border border-[#f7d5d5] group-hover:scale-110 transition-transform">
-                    {item.icon}
-                  </div>
-                </div>
-
-                <p className="text-sm text-slate-600 mb-6 font-medium leading-relaxed">{item.subtitle}</p>
-              </div>
-
-              <div className="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-[#8c3a3a] group-hover:translate-x-1 transition-transform">
-                <span className="flex items-center gap-1.5">
-                  <UserCheck className="w-4 h-4 text-[#a94a4a]" /> Enter Portal
-                </span>
-                <ArrowRight className="w-4 h-4 text-[#a94a4a]" />
-              </div>
-            </div>
+        {/* 4 Admin 3D Flip Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto w-full items-center justify-center">
+          {adminCards.map((card) => (
+            <CardFlip
+              key={card.roleKey}
+              title={card.title}
+              subtitle={card.subtitle}
+              description={card.description}
+              features={card.features}
+              icon={card.icon}
+              actionText={card.actionText}
+              badgeText={card.badgeText}
+              onAction={() => loginAs(card.roleKey)}
+            />
           ))}
         </div>
       </main>
