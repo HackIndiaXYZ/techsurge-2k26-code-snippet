@@ -66,7 +66,7 @@ export default function AdminLoginPage() {
               <ArrowLeft className="w-4 h-4 text-[#a94a4a]" /> Back to Main Login
             </button>
             <div className="h-6 w-px bg-slate-200 hidden sm:block" />
-            <span className="font-extrabold text-xl tracking-tight font-mono text-slate-900 hidden sm:inline">
+            <span className="font-extrabold text-xl tracking-tight font-sans text-slate-900 hidden sm:inline">
               cropins<span className="text-[#A94A4A]">'</span>
             </span>
           </div>

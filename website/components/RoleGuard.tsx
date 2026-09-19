@@ -92,7 +92,7 @@ export default function RoleGuard({ children }: RoleGuardProps) {
             <div className="w-9 h-9 rounded-xl bg-[#A94A4A] flex items-center justify-center shadow-md shadow-[#A94A4A]/20">
               <ShieldCheck className="w-5 h-5 text-white stroke-[2.5]" />
             </div>
-            <span className="font-extrabold text-xl tracking-tight font-mono text-slate-900">
+            <span className="font-extrabold text-xl tracking-tight font-sans text-slate-900">
               cropins<span className="text-[#A94A4A]">'</span>
             </span>
           </div>
