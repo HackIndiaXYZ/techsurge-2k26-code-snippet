@@ -31,14 +31,13 @@
     }
   },
   "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
+    "website/**/*.ts",
+    "website/**/*.tsx",
+    "website/next-env.d.ts",
+    "website/.next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",
-    "website",
     "AI_agent"
   ]
 }
