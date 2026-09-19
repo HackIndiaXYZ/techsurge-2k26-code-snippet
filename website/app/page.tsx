@@ -50,7 +50,7 @@ export default function HomePage() {
       />
 
       {/* Header Bar */}
-      <header className="border-b border-[#f7d5d5] bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+      <header className="sticky top-0 z-50 border-b border-[#f7d5d5] bg-white/90 backdrop-blur-md shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 rounded-xl bg-[#A94A4A] flex items-center justify-center shadow-md shadow-[#A94A4A]/20">
