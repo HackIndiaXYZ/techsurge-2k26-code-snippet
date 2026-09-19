@@ -14,6 +14,7 @@ import {
 
 import CardFlip from '@/components/CardFlip';
 import WarpText from '@/components/WarpText';
+import CursorGrid from '@/components/CursorGrid';
 
 export default function HomePage() {
   const router = useRouter();
@@ -29,6 +30,23 @@ export default function HomePage() {
       {/* Background Soft Glows */}
       <div className="absolute top-0 left-1/3 w-[500px] h-[500px] bg-[#fbeaea]/70 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 right-1/3 w-[500px] h-[500px] bg-[#feebaf]/70 rounded-full blur-[120px] pointer-events-none" />
+
+      {/* Interactive Cursor Grid Background */}
+      <CursorGrid
+        cellSize={70}
+        color="#A94A4A"
+        radius={140}
+        falloff="smooth"
+        holdTime={400}
+        fadeDuration={800}
+        lineWidth={1.2}
+        maxOpacity={0.8}
+        fillOpacity={0.06}
+        gridOpacity={0.04}
+        cellRadius={6}
+        clickPulse
+        pulseSpeed={600}
+      />
 
       {/* Header Bar */}
       <header className="border-b border-[#f7d5d5] bg-white/90 backdrop-blur-md sticky top-0 z-50 shadow-sm">
